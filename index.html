@@ -9,8 +9,11 @@
   :root{
     --bg-url: url("bg.png");
 
-    /* desktop */
+    /* Sidebar širina kad je otvoren */
     --sidebar-w: 300px;
+
+    /* Tanka “ručica” kad je zatvoren */
+    --edge-w: 14px;
 
     --ink:#0f172a;
     --muted:rgba(15,23,42,.65);
@@ -24,9 +27,6 @@
 
   *{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI",system-ui,Arial,sans-serif}
 
-  /* NE LOMIMO LAYOUT: uvek desktop raspored */
-  html, body{ overflow-x:auto; }
-
   body{
     min-height:100vh;
     background: var(--bg-url) center/cover no-repeat fixed;
@@ -38,42 +38,74 @@
     inset:0;
     background: rgba(255,255,255,.78);
     backdrop-filter: blur(8px);
-    z-index:-1;
+    z-index:-2;
   }
 
-  .app{
-    min-height:100vh;
-    /* da desktop raspored ne "puca" */
-    min-width: 980px;
+  /* ===== Overlay (kad je sidebar otvoren) ===== */
+  .overlay{
+    position: fixed;
+    inset: 0;
+    background: rgba(2,6,23,.25);
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .18s ease;
+    z-index: 40;
+  }
+  .overlay.show{
+    opacity: 1;
+    pointer-events: auto;
   }
 
-  /* SIDEBAR */
+  /* ===== “Edge” zona na levoj ivici za hover ===== */
+  .edgeHotspot{
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: var(--edge-w);
+    height: 100vh;
+    z-index: 60;
+    /* da se lakše “uhvati” */
+    background: rgba(255,255,255,0.0);
+  }
+
+  /* ===== Sidebar (overlay panel) ===== */
   .sidebar{
-    position:fixed;
-    left:0; top:0;
-    width:var(--sidebar-w);
-    height:100vh;
-    padding:26px 20px;
+    position: fixed;
+    left: 0; top: 0;
+    width: var(--sidebar-w);
+    height: 100vh;
+    padding: 26px 20px;
 
     background:
       linear-gradient(180deg,var(--side1),var(--side2)),
       var(--bg-url);
-    background-size:cover;
-    background-position:center;
-    color:#fff;
+    background-size: cover;
+    background-position: center;
 
-    box-shadow:10px 0 30px rgba(0,0,0,.25);
-    overflow:hidden;
+    color: #fff;
+    box-shadow: 18px 0 40px rgba(0,0,0,.28);
+    overflow: hidden;
+
+    /* START ZATVOREN: izvučen levo osim edge-a */
+    transform: translateX(calc(-1 * (var(--sidebar-w) - var(--edge-w))));
+    transition: transform .20s ease;
+    z-index: 70;
   }
+
+  .sidebar.open{
+    transform: translateX(0);
+  }
+
   .sidebar::before{
     content:"";
     position:absolute;
     inset:0;
     background:rgba(0,0,0,.22);
-    backdrop-filter:blur(10px);
+    backdrop-filter: blur(10px);
     z-index:0;
   }
-  .sidebar > *{ position:relative; z-index:1; }
+  .sidebar > *{position:relative;z-index:1}
 
   .brand h1{
     font-size:22px;
@@ -112,26 +144,46 @@
     box-shadow:0 10px 24px rgba(0,0,0,.22);
   }
 
-  /* MAIN */
+  /* ===== Main (više nema margin-left, jer sidebar je overlay) ===== */
   .main{
-    margin-left:var(--sidebar-w);
-    padding:44px 52px;
-    min-height:100vh;
+    padding: 44px 52px;
+    min-height: 100vh;
   }
 
-  /* TOP SEARCH */
-  .topActions{
+  /* Top: hamburger + search */
+  .topRow{
     display:flex;
-    justify-content:flex-end;
-    margin-bottom:26px;
+    align-items:center;
+    gap: 14px;
+    justify-content: space-between;
+    margin-bottom: 26px;
   }
+
+  .hamburger{
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: var(--glass);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    display:grid;
+    place-items:center;
+    cursor:pointer;
+    user-select:none;
+  }
+  .hamburger span{
+    font-size: 18px;
+    opacity: .75;
+  }
+
   .search{
-    width:520px;
-    padding:12px 16px;
-    border-radius:18px;
-    background:var(--glass);
-    border:1px solid var(--border);
-    box-shadow:var(--shadow);
+    flex: 1;
+    max-width: 640px;
+    padding: 12px 16px;
+    border-radius: 18px;
+    background: var(--glass);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
   }
   .search input{
     width:100%;
@@ -142,7 +194,7 @@
     color:var(--ink);
   }
 
-  /* HEADER + SALDO (uvek u istom redu) */
+  /* Header + saldo */
   .pageHeader{
     display:flex;
     justify-content:space-between;
@@ -164,7 +216,7 @@
   }
 
   .balanceCard{
-    min-width:280px;
+    min-width:260px;
     padding:22px 24px;
     border-radius:22px;
     background:#fff;
@@ -186,7 +238,7 @@
     letter-spacing:-0.01em;
   }
 
-  /* CONTENT CARD */
+  /* Content card */
   .card{
     background:var(--glass);
     border:1px solid var(--border);
@@ -195,16 +247,8 @@
     padding:24px;
     max-width:1100px;
   }
-  .card h3{
-    font-size:34px;
-    font-weight:800;
-  }
-  .card p{
-    margin-top:12px;
-    font-size:14px;
-    color:var(--muted);
-    max-width:90ch;
-  }
+  .card h3{ font-size:34px; font-weight:800; }
+  .card p{ margin-top:12px; font-size:14px; color:var(--muted); max-width:90ch; }
 
   .feed{
     margin-top:22px;
@@ -229,134 +273,142 @@
     color:rgba(15,23,42,.55);
     white-space:nowrap;
   }
-  .feedItem p{
-    margin-top:8px;
-    font-size:14px;
-    color:rgba(15,23,42,.70);
-  }
+  .feedItem p{ margin-top:8px; font-size:14px; color:rgba(15,23,42,.70); }
 
-  /* ==========================
-     📱 MOBILNI: suzavamo sidebar
-     (NE menjamo raspored)
-     ========================== */
+  /* Mobilno: smanji tipografiju (ali layout ostaje isti) */
   @media (max-width: 600px){
     :root{
-      --sidebar-w: 180px;  /* ključna stvar */
+      --sidebar-w: 260px; /* na telefonu ne treba 300 */
+      --edge-w: 14px;
     }
-
-    .app{ min-width: 860px; } /* da sve ostane "desktop", ali manje */
-
-    .sidebar{
-      padding:18px 12px;
-    }
-
-    .brand h1{
-      font-size:16px;
-      letter-spacing:.08em;
-    }
-    .brand p{ font-size:10px; }
-
-    .nav a{
-      font-size:13px;
-      padding:10px 10px;
-      border-radius:12px;
-    }
-
-    .main{
-      padding:20px 18px;
-    }
-
-    .search{
-      width:420px;
-      padding:10px 12px;
-      border-radius:14px;
-    }
-    .search input{ font-size:13px; }
-
-    .titleBlock h2{ font-size:32px; }
-    .meta{ font-size:16px; }
-
-    .balanceCard{
-      min-width:200px;
-      padding:14px 16px;
-      border-radius:16px;
-    }
-    .balanceCard strong{ font-size:22px; }
-
-    .card h3{ font-size:26px; }
+    .main{ padding: 20px 18px; }
+    .titleBlock h2{ font-size: 34px; }
+    .meta{ font-size: 16px; }
+    .balanceCard{ min-width: 200px; padding: 14px 16px; border-radius: 16px; }
+    .balanceCard strong{ font-size: 22px; }
+    .card h3{ font-size: 26px; }
   }
 </style>
 </head>
 
 <body>
-<div class="app">
 
-  <aside class="sidebar">
-    <div class="brand">
-      <h1>PORTAL</h1>
-      <p>Upravnik zgrade</p>
+<!-- levo “hotspot” da otvori sidebar na hover -->
+<div class="edgeHotspot" id="edgeHotspot" aria-hidden="true"></div>
+
+<!-- overlay -->
+<div class="overlay" id="overlay"></div>
+
+<!-- Sidebar panel -->
+<aside class="sidebar" id="sidebar">
+  <div class="brand">
+    <h1>PORTAL</h1>
+    <p>Upravnik zgrade</p>
+  </div>
+
+  <nav class="nav">
+    <a class="active" href="#">Finansije</a>
+    <a href="#">Oglasna tabla</a>
+    <a href="#">Forum</a>
+    <a href="#">Zakonska regulative</a>
+    <a href="#">Kontakt sluzbe</a>
+  </nav>
+</aside>
+
+<main class="main">
+  <div class="topRow">
+    <div class="hamburger" id="hamburger" title="Meni">
+      <span>☰</span>
+    </div>
+    <div class="search">
+      <input placeholder="Pretraga..." />
+    </div>
+  </div>
+
+  <section class="pageHeader">
+    <div class="titleBlock">
+      <h2>Stanje racuna</h2>
+      <div class="meta">
+        Ul. Primer 1<br/>
+        Zgrada 12<br/>
+        48 jedinica
+      </div>
     </div>
 
-    <nav class="nav">
-      <a class="active" href="#">Finansije</a>
-      <a href="#">Oglasna tabla</a>
-      <a href="#">Forum</a>
-      <a href="#">Zakonska regulative</a>
-      <a href="#">Kontakt sluzbe</a>
-    </nav>
-  </aside>
+    <div class="balanceCard">
+      <span>Ukupno stanje</span>
+      <strong>948.889,00 RSD</strong>
+    </div>
+  </section>
 
-  <main class="main">
-    <div class="topActions">
-      <div class="search">
-        <input placeholder="Pretraga..." />
+  <section class="card">
+    <h3>Oglasna tabla</h3>
+    <p>
+      Ovde se prikazuju vazna obavestenja upravnika za stanare (radovi, racuni,
+      hitna obavestenja i sl.).
+    </p>
+
+    <div class="feed">
+      <div class="feedItem">
+        <div class="row">
+          <span>Obavestenje o radovima</span>
+          <time>31.12.2025</time>
+        </div>
+        <p>U ponedeljak od 09:00 do 13:00 bice kratkotrajno iskljucenje vode.</p>
+      </div>
+
+      <div class="feedItem">
+        <div class="row">
+          <span>Racun za odrzavanje</span>
+          <time>29.12.2025</time>
+        </div>
+        <p>Rok placanja je do 10. u mesecu. Detalji u sekciji Finansije.</p>
       </div>
     </div>
+  </section>
+</main>
 
-    <section class="pageHeader">
-      <div class="titleBlock">
-        <h2>Stanje racuna</h2>
-        <div class="meta">
-          Ul. Primer 1<br/>
-          Zgrada 12<br/>
-          48 jedinica
-        </div>
-      </div>
+<script>
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("overlay");
+  const edgeHotspot = document.getElementById("edgeHotspot");
+  const hamburger = document.getElementById("hamburger");
 
-      <div class="balanceCard">
-        <span>Ukupno stanje</span>
-        <strong>948.889,00 RSD</strong>
-      </div>
-    </section>
+  function openSidebar(){
+    sidebar.classList.add("open");
+    overlay.classList.add("show");
+  }
+  function closeSidebar(){
+    sidebar.classList.remove("open");
+    overlay.classList.remove("show");
+  }
 
-    <section class="card">
-      <h3>Oglasna tabla</h3>
-      <p>
-        Ovde se prikazuju vazna obavestenja upravnika za stanare (radovi, racuni,
-        hitna obavestenja i sl.).
-      </p>
+  // Desktop: hover skroz levo otvara
+  edgeHotspot.addEventListener("mouseenter", openSidebar);
 
-      <div class="feed">
-        <div class="feedItem">
-          <div class="row">
-            <span>Obavestenje o radovima</span>
-            <time>31.12.2025</time>
-          </div>
-          <p>U ponedeljak od 09:00 do 13:00 bice kratkotrajno iskljucenje vode.</p>
-        </div>
+  // Kad miš izađe iz sidebara i overlay-a, zatvori (desktop)
+  sidebar.addEventListener("mouseleave", () => {
+    // mali delay da ne "secka" kad prelazi preko ivice
+    setTimeout(() => {
+      // ako korisnik nije kliknuo, zatvori
+      closeSidebar();
+    }, 120);
+  });
 
-        <div class="feedItem">
-          <div class="row">
-            <span>Racun za odrzavanje</span>
-            <time>29.12.2025</time>
-          </div>
-          <p>Rok placanja je do 10. u mesecu. Detalji u sekciji Finansije.</p>
-        </div>
-      </div>
-    </section>
+  // Klik van (overlay) zatvara
+  overlay.addEventListener("click", closeSidebar);
 
-  </main>
+  // Mobilno: hamburger toggle
+  hamburger.addEventListener("click", () => {
+    if (sidebar.classList.contains("open")) closeSidebar();
+    else openSidebar();
+  });
 
-</div>
+  // Escape zatvara (desktop)
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeSidebar();
+  });
+</script>
+
 </body>
 </html>
