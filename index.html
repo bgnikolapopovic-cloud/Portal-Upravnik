@@ -2,7 +2,7 @@
 <html lang="sr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Portal-Upravnik | Pocetna</title>
 
   <style>
@@ -21,7 +21,21 @@
       --side2: rgba(6, 24, 40, 0.92);
     }
 
-    *{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI",system-ui,Arial,sans-serif}
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:"Segoe UI", system-ui, Arial, sans-serif;
+    }
+
+    /* ==== DESKTOP LAYOUT FORCE (NAJBITNIJE) ==== */
+    html, body {
+      overflow-x: auto;
+    }
+    .app {
+      min-width: 1200px; /* forsira desktop izgled svuda */
+    }
+    /* ========================================== */
 
     body{
       min-height:100vh;
@@ -41,7 +55,8 @@
     /* SIDEBAR */
     .sidebar{
       position:fixed;
-      left:0; top:0;
+      left:0;
+      top:0;
       width:var(--sidebar-w);
       height:100vh;
       padding:28px 22px;
@@ -63,9 +78,6 @@
     }
     .sidebar > *{position:relative;z-index:1}
 
-    .brand{
-      margin-bottom:28px;
-    }
     .brand h1{
       font-size:22px;
       letter-spacing:0.12em;
@@ -78,6 +90,7 @@
     }
 
     .nav{
+      margin-top:30px;
       display:flex;
       flex-direction:column;
       gap:10px;
@@ -116,7 +129,7 @@
     }
 
     .search{
-      width:min(520px,45vw);
+      width:520px;
       display:flex;
       gap:10px;
       padding:12px 16px;
@@ -134,12 +147,12 @@
       font-size:14px;
     }
 
-    /* HEADER + SALDO */
+    /* HEADER + SALDO (U ISTOM REDU UVEK) */
     .pageHeader{
       display:flex;
       justify-content:space-between;
       align-items:flex-start;
-      gap:30px;
+      gap:40px;
       margin-bottom:30px;
     }
 
@@ -165,6 +178,7 @@
       border:1px solid var(--border);
       box-shadow:0 16px 36px rgba(2,6,23,0.14);
       text-align:right;
+      white-space:nowrap;
     }
 
     .balanceCard span{
@@ -187,6 +201,7 @@
       border-radius:22px;
       box-shadow:var(--shadow);
       padding:24px;
+      max-width:1100px;
     }
 
     .card h3{
@@ -231,89 +246,77 @@
       font-size:14px;
       color:rgba(15,23,42,0.70);
     }
-
-    /* RESPONSIVE */
-    @media(max-width:900px){
-      .pageHeader{
-        flex-direction:column;
-      }
-      .balanceCard{
-        width:100%;
-        text-align:left;
-      }
-    }
-
-    @media(max-width:640px){
-      .sidebar{display:none}
-      .main{margin-left:0;padding:26px 18px}
-    }
   </style>
 </head>
 
 <body>
-  <aside class="sidebar">
-    <div class="brand">
-      <h1>PORTAL</h1>
-      <p>Upravnik zgrade</p>
-    </div>
+  <div class="app">
 
-    <nav class="nav">
-      <a class="active" href="#">Finansije</a>
-      <a href="#">Oglasna tabla</a>
-      <a href="#">Forum</a>
-      <a href="#">Zakonska regulative</a>
-      <a href="#">Kontakt sluzbe</a>
-    </nav>
-  </aside>
-
-  <main class="main">
-    <div class="topActions">
-      <div class="search">
-        <input placeholder="Pretraga..." />
+    <aside class="sidebar">
+      <div class="brand">
+        <h1>PORTAL</h1>
+        <p>Upravnik zgrade</p>
       </div>
-    </div>
 
-    <section class="pageHeader">
-      <div class="titleBlock">
-        <h2>Stanje racuna</h2>
-        <div class="meta">
-          Ul. Primer 1<br/>
-          Zgrada 12<br/>
-          48 jedinica
+      <nav class="nav">
+        <a class="active" href="#">Finansije</a>
+        <a href="#">Oglasna tabla</a>
+        <a href="#">Forum</a>
+        <a href="#">Zakonska regulative</a>
+        <a href="#">Kontakt sluzbe</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="topActions">
+        <div class="search">
+          <input placeholder="Pretraga..." />
         </div>
       </div>
 
-      <div class="balanceCard">
-        <span>Ukupno stanje</span>
-        <strong>948.889,00 RSD</strong>
-      </div>
-    </section>
-
-    <section class="card">
-      <h3>Oglasna tabla</h3>
-      <p>
-        Ovde se prikazuju vazna obavestenja upravnika za stanare (radovi, racuni,
-        hitna obavestenja i sl.).
-      </p>
-
-      <div class="feed">
-        <div class="feedItem">
-          <div class="row">
-            <span>Obavestenje o radovima</span>
-            <time>31.12.2025</time>
+      <section class="pageHeader">
+        <div class="titleBlock">
+          <h2>Stanje racuna</h2>
+          <div class="meta">
+            Ul. Primer 1<br/>
+            Zgrada 12<br/>
+            48 jedinica
           </div>
-          <p>U ponedeljak od 09:00 do 13:00 bice kratkotrajno iskljucenje vode.</p>
         </div>
 
-        <div class="feedItem">
-          <div class="row">
-            <span>Racun za odrzavanje</span>
-            <time>29.12.2025</time>
-          </div>
-          <p>Rok placanja je do 10. u mesecu. Detalji u sekciji Finansije.</p>
+        <div class="balanceCard">
+          <span>Ukupno stanje</span>
+          <strong>948.889,00 RSD</strong>
         </div>
-      </div>
-    </section>
-  </main>
+      </section>
+
+      <section class="card">
+        <h3>Oglasna tabla</h3>
+        <p>
+          Ovde se prikazuju vazna obavestenja upravnika za stanare (radovi,
+          racuni, hitna obavestenja i sl.).
+        </p>
+
+        <div class="feed">
+          <div class="feedItem">
+            <div class="row">
+              <span>Obavestenje o radovima</span>
+              <time>31.12.2025</time>
+            </div>
+            <p>U ponedeljak od 09:00 do 13:00 bice kratkotrajno iskljucenje vode.</p>
+          </div>
+
+          <div class="feedItem">
+            <div class="row">
+              <span>Racun za odrzavanje</span>
+              <time>29.12.2025</time>
+            </div>
+            <p>Rok placanja je do 10. u mesecu. Detalji u sekciji Finansije.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+  </div>
 </body>
 </html>
