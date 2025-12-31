@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portal-Upravnik | Pocetna</title>
+
+  <style>
+    :root{
+      --bg-url: url("bg.png");
+      --sidebar-w: 300px;
+
+      --ink: #0f172a;
+      --muted: rgba(15, 23, 42, 0.65);
+
+      --glass: rgba(255,255,255,0.88);
+      --border: rgba(15,23,42,0.14);
+      --shadow: 0 18px 40px rgba(2, 6, 23, 0.10);
+
+      --side1: rgba(10, 35, 56, 0.92);
+      --side2: rgba(6, 24, 40, 0.92);
+    }
+
+    *{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI",system-ui,Arial,sans-serif}
+
+    body{
+      min-height:100vh;
+      background: var(--bg-url) center/cover no-repeat fixed;
+      color: var(--ink);
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      background: rgba(255,255,255,0.78);
+      backdrop-filter: blur(8px);
+      z-index:-1;
+    }
+
+    /* SIDEBAR */
+    .sidebar{
+      position:fixed;
+      left:0; top:0;
+      width:var(--sidebar-w);
+      height:100vh;
+      padding:28px 22px;
+      background:
+        linear-gradient(180deg,var(--side1),var(--side2)),
+        var(--bg-url);
+      background-size:cover;
+      color:white;
+      box-shadow:10px 0 30px rgba(0,0,0,0.25);
+    }
+
+    .sidebar::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:rgba(0,0,0,0.22);
+      backdrop-filter:blur(10px);
+      z-index:0;
+    }
+    .sidebar > *{position:relative;z-index:1}
+
+    .brand{
+      margin-bottom:28px;
+    }
+    .brand h1{
+      font-size:22px;
+      letter-spacing:0.12em;
+      font-weight:800;
+    }
+    .brand p{
+      margin-top:6px;
+      font-size:12px;
+      opacity:.75;
+    }
+
+    .nav{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .nav a{
+      display:flex;
+      align-items:center;
+      padding:14px 16px;
+      border-radius:16px;
+      color:white;
+      text-decoration:none;
+      background:rgba(255,255,255,0.06);
+      border:1px solid rgba(255,255,255,0.14);
+      font-size:18px;
+      font-weight:600;
+    }
+
+    .nav a.active{
+      background:rgba(255,255,255,0.14);
+      box-shadow:0 10px 24px rgba(0,0,0,0.22);
+    }
+
+    /* MAIN */
+    .main{
+      margin-left:var(--sidebar-w);
+      padding:44px 52px;
+      min-height:100vh;
+    }
+
+    /* TOP */
+    .topActions{
+      display:flex;
+      justify-content:flex-end;
+      margin-bottom:28px;
+    }
+
+    .search{
+      width:min(520px,45vw);
+      display:flex;
+      gap:10px;
+      padding:12px 16px;
+      background:var(--glass);
+      border-radius:18px;
+      border:1px solid var(--border);
+      box-shadow:var(--shadow);
+    }
+
+    .search input{
+      border:none;
+      outline:none;
+      background:transparent;
+      width:100%;
+      font-size:14px;
+    }
+
+    /* HEADER + SALDO */
+    .pageHeader{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:30px;
+      margin-bottom:30px;
+    }
+
+    .titleBlock h2{
+      font-size:54px;
+      font-weight:800;
+      letter-spacing:-0.02em;
+    }
+
+    .meta{
+      margin-top:12px;
+      font-size:26px;
+      color:rgba(15,23,42,0.62);
+      font-weight:600;
+      line-height:1.35;
+    }
+
+    .balanceCard{
+      min-width:280px;
+      padding:22px 24px;
+      border-radius:22px;
+      background:rgba(255,255,255,0.92);
+      border:1px solid var(--border);
+      box-shadow:0 16px 36px rgba(2,6,23,0.14);
+      text-align:right;
+    }
+
+    .balanceCard span{
+      display:block;
+      font-size:13px;
+      color:rgba(15,23,42,0.60);
+      margin-bottom:8px;
+    }
+
+    .balanceCard strong{
+      font-size:34px;
+      font-weight:900;
+      letter-spacing:-0.01em;
+    }
+
+    /* CARD */
+    .card{
+      background:var(--glass);
+      border:1px solid var(--border);
+      border-radius:22px;
+      box-shadow:var(--shadow);
+      padding:24px;
+    }
+
+    .card h3{
+      font-size:34px;
+      font-weight:800;
+    }
+
+    .card p{
+      margin-top:12px;
+      color:var(--muted);
+      font-size:14px;
+      max-width:90ch;
+    }
+
+    .feed{
+      margin-top:22px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    .feedItem{
+      background:rgba(255,255,255,0.72);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:16px;
+    }
+
+    .feedItem .row{
+      display:flex;
+      justify-content:space-between;
+      font-weight:700;
+    }
+
+    .feedItem time{
+      font-size:12px;
+      color:rgba(15,23,42,0.55);
+    }
+
+    .feedItem p{
+      margin-top:8px;
+      font-size:14px;
+      color:rgba(15,23,42,0.70);
+    }
+
+    /* RESPONSIVE */
+    @media(max-width:900px){
+      .pageHeader{
+        flex-direction:column;
+      }
+      .balanceCard{
+        width:100%;
+        text-align:left;
+      }
+    }
+
+    @media(max-width:640px){
+      .sidebar{display:none}
+      .main{margin-left:0;padding:26px 18px}
+    }
+  </style>
+</head>
+
+<body>
+  <aside class="sidebar">
+    <div class="brand">
+      <h1>PORTAL</h1>
+      <p>Upravnik zgrade</p>
+    </div>
+
+    <nav class="nav">
+      <a class="active" href="#">Finansije</a>
+      <a href="#">Oglasna tabla</a>
+      <a href="#">Forum</a>
+      <a href="#">Zakonska regulative</a>
+      <a href="#">Kontakt sluzbe</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <div class="topActions">
+      <div class="search">
+        <input placeholder="Pretraga..." />
+      </div>
+    </div>
+
+    <section class="pageHeader">
+      <div class="titleBlock">
+        <h2>Stanje racuna</h2>
+        <div class="meta">
+          Ul. Primer 1<br/>
+          Zgrada 12<br/>
+          48 jedinica
+        </div>
+      </div>
+
+      <div class="balanceCard">
+        <span>Ukupno stanje</span>
+        <strong>948.889,00 RSD</strong>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3>Oglasna tabla</h3>
+      <p>
+        Ovde se prikazuju vazna obavestenja upravnika za stanare (radovi, racuni,
+        hitna obavestenja i sl.).
+      </p>
+
+      <div class="feed">
+        <div class="feedItem">
+          <div class="row">
+            <span>Obavestenje o radovima</span>
+            <time>31.12.2025</time>
+          </div>
+          <p>U ponedeljak od 09:00 do 13:00 bice kratkotrajno iskljucenje vode.</p>
+        </div>
+
+        <div class="feedItem">
+          <div class="row">
+            <span>Racun za odrzavanje</span>
+            <time>29.12.2025</time>
+          </div>
+          <p>Rok placanja je do 10. u mesecu. Detalji u sekciji Finansije.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
