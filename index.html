@@ -8,8 +8,14 @@
 <style>
 :root{
   --bg-url: url("bg.png");
+
+  /* Sidebar */
   --sidebar-w: 300px;
   --edge-w: 14px;
+
+  /* PIXEL ALIGN: top pozicija prve stavke menija u sidebaru
+     (sidebar padding-top 26) + (brand fiksna visina 78) + (nav margin-top 24) = 128px */
+  --menu-first-item-top: 128px;
 
   --ink:#0f172a;
   --muted:rgba(15,23,42,.65);
@@ -70,11 +76,13 @@ body::before{
   padding:26px 20px;
   background:linear-gradient(180deg,var(--side1),var(--side2)),var(--bg-url);
   background-size:cover;
+  background-position:center;
   color:#fff;
   box-shadow:18px 0 40px rgba(0,0,0,.28);
   transform:translateX(calc(-1 * (var(--sidebar-w) - var(--edge-w))));
   transition:.2s;
   z-index:70;
+  overflow:hidden;
 }
 .sidebar.open{transform:translateX(0)}
 .sidebar::before{
@@ -86,10 +94,17 @@ body::before{
 }
 .sidebar>*{position:relative;z-index:1}
 
-.brand h1{font-size:22px;font-weight:800;letter-spacing:.12em}
+/* Brand: fiksna visina da pixel-align bude stabilan */
+.brand{
+  height:78px;             /* ključ za tačno poravnanje */
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+}
+.brand h1{font-size:22px;font-weight:800;letter-spacing:.12em;line-height:1.1}
 .brand p{font-size:12px;opacity:.75;margin-top:6px}
 
-.nav{margin-top:28px;display:flex;flex-direction:column;gap:10px}
+.nav{margin-top:24px;display:flex;flex-direction:column;gap:10px}
 .nav a{
   padding:14px 16px;
   border-radius:16px;
@@ -102,12 +117,11 @@ body::before{
 }
 .nav a.active{background:rgba(255,255,255,.14)}
 
-.main{
-  padding:36px 52px; /* 👈 bilo 44px – podignuto sve */
-}
-
-/* hamburger */
+/* Hamburger: fiksno gore levo (ne utiče na poravnanje sadržaja) */
 .hamburger{
+  position:fixed;
+  left:18px;
+  top:18px;
   width:44px;height:44px;
   border-radius:14px;
   background:var(--glass);
@@ -115,14 +129,26 @@ body::before{
   box-shadow:var(--shadow);
   display:grid;place-items:center;
   cursor:pointer;
-  margin-bottom:14px; /* 👈 manje razmaka */
+  z-index:80; /* iznad svega */
+  user-select:none;
 }
 
-/* desno gore pretraga */
+/* main */
+.main{
+  padding: 0 52px 44px 52px; /* nema top padding, jer align radimo preko contentWrap */
+  min-height:100vh;
+}
+
+/* Sve što treba da se poravna sa prvom stavkom menija */
+.contentWrap{
+  padding-top: var(--menu-first-item-top); /* TAČNO poravnanje */
+}
+
+/* Pretraga gore desno (u ravni sa prvom stavkom sidebara) */
 .topRight{
   display:flex;
   justify-content:flex-end;
-  margin-bottom:8px; /* 👈 podignuto */
+  margin-bottom:12px;
 }
 .searchInline{
   width:260px;
@@ -138,31 +164,64 @@ body::before{
   outline:none;
   background:transparent;
   font-size:13px;
+  color:var(--ink);
 }
 
-/* header */
+/* Desni blok: ispod pretrage “Stanje racuna”, pa kartica “Ukupno stanje” */
+.rightPanel{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:10px;
+}
+
+/* “Stanje racuna” label iznad kartice */
+.balanceTitle{
+  width:260px;                 /* ista širina kao pretraga i kartica */
+  padding:10px 14px;
+  border-radius:16px;
+  background:rgba(255,255,255,.72);
+  border:1px solid var(--border);
+  box-shadow:var(--shadow);
+  font-weight:800;
+  letter-spacing:-0.01em;
+  color:rgba(15,23,42,.85);
+}
+
+/* Kartica: Ukupno stanje */
+.balanceCard{
+  width:260px;                 /* ista širina kao pretraga */
+  padding:18px 18px;
+  border-radius:18px;
+  background:rgba(255,255,255,.92);
+  border:1px solid var(--border);
+  box-shadow:0 16px 36px rgba(2,6,23,.14);
+  text-align:right;
+  white-space:nowrap;
+}
+.balanceCard span{display:block;font-size:13px;color:rgba(15,23,42,.60);margin-bottom:6px}
+.balanceCard strong{display:block;font-size:30px;font-weight:900;letter-spacing:-0.01em}
+
+/* Header: levo meta, desno rightPanel (poravnato u ravni sa pretragom) */
 .pageHeader{
   display:flex;
   justify-content:space-between;
   align-items:flex-start;
   gap:40px;
-  margin-bottom:26px; /* 👈 podignuto */
+  margin-bottom:26px;
 }
-.titleBlock h2{font-size:54px;font-weight:800}
-.meta{margin-top:10px;font-size:26px;color:rgba(15,23,42,.62);font-weight:600}
-
-/* saldo */
-.balanceCard{
-  min-width:260px;
-  padding:22px 24px;
-  border-radius:22px;
-  background:rgba(255,255,255,.92);
-  border:1px solid var(--border);
-  box-shadow:0 16px 36px rgba(2,6,23,.14);
-  text-align:right;
+.titleBlock h2{
+  font-size:46px; /* sad je “Pocetna”, jer “Stanje racuna” je desno iznad kartice */
+  font-weight:900;
+  letter-spacing:-0.02em;
 }
-.balanceCard span{font-size:13px;color:rgba(15,23,42,.6)}
-.balanceCard strong{font-size:34px;font-weight:900}
+.meta{
+  margin-top:10px;
+  font-size:22px;
+  color:rgba(15,23,42,.62);
+  font-weight:600;
+  line-height:1.35;
+}
 
 /* content */
 .card{
@@ -176,14 +235,25 @@ body::before{
 .card h3{font-size:34px;font-weight:800}
 .card p{margin-top:12px;font-size:14px;color:var(--muted)}
 
+/* Mobilno */
 @media(max-width:600px){
-  :root{--sidebar-w:260px}
-  .main{padding:18px}
-  .titleBlock h2{font-size:34px}
+  :root{
+    --sidebar-w:260px;
+    /* isto poravnanje ostaje stabilno */
+  }
+
+  .main{padding: 0 18px 22px 18px;}
+
+  .contentWrap{ padding-top: var(--menu-first-item-top); }
+
+  .titleBlock h2{font-size:32px}
   .meta{font-size:16px}
-  .balanceCard{min-width:200px;padding:14px 16px}
+
+  .searchInline{width:220px}
+  .balanceTitle{width:220px}
+  .balanceCard{width:220px}
   .balanceCard strong{font-size:22px}
-  .searchInline{width:200px}
+  .card h3{font-size:26px}
 }
 </style>
 </head>
@@ -193,51 +263,59 @@ body::before{
 <div class="edgeHotspot" id="edgeHotspot"></div>
 <div class="overlay" id="overlay"></div>
 
+<div class="hamburger" id="hamburger">☰</div>
+
 <aside class="sidebar" id="sidebar">
   <div class="brand">
     <h1>PORTAL</h1>
     <p>Upravnik zgrade</p>
   </div>
+
   <nav class="nav">
-    <a class="active">Finansije</a>
-    <a>Oglasna tabla</a>
-    <a>Forum</a>
-    <a>Zakonska regulative</a>
-    <a>Kontakt sluzbe</a>
+    <a class="active" href="#">Finansije</a>
+    <a href="#">Oglasna tabla</a>
+    <a href="#">Forum</a>
+    <a href="#">Zakonska regulative</a>
+    <a href="#">Kontakt sluzbe</a>
   </nav>
 </aside>
 
 <main class="main">
+  <div class="contentWrap">
 
-  <div class="hamburger" id="hamburger">☰</div>
-
-  <div class="topRight">
-    <div class="searchInline">
-      <input placeholder="Pretraga (finansije, dokumenti, forum)..." />
-    </div>
-  </div>
-
-  <section class="pageHeader">
-    <div class="titleBlock">
-      <h2>Stanje racuna</h2>
-      <div class="meta">
-        Ul. Primer 1<br/>
-        Zgrada 12<br/>
-        48 jedinica
+    <!-- PRETRAGA: poravnata sa prvom stavkom sidebara -->
+    <div class="topRight">
+      <div class="searchInline">
+        <input placeholder="Pretraga (finansije, dokumenti, forum)..." />
       </div>
     </div>
 
-    <div class="balanceCard">
-      <span>Ukupno stanje</span>
-      <strong>948.889,00 RSD</strong>
-    </div>
-  </section>
+    <section class="pageHeader">
+      <div class="titleBlock">
+        <h2>Pocetna</h2>
+        <div class="meta">
+          Ul. Primer 1<br/>
+          Zgrada 12<br/>
+          48 jedinica
+        </div>
+      </div>
 
-  <section class="card">
-    <h3>Oglasna tabla</h3>
-    <p>Ovde se prikazuju vazna obavestenja upravnika za stanare.</p>
-  </section>
+      <!-- DESNO: Pretraga je iznad, ovde je “Stanje racuna” pa “Ukupno stanje” -->
+      <div class="rightPanel">
+        <div class="balanceTitle">Stanje racuna</div>
+        <div class="balanceCard">
+          <span>Ukupno stanje</span>
+          <strong>948.889,00 RSD</strong>
+        </div>
+      </div>
+    </section>
 
+    <section class="card">
+      <h3>Oglasna tabla</h3>
+      <p>Ovde se prikazuju vazna obavestenja upravnika za stanare.</p>
+    </section>
+
+  </div>
 </main>
 
 <script>
@@ -249,9 +327,13 @@ const burger=document.getElementById("hamburger");
 function openS(){sidebar.classList.add("open");overlay.classList.add("show")}
 function closeS(){sidebar.classList.remove("open");overlay.classList.remove("show")}
 
-edge.addEventListener("mouseenter",openS);
-overlay.addEventListener("click",closeS);
-burger.addEventListener("click",()=>sidebar.classList.contains("open")?closeS():openS());
+edge.addEventListener("mouseenter", openS);
+overlay.addEventListener("click", closeS);
+burger.addEventListener("click", ()=> sidebar.classList.contains("open") ? closeS() : openS());
+
+window.addEventListener("keydown",(e)=>{
+  if(e.key==="Escape") closeS();
+});
 </script>
 
 </body>
