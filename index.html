@@ -15,8 +15,6 @@
 
   --sidebar-w: 340px;
   --edge-w: 16px;
-
-  /* VISINA GORNJE ZONE */
   --topbar-h: 86px;
 
   --ink:#0f172a;
@@ -47,12 +45,15 @@ body::before{
   z-index:-2;
 }
 
-/* ================= TOP RIGHT (U RAVNI SA PRETRAGOM) ================= */
+/* ================= TOP RIGHT (PORAVNATO SA PRETRAGOM) ================= */
 .topRightBar{
   position:fixed;
-  /* ⬇️ SPUŠTENO DO NIVOA PRETRAGE */
-  top:calc(var(--topbar-h) + 14px + env(safe-area-inset-top));
+  top:calc(10px + env(safe-area-inset-top));
   right:calc(10px + env(safe-area-inset-right));
+
+  /* ✅ KLJUČNA IZMENA */
+  transform: translateX(-22px); /* ← pomeraj ulevo, NE menja visinu */
+
   display:flex;
   align-items:center;
   gap:12px;
@@ -67,7 +68,7 @@ body::before{
 }
 .topRightTitle span{
   display:block;
-  font-size:18px; /* mobile */
+  font-size:18px;
 }
 
 /* LOGO – OVALNO */
@@ -160,10 +161,7 @@ body::before{
 
 /* ================= MAIN ================= */
 .main{padding:0 18px 22px}
-.contentWrap{
-  /* prostor iznad sadržaja ostaje stabilan */
-  padding-top:calc(var(--topbar-h) + 14px);
-}
+.contentWrap{padding-top:calc(var(--topbar-h) + 14px)}
 
 .pageHeader{
   display:flex;
@@ -226,7 +224,7 @@ body::before{
 
 <body>
 
-<!-- TOP RIGHT: sada u ravni sa pretragom -->
+<!-- TOP RIGHT: ista visina kao pretraga, samo pomeren ulevo -->
 <div class="topRightBar">
   <div class="topRightTitle">
     <span>Portal</span>
@@ -306,4 +304,3 @@ burger.addEventListener("click", ()=> sidebar.classList.contains("open") ? close
 
 </body>
 </html>
-
