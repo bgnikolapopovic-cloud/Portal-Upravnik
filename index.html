@@ -15,8 +15,6 @@
 
   --sidebar-w: 300px;
   --edge-w: 14px;
-
-  /* držimo podignut header */
   --menu-first-item-top: 92px;
 
   --ink:#0f172a;
@@ -29,15 +27,21 @@
   --side2:rgba(6,24,40,.92);
 }
 
-*{margin:0;padding:0;box-sizing:border-box;font-family:"Inter",system-ui,Arial,sans-serif}
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:"Inter",system-ui,Arial,sans-serif;
+}
 
 body{
   min-height:100vh;
   background: var(--bg-url) center/cover no-repeat fixed;
   color: var(--ink);
-  overflow-x:hidden; /* ✅ nema horizontalnog skrola */
+  overflow-x:hidden;
 }
 
+/* pozadina */
 body::before{
   content:"";
   position:fixed;
@@ -48,27 +52,65 @@ body::before{
   z-index:-2;
 }
 
-/* overlay */
+/* ================= LOGO ================= */
+
+/* default: mobilni (nije sticky, safe-area aware) */
+.logoTop{
+  position:absolute;
+  top:calc(14px + env(safe-area-inset-top));
+  right:calc(14px + env(safe-area-inset-right));
+  z-index:90;
+}
+.logoTop img{
+  height:46px;
+  width:auto;
+  display:block;
+  filter: drop-shadow(0 6px 12px rgba(0,0,0,.25));
+}
+
+/* desktop: sticky/fixed */
+@media(min-width:900px){
+  .logoTop{
+    position:fixed;
+    top:14px;
+    right:14px;
+  }
+}
+
+/* mobilni: malo manji logo */
+@media(max-width:700px){
+  .logoTop img{
+    height:34px;
+  }
+}
+
+/* ================= UI ================= */
+
 .overlay{
-  position:fixed; inset:0;
+  position:fixed;
+  inset:0;
   background:rgba(2,6,23,.25);
-  opacity:0; pointer-events:none;
+  opacity:0;
+  pointer-events:none;
   transition:.2s;
   z-index:40;
 }
 .overlay.show{opacity:1;pointer-events:auto}
 
-/* hover zona */
 .edgeHotspot{
-  position:fixed; left:0; top:0;
-  width:var(--edge-w); height:100vh;
+  position:fixed;
+  left:0;top:0;
+  width:var(--edge-w);
+  height:100vh;
   z-index:60;
 }
 
 /* sidebar */
 .sidebar{
-  position:fixed; left:0; top:0;
-  width:var(--sidebar-w); height:100vh;
+  position:fixed;
+  left:0;top:0;
+  width:var(--sidebar-w);
+  height:100vh;
   padding:26px 20px;
   background:linear-gradient(180deg,var(--side1),var(--side2)),var(--bg-url);
   background-size:cover;
@@ -81,7 +123,8 @@ body::before{
 .sidebar.open{transform:translateX(0)}
 .sidebar::before{
   content:"";
-  position:absolute; inset:0;
+  position:absolute;
+  inset:0;
   background:rgba(0,0,0,.22);
   backdrop-filter:blur(8px);
 }
@@ -91,7 +134,12 @@ body::before{
 .brand h1{font-size:22px;font-weight:800;letter-spacing:.14em}
 .brand p{font-size:12px;opacity:.75;margin-top:6px}
 
-.nav{margin-top:24px;display:flex;flex-direction:column;gap:10px}
+.nav{
+  margin-top:24px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
 .nav a{
   padding:14px 16px;
   border-radius:16px;
@@ -104,16 +152,18 @@ body::before{
 }
 .nav a.active{background:rgba(255,255,255,.14)}
 
-/* hamburger */
 .hamburger{
   position:fixed;
-  left:18px; top:18px;
-  width:44px; height:44px;
+  left:18px;
+  top:18px;
+  width:44px;
+  height:44px;
   border-radius:14px;
   background:var(--glass);
   border:1px solid var(--border);
   box-shadow:var(--shadow);
-  display:grid; place-items:center;
+  display:grid;
+  place-items:center;
   cursor:pointer;
   z-index:80;
   user-select:none;
@@ -127,7 +177,6 @@ body::before{
   padding-top:var(--menu-first-item-top);
 }
 
-/* header layout */
 .pageHeader{
   display:flex;
   justify-content:space-between;
@@ -136,12 +185,10 @@ body::before{
   margin-bottom:26px;
 }
 
-/* naslov u 2 reda */
 .titleBlock h2{
   font-size:54px;
   font-weight:900;
   line-height:1.03;
-  letter-spacing:-0.02em;
 }
 .titleBlock h2 span{display:block}
 
@@ -150,10 +197,8 @@ body::before{
   font-size:26px;
   color:rgba(15,23,42,.62);
   font-weight:600;
-  line-height:1.28;
 }
 
-/* desna kolona: pretraga + stanje */
 .rightCol{
   display:flex;
   flex-direction:column;
@@ -161,7 +206,6 @@ body::before{
   gap:14px;
 }
 
-/* pretraga */
 .searchInline{
   width:300px;
   padding:10px 14px;
@@ -175,10 +219,8 @@ body::before{
   border:none;
   outline:none;
   background:transparent;
-  font-size:14px;
 }
 
-/* stanje računa */
 .balanceCard{
   width:300px;
   padding:18px;
@@ -189,38 +231,28 @@ body::before{
   text-align:right;
 }
 .balanceCard .label{
-  display:block;
   font-size:14px;
   font-weight:700;
-  color:rgba(15,23,42,.75);
   margin-bottom:8px;
+  display:block;
 }
 .balanceCard .amount{
-  display:block;
   font-size:36px;
   font-weight:900;
-  letter-spacing:-0.01em;
   line-height:1.05;
 }
 
-/* Oglasna tabla - puna širina */
+/* oglasna tabla */
 .card{
   width:100%;
   background:rgba(255,255,255,.86);
-  border:1px solid var(--border);
   border-radius:26px;
-  box-shadow:var(--shadow);
   padding:28px;
+  box-shadow:var(--shadow);
 }
 .card h3{
   font-size:44px;
   font-weight:900;
-  letter-spacing:-0.02em;
-}
-.card p{
-  margin-top:10px;
-  font-size:16px;
-  color:var(--muted);
 }
 .boardList{
   margin-top:14px;
@@ -235,52 +267,35 @@ body::before{
   padding:12px 14px;
   border-radius:16px;
   font-weight:700;
-  color:rgba(15,23,42,.85);
 }
 
-/* ✅ MOBILNI: ostaje paralelno, samo smanjujemo desnu stranu da stane */
+/* mobilni layout */
 @media(max-width:700px){
   .main{padding:0 18px 22px}
+  .pageHeader{gap:14px}
 
-  .pageHeader{
-    gap:14px; /* manje razmaka */
-  }
-
-  /* levo smanji naslov/metu */
   .titleBlock{max-width:58vw}
   .titleBlock h2{font-size:38px}
   .meta{font-size:18px}
 
-  /* desno smanji pretragu + stanje da ostanu paralelno */
-  .rightCol{align-items:flex-end; gap:10px}
+  .rightCol{gap:10px}
   .searchInline,
   .balanceCard{
-    width:min(42vw, 220px); /* ✅ staje desno bez skrola */
+    width:min(42vw,220px);
   }
-  .searchInline input{font-size:13px}
 
   .balanceCard{padding:12px}
-  .balanceCard .label{font-size:12px;margin-bottom:6px}
   .balanceCard .amount{font-size:22px}
-  .card h3{font-size:30px}
-}
-
-/* ekstra mali telefoni */
-@media(max-width:420px){
-  .titleBlock{max-width:56vw}
-  .titleBlock h2{font-size:34px}
-  .meta{font-size:16px}
-
-  .searchInline,
-  .balanceCard{
-    width:min(44vw, 200px);
-  }
-  .balanceCard .amount{font-size:20px}
 }
 </style>
 </head>
 
 <body>
+
+<!-- LOGO -->
+<div class="logoTop">
+  <img src="logo.png" alt="Portal Upravnik logo">
+</div>
 
 <div class="edgeHotspot" id="edgeHotspot"></div>
 <div class="overlay" id="overlay"></div>
@@ -317,7 +332,6 @@ body::before{
         <div class="searchInline">
           <input placeholder="Pretraga (finansije, dokumenti, forum)">
         </div>
-
         <div class="balanceCard">
           <span class="label">Stanje računa</span>
           <span class="amount">948.889,00 RSD</span>
@@ -327,8 +341,6 @@ body::before{
 
     <section class="card">
       <h3>Oglasna tabla</h3>
-      <p>Ovde se prikazuju važna obaveštenja upravnika za stanare.</p>
-
       <ul class="boardList">
         <li>Akcija čišćenja</li>
         <li>Popravka krova</li>
@@ -345,8 +357,14 @@ const overlay=document.getElementById("overlay");
 const edge=document.getElementById("edgeHotspot");
 const burger=document.getElementById("hamburger");
 
-function openS(){sidebar.classList.add("open");overlay.classList.add("show")}
-function closeS(){sidebar.classList.remove("open");overlay.classList.remove("show")}
+function openS(){
+  sidebar.classList.add("open");
+  overlay.classList.add("show");
+}
+function closeS(){
+  sidebar.classList.remove("open");
+  overlay.classList.remove("show");
+}
 
 edge.addEventListener("mouseenter", openS);
 overlay.addEventListener("click", closeS);
