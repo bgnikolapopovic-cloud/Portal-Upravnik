@@ -16,9 +16,8 @@
   --sidebar-w: 340px;
   --edge-w: 16px;
 
-  /* MOBILE FIRST */
+  /* ✅ isti padding koji koristi main (mobile-first) */
   --main-pad: 18px;
-  --top-offset: 86px;
 
   --ink:#0f172a;
   --glass:rgba(255,255,255,.88);
@@ -31,8 +30,7 @@
 
 @media(min-width:900px){
   :root{
-    --main-pad: 52px;
-    --top-offset: 120px;
+    --main-pad: 52px; /* desktop padding */
   }
 }
 
@@ -55,11 +53,16 @@ body::before{
   z-index:-2;
 }
 
-/* ================= TOP RIGHT – PORAVNATO SA PRETRAGOM ================= */
+/* ================= TOP RIGHT (NE SPUŠTAMO, SAMO U LEVO) ================= */
 .topRightBar{
   position:fixed;
-  top:calc(var(--top-offset) + env(safe-area-inset-top));
+
+  /* ✅ OSTAVI ISTI TOP KAO PRE (nema spuštanja) */
+  top:calc(10px + env(safe-area-inset-top));
+
+  /* ✅ SAMO POMERENO ULEVO da legne u liniju sa pretragom */
   right:calc(var(--main-pad) + env(safe-area-inset-right));
+
   display:flex;
   align-items:center;
   gap:12px;
@@ -74,10 +77,10 @@ body::before{
 }
 .topRightTitle span{
   display:block;
-  font-size:18px;
+  font-size:18px; /* mobile */
 }
 
-/* LOGO – OVAL */
+/* LOGO – ovalno kao kartice */
 .topRightLogo{
   padding:6px;
   background:rgba(255,255,255,.72);
@@ -86,7 +89,7 @@ body::before{
   box-shadow:var(--shadow);
 }
 .topRightLogo img{
-  height:56px;
+  height:56px; /* mobile */
   width:auto;
   display:block;
   border-radius:16px;
@@ -167,8 +170,14 @@ body::before{
 .main{
   padding:0 var(--main-pad) 22px;
 }
+
 .contentWrap{
-  padding-top:calc(var(--top-offset) + 14px);
+  /* ovo ostaje kao ranije: content kreće ispod top bloka */
+  padding-top:calc(86px + 14px);
+}
+
+@media(min-width:900px){
+  .contentWrap{padding-top:calc(120px + 14px);}
 }
 
 .pageHeader{
@@ -203,14 +212,14 @@ body::before{
 }
 
 .searchInline{padding:10px 14px}
-.searchInline input{border:none;background:transparent;width:100%}
+.searchInline input{border:none;background:transparent;width:100%;outline:none;font-size:14px}
 
 .balanceCard{
   padding:12px;
   text-align:right;
 }
-.balanceCard .label{font-size:12px;font-weight:700}
-.balanceCard .amount{font-size:22px;font-weight:900}
+.balanceCard .label{font-size:12px;font-weight:700;display:block;margin-bottom:6px}
+.balanceCard .amount{font-size:22px;font-weight:900;line-height:1.05}
 
 .card{
   background:rgba(255,255,255,.86);
@@ -220,10 +229,27 @@ body::before{
 }
 .card h3{font-size:30px;font-weight:900}
 
+.boardList{
+  margin-top:14px;
+  list-style:none;
+  display:flex;
+  flex-direction:column;
+  gap:10px
+}
+.boardList li{
+  background:rgba(15,23,42,.06);
+  border:1px solid rgba(15,23,42,.10);
+  padding:12px 14px;
+  border-radius:16px;
+  font-weight:700
+}
+
 @media(min-width:900px){
   .meta{font-size:26px}
   .balanceCard{padding:18px}
+  .balanceCard .label{font-size:14px;margin-bottom:8px}
   .balanceCard .amount{font-size:36px}
+  .card{padding:28px}
   .card h3{font-size:44px}
 }
 </style>
@@ -231,7 +257,7 @@ body::before{
 
 <body>
 
-<!-- TOP RIGHT – ISTA DESNA LINIJA I VISINA KAO PRETRAGA -->
+<!-- TOP RIGHT: ista visina kao pre, samo uvučeno ulevo da bude u liniji sa pretragom -->
 <div class="topRightBar">
   <div class="topRightTitle">
     <span>Portal</span>
