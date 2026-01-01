@@ -29,13 +29,14 @@ body{
   color: var(--ink);
 }
 
-/* 🔥 JOŠ PROZIRNIJA POZADINA (+10%) */
+/* 🔥 OŠTRIJA POZADINA */
 body::before{
   content:"";
   position:fixed;
   inset:0;
-  background: rgba(255,255,255,.45); /* bilo .55 */
-  backdrop-filter: blur(3px);        /* bilo 4px */
+  background: rgba(255,255,255,.38);   /* manje bele */
+  backdrop-filter: blur(2px);           /* manji blur */
+  filter: contrast(1.15) saturate(1.12);/* oštrina + boje */
   z-index:-2;
 }
 
@@ -81,7 +82,7 @@ body::before{
   position:absolute;
   inset:0;
   background:rgba(0,0,0,.22);
-  backdrop-filter:blur(10px);
+  backdrop-filter:blur(8px);
 }
 .sidebar>*{position:relative;z-index:1}
 
@@ -153,7 +154,7 @@ body::before{
   min-width:260px;
   padding:22px 24px;
   border-radius:22px;
-  background:rgba(255,255,255,.90);
+  background:rgba(255,255,255,.92);
   border:1px solid var(--border);
   box-shadow:0 16px 36px rgba(2,6,23,.14);
   text-align:right;
@@ -163,7 +164,7 @@ body::before{
 
 /* content */
 .card{
-  background:rgba(255,255,255,.85);
+  background:rgba(255,255,255,.86);
   border:1px solid var(--border);
   border-radius:22px;
   box-shadow:var(--shadow);
