@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Portal-Upravnik</title>
+<title>Portal Upravnik</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,8 +15,6 @@
 
   --sidebar-w: 300px;
   --edge-w: 14px;
-
-  /* ✅ PODIGNUTO: ranije 128px */
   --menu-first-item-top: 92px;
 
   --ink:#0f172a;
@@ -33,16 +31,17 @@
   margin:0;
   padding:0;
   box-sizing:border-box;
-  font-family:"Inter","Segoe UI",system-ui,Arial,sans-serif;
+  font-family:"Inter",system-ui,Arial,sans-serif;
 }
 
 body{
   min-height:100vh;
   background: var(--bg-url) center/cover no-repeat fixed;
   color: var(--ink);
+  overflow-x:hidden; /* ✅ nema horizontalnog scrolla */
 }
 
-/* oštrija, prozirna pozadina */
+/* pozadina */
 body::before{
   content:"";
   position:fixed;
@@ -100,23 +99,10 @@ body::before{
 .sidebar>*{position:relative;z-index:1}
 
 .brand{height:78px}
-.brand h1{
-  font-size:22px;
-  font-weight:800;
-  letter-spacing:.14em;
-}
-.brand p{
-  font-size:12px;
-  opacity:.75;
-  margin-top:6px;
-}
+.brand h1{font-size:22px;font-weight:800;letter-spacing:.14em}
+.brand p{font-size:12px;opacity:.75;margin-top:6px}
 
-.nav{
-  margin-top:24px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
+.nav{margin-top:24px;display:flex;flex-direction:column;gap:10px}
 .nav a{
   padding:14px 16px;
   border-radius:16px;
@@ -149,20 +135,19 @@ body::before{
 /* main */
 .main{
   padding:0 52px 44px 52px;
-  min-height:100vh;
 }
 .contentWrap{
   padding-top:var(--menu-first-item-top);
 }
 
-/* ✅ PRETRAGA u nivou naslova */
+/* pretraga */
 .topRight{
   display:flex;
   justify-content:flex-end;
   margin-bottom:14px;
 }
 .searchInline{
-  width:300px; /* malo šire kao na slici */
+  width:300px;
   padding:10px 14px;
   border-radius:18px;
   background:var(--glass);
@@ -174,7 +159,6 @@ body::before{
   border:none;
   outline:none;
   background:transparent;
-  font-size:14px;
 }
 
 /* header */
@@ -185,20 +169,25 @@ body::before{
   gap:40px;
   margin-bottom:26px;
 }
+
+/* 🔥 NASLOV U 2 REDA */
 .titleBlock h2{
   font-size:54px;
   font-weight:900;
-  letter-spacing:-0.02em;
+  line-height:1.05;
 }
+.titleBlock h2 span{
+  display:block;
+}
+
 .meta{
-  margin-top:10px;
+  margin-top:12px;
   font-size:26px;
   color:rgba(15,23,42,.62);
   font-weight:600;
-  line-height:1.3;
 }
 
-/* ✅ stanje računa ispod pretrage */
+/* stanje */
 .balanceCard{
   width:300px;
   padding:18px;
@@ -209,52 +198,43 @@ body::before{
   text-align:right;
 }
 .balanceCard .label{
-  display:block;
   font-size:14px;
   font-weight:700;
-  color:rgba(15,23,42,.75);
   margin-bottom:8px;
+  display:block;
 }
 .balanceCard .amount{
-  display:block;
-  font-size:38px;
+  font-size:36px;
   font-weight:900;
-  letter-spacing:-0.01em;
   line-height:1.05;
 }
 
-/* sadržaj */
+/* content */
 .card{
   background:rgba(255,255,255,.86);
-  border:1px solid var(--border);
   border-radius:26px;
-  box-shadow:var(--shadow);
   padding:28px;
   max-width:1200px;
-}
-.card h3{
-  font-size:44px;
-  font-weight:900;
-  letter-spacing:-0.02em;
-}
-.card p{
-  margin-top:10px;
-  font-size:16px;
-  color:var(--muted);
+  box-shadow:var(--shadow);
 }
 
-@media(max-width:600px){
-  :root{
-    --sidebar-w:260px;
-    --menu-first-item-top: 86px; /* malo manje i na mobilnom */
+/* ✅ MOBILNI – BEZ SCROLLA */
+@media(max-width:700px){
+  .main{padding:0 18px 22px}
+  .pageHeader{
+    flex-direction:column;
+    gap:18px;
   }
-  .main{padding:0 18px 22px 18px}
+  .topRight{
+    justify-content:flex-start;
+  }
+  .searchInline,
+  .balanceCard{
+    width:100%;
+  }
   .titleBlock h2{font-size:38px}
   .meta{font-size:18px}
-  .searchInline{width:260px}
-  .balanceCard{width:260px}
-  .balanceCard .amount{font-size:30px}
-  .card h3{font-size:30px}
+  .balanceCard .amount{font-size:28px}
 }
 </style>
 </head>
@@ -263,7 +243,6 @@ body::before{
 
 <div class="edgeHotspot" id="edgeHotspot"></div>
 <div class="overlay" id="overlay"></div>
-
 <div class="hamburger" id="hamburger">☰</div>
 
 <aside class="sidebar" id="sidebar">
@@ -283,27 +262,28 @@ body::before{
 <main class="main">
   <div class="contentWrap">
 
-    <!-- ✅ PRETRAGA: u nivou naslova -->
     <div class="topRight">
       <div class="searchInline">
-        <input placeholder="Pretraga (finansije, dokumenti, forum)" />
+        <input placeholder="Pretraga (finansije, dokumenti, forum)">
       </div>
     </div>
 
     <section class="pageHeader">
       <div class="titleBlock">
-        <h2>Portal-Upravnik</h2>
+        <h2>
+          <span>Portal</span>
+          <span>Upravnik</span>
+        </h2>
         <div class="meta">
-          Ulica Primer 1<br/>
-          Zgrada 12<br/>
+          Ulica Primer 1<br>
+          Zgrada 12<br>
           48 jedinica
         </div>
       </div>
 
-      <!-- ✅ stanje ispod pretrage -->
       <div class="balanceCard">
         <span class="label">Stanje računa</span>
-        <span class="amount">948.889,00<br/>RSD</span>
+        <span class="amount">948.889,00 RSD</span>
       </div>
     </section>
 
