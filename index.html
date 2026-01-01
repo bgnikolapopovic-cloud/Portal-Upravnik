@@ -65,7 +65,6 @@
     width: var(--edge-w);
     height: 100vh;
     z-index: 60;
-    /* da se lakše “uhvati” */
     background: rgba(255,255,255,0.0);
   }
 
@@ -128,13 +127,10 @@
     display:block;
     padding:14px 16px;
     border-radius:16px;
-
     color:#fff;
     text-decoration:none;
-
     background:rgba(255,255,255,.06);
     border:1px solid rgba(255,255,255,.14);
-
     font-size:18px;
     font-weight:600;
     line-height:1.2;
@@ -144,21 +140,13 @@
     box-shadow:0 10px 24px rgba(0,0,0,.22);
   }
 
-  /* ===== Main (više nema margin-left, jer sidebar je overlay) ===== */
+  /* ===== Main ===== */
   .main{
     padding: 44px 52px;
     min-height: 100vh;
   }
 
-  /* Top: hamburger + search */
-  .topRow{
-    display:flex;
-    align-items:center;
-    gap: 14px;
-    justify-content: space-between;
-    margin-bottom: 26px;
-  }
-
+  /* Hamburger (ostaje gore levo u main-u) */
   .hamburger{
     width: 44px;
     height: 44px;
@@ -170,28 +158,11 @@
     place-items:center;
     cursor:pointer;
     user-select:none;
+    margin-bottom: 18px;
   }
   .hamburger span{
     font-size: 18px;
     opacity: .75;
-  }
-
-  .search{
-    flex: 1;
-    max-width: 640px;
-    padding: 12px 16px;
-    border-radius: 18px;
-    background: var(--glass);
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow);
-  }
-  .search input{
-    width:100%;
-    border:none;
-    outline:none;
-    background:transparent;
-    font-size:14px;
-    color:var(--ink);
   }
 
   /* Header + saldo */
@@ -215,6 +186,14 @@
     line-height:1.35;
   }
 
+  /* Desni panel (saldo + pretraga) */
+  .rightPanel{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    align-items:flex-end;
+  }
+
   .balanceCard{
     min-width:260px;
     padding:22px 24px;
@@ -236,6 +215,24 @@
     font-size:34px;
     font-weight:900;
     letter-spacing:-0.01em;
+  }
+
+  /* Pretraga desno (poravnata uz saldo) */
+  .searchInline{
+    width: 260px;
+    padding: 10px 14px;
+    border-radius: 16px;
+    background: var(--glass);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+  .searchInline input{
+    width:100%;
+    border:none;
+    outline:none;
+    background:transparent;
+    font-size:13px;
+    color:var(--ink);
   }
 
   /* Content card */
@@ -275,17 +272,20 @@
   }
   .feedItem p{ margin-top:8px; font-size:14px; color:rgba(15,23,42,.70); }
 
-  /* Mobilno: smanji tipografiju (ali layout ostaje isti) */
+  /* Mobilno: malo smanji panel da bude uredno */
   @media (max-width: 600px){
     :root{
-      --sidebar-w: 260px; /* na telefonu ne treba 300 */
+      --sidebar-w: 260px;
       --edge-w: 14px;
     }
     .main{ padding: 20px 18px; }
     .titleBlock h2{ font-size: 34px; }
     .meta{ font-size: 16px; }
+
     .balanceCard{ min-width: 200px; padding: 14px 16px; border-radius: 16px; }
     .balanceCard strong{ font-size: 22px; }
+
+    .searchInline{ width: 200px; }
     .card h3{ font-size: 26px; }
   }
 </style>
@@ -316,13 +316,9 @@
 </aside>
 
 <main class="main">
-  <div class="topRow">
-    <div class="hamburger" id="hamburger" title="Meni">
-      <span>☰</span>
-    </div>
-    <div class="search">
-      <input placeholder="Pretraga..." />
-    </div>
+
+  <div class="hamburger" id="hamburger" title="Meni">
+    <span>☰</span>
   </div>
 
   <section class="pageHeader">
@@ -335,9 +331,15 @@
       </div>
     </div>
 
-    <div class="balanceCard">
-      <span>Ukupno stanje</span>
-      <strong>948.889,00 RSD</strong>
+    <div class="rightPanel">
+      <div class="balanceCard">
+        <span>Ukupno stanje</span>
+        <strong>948.889,00 RSD</strong>
+      </div>
+
+      <div class="searchInline">
+        <input placeholder="Pretraga (finansije, dokumenti, forum)..." />
+      </div>
     </div>
   </section>
 
@@ -366,6 +368,7 @@
       </div>
     </div>
   </section>
+
 </main>
 
 <script>
@@ -386,13 +389,9 @@
   // Desktop: hover skroz levo otvara
   edgeHotspot.addEventListener("mouseenter", openSidebar);
 
-  // Kad miš izađe iz sidebara i overlay-a, zatvori (desktop)
+  // Kad miš izađe iz sidebara, zatvori (kratki delay)
   sidebar.addEventListener("mouseleave", () => {
-    // mali delay da ne "secka" kad prelazi preko ivice
-    setTimeout(() => {
-      // ako korisnik nije kliknuo, zatvori
-      closeSidebar();
-    }, 120);
+    setTimeout(() => closeSidebar(), 120);
   });
 
   // Klik van (overlay) zatvara
@@ -400,11 +399,10 @@
 
   // Mobilno: hamburger toggle
   hamburger.addEventListener("click", () => {
-    if (sidebar.classList.contains("open")) closeSidebar();
-    else openSidebar();
+    sidebar.classList.contains("open") ? closeSidebar() : openSidebar();
   });
 
-  // Escape zatvara (desktop)
+  // Escape zatvara
   window.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeSidebar();
   });
