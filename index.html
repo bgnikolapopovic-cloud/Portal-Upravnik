@@ -13,9 +13,12 @@
 :root{
   --bg-url: url("bg.png");
 
-  --sidebar-w: 300px;
-  --edge-w: 14px;
-  --menu-first-item-top: 92px;
+  /* ✅ VEĆI SIDEBAR */
+  --sidebar-w: 340px;        /* bilo 300 */
+  --edge-w: 16px;            /* malo širi hotspot */
+
+  /* ✅ SPUSTI SADRŽAJ da sidebar vizuelno bude “iznad” naslova */
+  --menu-first-item-top: 120px; /* bilo 92 */
 
   --ink:#0f172a;
   --muted:rgba(15,23,42,.65);
@@ -27,12 +30,7 @@
   --side2:rgba(6,24,40,.92);
 }
 
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:"Inter",system-ui,Arial,sans-serif;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Inter",system-ui,Arial,sans-serif}
 
 body{
   min-height:100vh;
@@ -41,7 +39,6 @@ body{
   overflow-x:hidden;
 }
 
-/* pozadina */
 body::before{
   content:"";
   position:fixed;
@@ -52,9 +49,7 @@ body::before{
   z-index:-2;
 }
 
-/* ================= LOGO ================= */
-
-/* default: mobilni (nije sticky, safe-area aware) */
+/* ✅ LOGO (duplo veći) + safe-area */
 .logoTop{
   position:absolute;
   top:calc(14px + env(safe-area-inset-top));
@@ -62,13 +57,13 @@ body::before{
   z-index:90;
 }
 .logoTop img{
-  height:46px;
+  height:92px; /* ✅ bilo 46 */
   width:auto;
   display:block;
-  filter: drop-shadow(0 6px 12px rgba(0,0,0,.25));
+  filter: drop-shadow(0 10px 18px rgba(0,0,0,.25));
 }
 
-/* desktop: sticky/fixed */
+/* Sticky logo samo na desktopu */
 @media(min-width:900px){
   .logoTop{
     position:fixed;
@@ -77,41 +72,28 @@ body::before{
   }
 }
 
-/* mobilni: malo manji logo */
-@media(max-width:700px){
-  .logoTop img{
-    height:34px;
-  }
-}
-
-/* ================= UI ================= */
-
+/* overlay */
 .overlay{
-  position:fixed;
-  inset:0;
+  position:fixed; inset:0;
   background:rgba(2,6,23,.25);
-  opacity:0;
-  pointer-events:none;
+  opacity:0; pointer-events:none;
   transition:.2s;
   z-index:40;
 }
 .overlay.show{opacity:1;pointer-events:auto}
 
+/* hover zona */
 .edgeHotspot{
-  position:fixed;
-  left:0;top:0;
-  width:var(--edge-w);
-  height:100vh;
+  position:fixed; left:0; top:0;
+  width:var(--edge-w); height:100vh;
   z-index:60;
 }
 
-/* sidebar */
+/* ✅ SIDEBAR veći */
 .sidebar{
-  position:fixed;
-  left:0;top:0;
-  width:var(--sidebar-w);
-  height:100vh;
-  padding:26px 20px;
+  position:fixed; left:0; top:0;
+  width:var(--sidebar-w); height:100vh;
+  padding:30px 22px; /* malo veći padding */
   background:linear-gradient(180deg,var(--side1),var(--side2)),var(--bg-url);
   background-size:cover;
   color:#fff;
@@ -123,59 +105,49 @@ body::before{
 .sidebar.open{transform:translateX(0)}
 .sidebar::before{
   content:"";
-  position:absolute;
-  inset:0;
+  position:absolute; inset:0;
   background:rgba(0,0,0,.22);
   backdrop-filter:blur(8px);
 }
 .sidebar>*{position:relative;z-index:1}
 
-.brand{height:78px}
-.brand h1{font-size:22px;font-weight:800;letter-spacing:.14em}
-.brand p{font-size:12px;opacity:.75;margin-top:6px}
+/* veći brand */
+.brand{height:92px}
+.brand h1{font-size:24px;font-weight:900;letter-spacing:.16em}
+.brand p{font-size:13px;opacity:.78;margin-top:8px}
 
-.nav{
-  margin-top:24px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
+/* veće stavke menija */
+.nav{margin-top:26px;display:flex;flex-direction:column;gap:12px}
 .nav a{
-  padding:14px 16px;
-  border-radius:16px;
+  padding:16px 18px;
+  border-radius:18px;
   color:#fff;
   text-decoration:none;
   background:rgba(255,255,255,.06);
   border:1px solid rgba(255,255,255,.14);
-  font-size:18px;
-  font-weight:600;
+  font-size:19px;
+  font-weight:700;
 }
 .nav a.active{background:rgba(255,255,255,.14)}
 
+/* hamburger */
 .hamburger{
   position:fixed;
-  left:18px;
-  top:18px;
-  width:44px;
-  height:44px;
+  left:18px; top:18px;
+  width:44px; height:44px;
   border-radius:14px;
   background:var(--glass);
   border:1px solid var(--border);
   box-shadow:var(--shadow);
-  display:grid;
-  place-items:center;
+  display:grid; place-items:center;
   cursor:pointer;
   z-index:80;
   user-select:none;
 }
 
 /* main */
-.main{
-  padding:0 52px 44px 52px;
-}
-.contentWrap{
-  padding-top:var(--menu-first-item-top);
-}
+.main{padding:0 52px 44px 52px}
+.contentWrap{padding-top:var(--menu-first-item-top)}
 
 .pageHeader{
   display:flex;
@@ -219,6 +191,7 @@ body::before{
   border:none;
   outline:none;
   background:transparent;
+  font-size:14px;
 }
 
 .balanceCard{
@@ -230,17 +203,8 @@ body::before{
   box-shadow:0 16px 36px rgba(2,6,23,.14);
   text-align:right;
 }
-.balanceCard .label{
-  font-size:14px;
-  font-weight:700;
-  margin-bottom:8px;
-  display:block;
-}
-.balanceCard .amount{
-  font-size:36px;
-  font-weight:900;
-  line-height:1.05;
-}
+.balanceCard .label{font-size:14px;font-weight:700;margin-bottom:8px;display:block}
+.balanceCard .amount{font-size:36px;font-weight:900;line-height:1.05}
 
 /* oglasna tabla */
 .card{
@@ -250,17 +214,8 @@ body::before{
   padding:28px;
   box-shadow:var(--shadow);
 }
-.card h3{
-  font-size:44px;
-  font-weight:900;
-}
-.boardList{
-  margin-top:14px;
-  list-style:none;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
+.card h3{font-size:44px;font-weight:900}
+.boardList{margin-top:14px;list-style:none;display:flex;flex-direction:column;gap:10px}
 .boardList li{
   background:rgba(15,23,42,.06);
   border:1px solid rgba(15,23,42,.10);
@@ -269,8 +224,14 @@ body::before{
   font-weight:700;
 }
 
-/* mobilni layout */
+/* Mobilni: zadržavamo paralelno, ali prilagodimo širine + logo manji nego desktop (ali i dalje veći nego pre) */
 @media(max-width:700px){
+  :root{
+    --sidebar-w:300px;
+    --edge-w:14px;
+    --menu-first-item-top:110px;
+  }
+
   .main{padding:0 18px 22px}
   .pageHeader{gap:14px}
 
@@ -280,19 +241,19 @@ body::before{
 
   .rightCol{gap:10px}
   .searchInline,
-  .balanceCard{
-    width:min(42vw,220px);
-  }
+  .balanceCard{width:min(42vw,220px)}
 
   .balanceCard{padding:12px}
   .balanceCard .amount{font-size:22px}
+
+  /* ✅ logo na mobilnom: veći nego pre, ali ne prevelik */
+  .logoTop img{height:64px;}
 }
 </style>
 </head>
 
 <body>
 
-<!-- LOGO -->
 <div class="logoTop">
   <img src="logo.png" alt="Portal Upravnik logo">
 </div>
@@ -357,14 +318,8 @@ const overlay=document.getElementById("overlay");
 const edge=document.getElementById("edgeHotspot");
 const burger=document.getElementById("hamburger");
 
-function openS(){
-  sidebar.classList.add("open");
-  overlay.classList.add("show");
-}
-function closeS(){
-  sidebar.classList.remove("open");
-  overlay.classList.remove("show");
-}
+function openS(){sidebar.classList.add("open");overlay.classList.add("show")}
+function closeS(){sidebar.classList.remove("open");overlay.classList.remove("show")}
 
 edge.addEventListener("mouseenter", openS);
 overlay.addEventListener("click", closeS);
