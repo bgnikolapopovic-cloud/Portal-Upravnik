@@ -1,18 +1,20 @@
 <!DOCTYPE html>
-<html lang="sr">
+<html lang="sr-Latn">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Portal-Upravnik | Pocetna</title>
+<title>Portal-Upravnik | Početna</title>
+
+<!-- Latin Extended font -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 
 <style>
 :root{
   --bg-url: url("bg.png");
-
   --sidebar-w: 300px;
   --edge-w: 14px;
-
-  /* pixel align sa prvom stavkom menija */
   --menu-first-item-top: 128px;
 
   --ink:#0f172a;
@@ -25,7 +27,12 @@
   --side2:rgba(6,24,40,.92);
 }
 
-*{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI",system-ui,Arial,sans-serif}
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:"Inter","Segoe UI",system-ui,Arial,sans-serif;
+}
 
 body{
   min-height:100vh;
@@ -33,7 +40,7 @@ body{
   color: var(--ink);
 }
 
-/* pozadina */
+/* oštrija pozadina */
 body::before{
   content:"";
   position:fixed;
@@ -91,10 +98,23 @@ body::before{
 .sidebar>*{position:relative;z-index:1}
 
 .brand{height:78px}
-.brand h1{font-size:22px;font-weight:800;letter-spacing:.12em}
-.brand p{font-size:12px;opacity:.75;margin-top:6px}
+.brand h1{
+  font-size:22px;
+  font-weight:800;
+  letter-spacing:.14em;
+}
+.brand p{
+  font-size:12px;
+  opacity:.75;
+  margin-top:6px;
+}
 
-.nav{margin-top:24px;display:flex;flex-direction:column;gap:10px}
+.nav{
+  margin-top:24px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
 .nav a{
   padding:14px 16px;
   border-radius:16px;
@@ -112,7 +132,8 @@ body::before{
   position:fixed;
   left:18px;
   top:18px;
-  width:44px;height:44px;
+  width:44px;
+  height:44px;
   border-radius:14px;
   background:var(--glass);
   border:1px solid var(--border);
@@ -173,18 +194,10 @@ body::before{
   font-weight:600;
 }
 
-/* DESNI PANEL */
-.rightPanel{
-  display:flex;
-  flex-direction:column;
-  align-items:flex-end;
-  gap:10px;
-}
-
-/* JEDNA kartica sa tekstom "Stanje racuna" unutra */
+/* stanje računa – jedna kartica */
 .balanceCard{
   width:260px;
-  padding:18px 18px;
+  padding:18px;
   border-radius:18px;
   background:rgba(255,255,255,.92);
   border:1px solid var(--border);
@@ -202,10 +215,9 @@ body::before{
   display:block;
   font-size:30px;
   font-weight:900;
-  letter-spacing:-0.01em;
 }
 
-/* content */
+/* sadržaj */
 .card{
   background:rgba(255,255,255,.86);
   border:1px solid var(--border);
@@ -214,9 +226,17 @@ body::before{
   padding:24px;
   max-width:1100px;
 }
-.card h3{font-size:34px;font-weight:800}
-.card p{margin-top:12px;font-size:14px;color:var(--muted)}
+.card h3{
+  font-size:34px;
+  font-weight:800;
+}
+.card p{
+  margin-top:12px;
+  font-size:14px;
+  color:var(--muted);
+}
 
+/* mobilni */
 @media(max-width:600px){
   :root{--sidebar-w:260px}
   .main{padding:0 18px 22px 18px}
@@ -245,8 +265,8 @@ body::before{
     <a class="active">Finansije</a>
     <a>Oglasna tabla</a>
     <a>Forum</a>
-    <a>Zakonska regulative</a>
-    <a>Kontakt sluzbe</a>
+    <a>Zakonske regulative</a>
+    <a>Kontakt službe</a>
   </nav>
 </aside>
 
@@ -261,25 +281,23 @@ body::before{
 
     <section class="pageHeader">
       <div class="titleBlock">
-        <h2>Pocetna</h2>
+        <h2>Početna</h2>
         <div class="meta">
-          Ul. Primer 1<br/>
+          Ulica Primer 1<br/>
           Zgrada 12<br/>
           48 jedinica
         </div>
       </div>
 
-      <div class="rightPanel">
-        <div class="balanceCard">
-          <span class="label">Stanje racuna</span>
-          <span class="amount">948.889,00 RSD</span>
-        </div>
+      <div class="balanceCard">
+        <span class="label">Stanje računa</span>
+        <span class="amount">948.889,00 RSD</span>
       </div>
     </section>
 
     <section class="card">
       <h3>Oglasna tabla</h3>
-      <p>Ovde se prikazuju vazna obavestenja upravnika za stanare.</p>
+      <p>Ovde se prikazuju važna obaveštenja upravnika za stanare.</p>
     </section>
 
   </div>
