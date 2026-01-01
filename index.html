@@ -6,319 +6,212 @@
 <title>Portal-Upravnik | Pocetna</title>
 
 <style>
-  :root{
-    --bg-url: url("bg.png");
+:root{
+  --bg-url: url("bg.png");
+  --sidebar-w: 300px;
+  --edge-w: 14px;
 
-    /* Sidebar širina kad je otvoren */
-    --sidebar-w: 300px;
+  --ink:#0f172a;
+  --muted:rgba(15,23,42,.65);
+  --glass:rgba(255,255,255,.90);
+  --border:rgba(15,23,42,.14);
+  --shadow:0 18px 40px rgba(2,6,23,.10);
 
-    /* Tanka “ručica” kad je zatvoren */
-    --edge-w: 14px;
+  --side1:rgba(10,35,56,.92);
+  --side2:rgba(6,24,40,.92);
+}
 
-    --ink:#0f172a;
-    --muted:rgba(15,23,42,.65);
-    --glass:rgba(255,255,255,.90);
-    --border:rgba(15,23,42,.14);
-    --shadow:0 18px 40px rgba(2,6,23,.10);
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI",system-ui,Arial,sans-serif}
 
-    --side1:rgba(10,35,56,.92);
-    --side2:rgba(6,24,40,.92);
-  }
+body{
+  min-height:100vh;
+  background: var(--bg-url) center/cover no-repeat fixed;
+  color: var(--ink);
+}
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background: rgba(255,255,255,.78);
+  backdrop-filter: blur(8px);
+  z-index:-2;
+}
 
-  *{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI",system-ui,Arial,sans-serif}
+/* overlay */
+.overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(2,6,23,.25);
+  opacity:0;
+  pointer-events:none;
+  transition:.2s;
+  z-index:40;
+}
+.overlay.show{opacity:1;pointer-events:auto}
 
-  body{
-    min-height:100vh;
-    background: var(--bg-url) center/cover no-repeat fixed;
-    color: var(--ink);
-  }
-  body::before{
-    content:"";
-    position:fixed;
-    inset:0;
-    background: rgba(255,255,255,.78);
-    backdrop-filter: blur(8px);
-    z-index:-2;
-  }
+/* hover zona */
+.edgeHotspot{
+  position:fixed;
+  left:0;top:0;
+  width:var(--edge-w);
+  height:100vh;
+  z-index:60;
+}
 
-  /* ===== Overlay (kad je sidebar otvoren) ===== */
-  .overlay{
-    position: fixed;
-    inset: 0;
-    background: rgba(2,6,23,.25);
-    backdrop-filter: blur(2px);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity .18s ease;
-    z-index: 40;
-  }
-  .overlay.show{
-    opacity: 1;
-    pointer-events: auto;
-  }
+/* sidebar */
+.sidebar{
+  position:fixed;
+  left:0;top:0;
+  width:var(--sidebar-w);
+  height:100vh;
+  padding:26px 20px;
+  background:linear-gradient(180deg,var(--side1),var(--side2)),var(--bg-url);
+  background-size:cover;
+  color:#fff;
+  box-shadow:18px 0 40px rgba(0,0,0,.28);
+  transform:translateX(calc(-1 * (var(--sidebar-w) - var(--edge-w))));
+  transition:.2s;
+  z-index:70;
+}
+.sidebar.open{transform:translateX(0)}
+.sidebar::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.22);
+  backdrop-filter:blur(10px);
+}
+.sidebar>*{position:relative;z-index:1}
 
-  /* ===== “Edge” zona na levoj ivici za hover ===== */
-  .edgeHotspot{
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: var(--edge-w);
-    height: 100vh;
-    z-index: 60;
-    background: rgba(255,255,255,0.0);
-  }
+.brand h1{font-size:22px;font-weight:800;letter-spacing:.12em}
+.brand p{font-size:12px;opacity:.75;margin-top:6px}
 
-  /* ===== Sidebar (overlay panel) ===== */
-  .sidebar{
-    position: fixed;
-    left: 0; top: 0;
-    width: var(--sidebar-w);
-    height: 100vh;
-    padding: 26px 20px;
+.nav{margin-top:28px;display:flex;flex-direction:column;gap:10px}
+.nav a{
+  padding:14px 16px;
+  border-radius:16px;
+  color:#fff;
+  text-decoration:none;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.14);
+  font-size:18px;
+  font-weight:600;
+}
+.nav a.active{background:rgba(255,255,255,.14)}
 
-    background:
-      linear-gradient(180deg,var(--side1),var(--side2)),
-      var(--bg-url);
-    background-size: cover;
-    background-position: center;
+/* main */
+.main{padding:44px 52px}
 
-    color: #fff;
-    box-shadow: 18px 0 40px rgba(0,0,0,.28);
-    overflow: hidden;
+/* hamburger */
+.hamburger{
+  width:44px;height:44px;
+  border-radius:14px;
+  background:var(--glass);
+  border:1px solid var(--border);
+  box-shadow:var(--shadow);
+  display:grid;place-items:center;
+  cursor:pointer;
+  margin-bottom:22px;
+}
 
-    /* START ZATVOREN: izvučen levo osim edge-a */
-    transform: translateX(calc(-1 * (var(--sidebar-w) - var(--edge-w))));
-    transition: transform .20s ease;
-    z-index: 70;
-  }
+/* DESNI TOP RED (pretraga iznad) */
+.topRight{
+  display:flex;
+  justify-content:flex-end;
+  margin-bottom:18px;
+}
+.searchInline{
+  width:260px;
+  padding:10px 14px;
+  border-radius:16px;
+  background:var(--glass);
+  border:1px solid var(--border);
+  box-shadow:var(--shadow);
+}
+.searchInline input{
+  width:100%;
+  border:none;
+  outline:none;
+  background:transparent;
+  font-size:13px;
+}
 
-  .sidebar.open{
-    transform: translateX(0);
-  }
+/* header */
+.pageHeader{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:40px;
+  margin-bottom:30px;
+}
+.titleBlock h2{font-size:54px;font-weight:800}
+.meta{margin-top:12px;font-size:26px;color:rgba(15,23,42,.62);font-weight:600}
 
-  .sidebar::before{
-    content:"";
-    position:absolute;
-    inset:0;
-    background:rgba(0,0,0,.22);
-    backdrop-filter: blur(10px);
-    z-index:0;
-  }
-  .sidebar > *{position:relative;z-index:1}
+/* saldo */
+.balanceCard{
+  min-width:260px;
+  padding:22px 24px;
+  border-radius:22px;
+  background:#fff;
+  border:1px solid var(--border);
+  box-shadow:0 16px 36px rgba(2,6,23,.14);
+  text-align:right;
+}
+.balanceCard span{font-size:13px;color:rgba(15,23,42,.6)}
+.balanceCard strong{font-size:34px;font-weight:900}
 
-  .brand h1{
-    font-size:22px;
-    letter-spacing:.12em;
-    font-weight:800;
-  }
-  .brand p{
-    margin-top:6px;
-    font-size:12px;
-    opacity:.75;
-  }
+/* content */
+.card{
+  background:var(--glass);
+  border:1px solid var(--border);
+  border-radius:22px;
+  box-shadow:var(--shadow);
+  padding:24px;
+  max-width:1100px;
+}
+.card h3{font-size:34px;font-weight:800}
+.card p{margin-top:12px;font-size:14px;color:var(--muted)}
 
-  .nav{
-    margin-top:28px;
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-  }
-  .nav a{
-    display:block;
-    padding:14px 16px;
-    border-radius:16px;
-    color:#fff;
-    text-decoration:none;
-    background:rgba(255,255,255,.06);
-    border:1px solid rgba(255,255,255,.14);
-    font-size:18px;
-    font-weight:600;
-    line-height:1.2;
-  }
-  .nav a.active{
-    background:rgba(255,255,255,.14);
-    box-shadow:0 10px 24px rgba(0,0,0,.22);
-  }
-
-  /* ===== Main ===== */
-  .main{
-    padding: 44px 52px;
-    min-height: 100vh;
-  }
-
-  /* Hamburger (ostaje gore levo u main-u) */
-  .hamburger{
-    width: 44px;
-    height: 44px;
-    border-radius: 14px;
-    background: var(--glass);
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow);
-    display:grid;
-    place-items:center;
-    cursor:pointer;
-    user-select:none;
-    margin-bottom: 18px;
-  }
-  .hamburger span{
-    font-size: 18px;
-    opacity: .75;
-  }
-
-  /* Header + saldo */
-  .pageHeader{
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-start;
-    gap:40px;
-    margin-bottom:30px;
-  }
-  .titleBlock h2{
-    font-size:54px;
-    font-weight:800;
-    letter-spacing:-0.02em;
-  }
-  .meta{
-    margin-top:12px;
-    font-size:26px;
-    color:rgba(15,23,42,.62);
-    font-weight:600;
-    line-height:1.35;
-  }
-
-  /* Desni panel (saldo + pretraga) */
-  .rightPanel{
-    display:flex;
-    flex-direction:column;
-    gap:14px;
-    align-items:flex-end;
-  }
-
-  .balanceCard{
-    min-width:260px;
-    padding:22px 24px;
-    border-radius:22px;
-    background:#fff;
-    border:1px solid var(--border);
-    box-shadow:0 16px 36px rgba(2,6,23,.14);
-    text-align:right;
-    white-space:nowrap;
-  }
-  .balanceCard span{
-    display:block;
-    font-size:13px;
-    color:rgba(15,23,42,.60);
-    margin-bottom:8px;
-  }
-  .balanceCard strong{
-    display:block;
-    font-size:34px;
-    font-weight:900;
-    letter-spacing:-0.01em;
-  }
-
-  /* Pretraga desno (poravnata uz saldo) */
-  .searchInline{
-    width: 260px;
-    padding: 10px 14px;
-    border-radius: 16px;
-    background: var(--glass);
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow);
-  }
-  .searchInline input{
-    width:100%;
-    border:none;
-    outline:none;
-    background:transparent;
-    font-size:13px;
-    color:var(--ink);
-  }
-
-  /* Content card */
-  .card{
-    background:var(--glass);
-    border:1px solid var(--border);
-    border-radius:22px;
-    box-shadow:var(--shadow);
-    padding:24px;
-    max-width:1100px;
-  }
-  .card h3{ font-size:34px; font-weight:800; }
-  .card p{ margin-top:12px; font-size:14px; color:var(--muted); max-width:90ch; }
-
-  .feed{
-    margin-top:22px;
-    display:flex;
-    flex-direction:column;
-    gap:14px;
-  }
-  .feedItem{
-    background:rgba(255,255,255,.72);
-    border:1px solid var(--border);
-    border-radius:18px;
-    padding:16px;
-  }
-  .feedItem .row{
-    display:flex;
-    justify-content:space-between;
-    font-weight:700;
-    gap:16px;
-  }
-  .feedItem time{
-    font-size:12px;
-    color:rgba(15,23,42,.55);
-    white-space:nowrap;
-  }
-  .feedItem p{ margin-top:8px; font-size:14px; color:rgba(15,23,42,.70); }
-
-  /* Mobilno: malo smanji panel da bude uredno */
-  @media (max-width: 600px){
-    :root{
-      --sidebar-w: 260px;
-      --edge-w: 14px;
-    }
-    .main{ padding: 20px 18px; }
-    .titleBlock h2{ font-size: 34px; }
-    .meta{ font-size: 16px; }
-
-    .balanceCard{ min-width: 200px; padding: 14px 16px; border-radius: 16px; }
-    .balanceCard strong{ font-size: 22px; }
-
-    .searchInline{ width: 200px; }
-    .card h3{ font-size: 26px; }
-  }
+@media(max-width:600px){
+  :root{--sidebar-w:260px}
+  .main{padding:20px 18px}
+  .titleBlock h2{font-size:34px}
+  .meta{font-size:16px}
+  .balanceCard{min-width:200px;padding:14px 16px}
+  .balanceCard strong{font-size:22px}
+  .searchInline{width:200px}
+}
 </style>
 </head>
 
 <body>
 
-<!-- levo “hotspot” da otvori sidebar na hover -->
-<div class="edgeHotspot" id="edgeHotspot" aria-hidden="true"></div>
-
-<!-- overlay -->
+<div class="edgeHotspot" id="edgeHotspot"></div>
 <div class="overlay" id="overlay"></div>
 
-<!-- Sidebar panel -->
 <aside class="sidebar" id="sidebar">
   <div class="brand">
     <h1>PORTAL</h1>
     <p>Upravnik zgrade</p>
   </div>
-
   <nav class="nav">
-    <a class="active" href="#">Finansije</a>
-    <a href="#">Oglasna tabla</a>
-    <a href="#">Forum</a>
-    <a href="#">Zakonska regulative</a>
-    <a href="#">Kontakt sluzbe</a>
+    <a class="active">Finansije</a>
+    <a>Oglasna tabla</a>
+    <a>Forum</a>
+    <a>Zakonska regulative</a>
+    <a>Kontakt sluzbe</a>
   </nav>
 </aside>
 
 <main class="main">
 
-  <div class="hamburger" id="hamburger" title="Meni">
-    <span>☰</span>
+  <div class="hamburger" id="hamburger">☰</div>
+
+  <!-- PRETRAGA IZNAD, DESNO -->
+  <div class="topRight">
+    <div class="searchInline">
+      <input placeholder="Pretraga (finansije, dokumenti, forum)..." />
+    </div>
   </div>
 
   <section class="pageHeader">
@@ -331,82 +224,34 @@
       </div>
     </div>
 
-    <div class="rightPanel">
-      <div class="balanceCard">
-        <span>Ukupno stanje</span>
-        <strong>948.889,00 RSD</strong>
-      </div>
-
-      <div class="searchInline">
-        <input placeholder="Pretraga (finansije, dokumenti, forum)..." />
-      </div>
+    <div class="balanceCard">
+      <span>Ukupno stanje</span>
+      <strong>948.889,00 RSD</strong>
     </div>
   </section>
 
   <section class="card">
     <h3>Oglasna tabla</h3>
-    <p>
-      Ovde se prikazuju vazna obavestenja upravnika za stanare (radovi, racuni,
-      hitna obavestenja i sl.).
-    </p>
-
-    <div class="feed">
-      <div class="feedItem">
-        <div class="row">
-          <span>Obavestenje o radovima</span>
-          <time>31.12.2025</time>
-        </div>
-        <p>U ponedeljak od 09:00 do 13:00 bice kratkotrajno iskljucenje vode.</p>
-      </div>
-
-      <div class="feedItem">
-        <div class="row">
-          <span>Racun za odrzavanje</span>
-          <time>29.12.2025</time>
-        </div>
-        <p>Rok placanja je do 10. u mesecu. Detalji u sekciji Finansije.</p>
-      </div>
-    </div>
+    <p>Ovde se prikazuju vazna obavestenja upravnika za stanare.</p>
   </section>
 
 </main>
 
 <script>
-  const sidebar = document.getElementById("sidebar");
-  const overlay = document.getElementById("overlay");
-  const edgeHotspot = document.getElementById("edgeHotspot");
-  const hamburger = document.getElementById("hamburger");
+const sidebar=document.getElementById("sidebar");
+const overlay=document.getElementById("overlay");
+const edge=document.getElementById("edgeHotspot");
+const burger=document.getElementById("hamburger");
 
-  function openSidebar(){
-    sidebar.classList.add("open");
-    overlay.classList.add("show");
-  }
-  function closeSidebar(){
-    sidebar.classList.remove("open");
-    overlay.classList.remove("show");
-  }
+function openS(){sidebar.classList.add("open");overlay.classList.add("show")}
+function closeS(){sidebar.classList.remove("open");overlay.classList.remove("show")}
 
-  // Desktop: hover skroz levo otvara
-  edgeHotspot.addEventListener("mouseenter", openSidebar);
-
-  // Kad miš izađe iz sidebara, zatvori (kratki delay)
-  sidebar.addEventListener("mouseleave", () => {
-    setTimeout(() => closeSidebar(), 120);
-  });
-
-  // Klik van (overlay) zatvara
-  overlay.addEventListener("click", closeSidebar);
-
-  // Mobilno: hamburger toggle
-  hamburger.addEventListener("click", () => {
-    sidebar.classList.contains("open") ? closeSidebar() : openSidebar();
-  });
-
-  // Escape zatvara
-  window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") closeSidebar();
-  });
+edge.addEventListener("mouseenter",openS);
+overlay.addEventListener("click",closeS);
+burger.addEventListener("click",()=>sidebar.classList.contains("open")?closeS():openS());
 </script>
 
 </body>
 </html>
+
+
