@@ -15,6 +15,8 @@
 
   --sidebar-w: 340px;
   --edge-w: 16px;
+
+  /* VISINA GORNJE ZONE */
   --topbar-h: 86px;
 
   --ink:#0f172a;
@@ -45,10 +47,11 @@ body::before{
   z-index:-2;
 }
 
-/* ===== TOP RIGHT BAR ===== */
+/* ================= TOP RIGHT (U RAVNI SA PRETRAGOM) ================= */
 .topRightBar{
   position:fixed;
-  top:calc(10px + env(safe-area-inset-top));
+  /* ⬇️ SPUŠTENO DO NIVOA PRETRAGE */
+  top:calc(var(--topbar-h) + 14px + env(safe-area-inset-top));
   right:calc(10px + env(safe-area-inset-right));
   display:flex;
   align-items:center;
@@ -57,7 +60,6 @@ body::before{
   pointer-events:none;
 }
 
-/* NASLOV */
 .topRightTitle{
   text-align:left;
   font-weight:900;
@@ -65,22 +67,22 @@ body::before{
 }
 .topRightTitle span{
   display:block;
-  font-size:18px;
+  font-size:18px; /* mobile */
 }
 
-/* ===== LOGO (OVALNO) ===== */
+/* LOGO – OVALNO */
 .topRightLogo{
-  padding:6px;                       /* mali okvir */
-  background:rgba(255,255,255,.72);  /* glass efekat */
+  padding:6px;
+  background:rgba(255,255,255,.72);
   border:1px solid var(--border);
-  border-radius:22px;                /* OVAL */
+  border-radius:22px;
   box-shadow:var(--shadow);
 }
 .topRightLogo img{
   height:56px;
   width:auto;
   display:block;
-  border-radius:16px;                /* OVAL NA SLICI */
+  border-radius:16px;
 }
 
 /* Desktop */
@@ -90,7 +92,7 @@ body::before{
   .topRightLogo img{height:92px;}
 }
 
-/* ===== SIDEBAR ===== */
+/* ================= SIDEBAR ================= */
 .overlay{
   position:fixed; inset:0;
   background:rgba(2,6,23,.25);
@@ -156,9 +158,12 @@ body::before{
   z-index:80;
 }
 
-/* ===== MAIN ===== */
+/* ================= MAIN ================= */
 .main{padding:0 18px 22px}
-.contentWrap{padding-top:calc(var(--topbar-h) + 14px)}
+.contentWrap{
+  /* prostor iznad sadržaja ostaje stabilan */
+  padding-top:calc(var(--topbar-h) + 14px);
+}
 
 .pageHeader{
   display:flex;
@@ -221,7 +226,7 @@ body::before{
 
 <body>
 
-<!-- TOP RIGHT -->
+<!-- TOP RIGHT: sada u ravni sa pretragom -->
 <div class="topRightBar">
   <div class="topRightTitle">
     <span>Portal</span>
