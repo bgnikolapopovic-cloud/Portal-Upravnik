@@ -16,7 +16,6 @@
   --sidebar-w: 340px;
   --edge-w: 16px;
 
-  /* ✅ isti padding koji koristi main (mobile-first) */
   --main-pad: 18px;
 
   --ink:#0f172a;
@@ -29,9 +28,7 @@
 }
 
 @media(min-width:900px){
-  :root{
-    --main-pad: 52px; /* desktop padding */
-  }
+  :root{ --main-pad: 52px; }
 }
 
 *{margin:0;padding:0;box-sizing:border-box;font-family:"Inter",system-ui,Arial,sans-serif}
@@ -53,16 +50,11 @@ body::before{
   z-index:-2;
 }
 
-/* ================= TOP RIGHT (NE SPUŠTAMO, SAMO U LEVO) ================= */
+/* ================= TOP RIGHT ================= */
 .topRightBar{
   position:fixed;
-
-  /* ✅ OSTAVI ISTI TOP KAO PRE (nema spuštanja) */
   top:calc(10px + env(safe-area-inset-top));
-
-  /* ✅ SAMO POMERENO ULEVO da legne u liniju sa pretragom */
   right:calc(var(--main-pad) + env(safe-area-inset-right));
-
   display:flex;
   align-items:center;
   gap:12px;
@@ -77,10 +69,9 @@ body::before{
 }
 .topRightTitle span{
   display:block;
-  font-size:18px; /* mobile */
+  font-size:18px;
 }
 
-/* LOGO – ovalno kao kartice */
 .topRightLogo{
   padding:6px;
   background:rgba(255,255,255,.72);
@@ -89,7 +80,7 @@ body::before{
   box-shadow:var(--shadow);
 }
 .topRightLogo img{
-  height:56px; /* mobile */
+  height:56px;
   width:auto;
   display:block;
   border-radius:16px;
@@ -129,29 +120,6 @@ body::before{
   z-index:70;
 }
 .sidebar.open{transform:translateX(0)}
-.sidebar::before{
-  content:"";
-  position:absolute; inset:0;
-  background:rgba(0,0,0,.22);
-  backdrop-filter:blur(8px);
-}
-.sidebar>*{position:relative;z-index:1}
-
-.brand{height:92px}
-.brand h1{font-size:24px;font-weight:900;letter-spacing:.16em}
-.brand p{font-size:13px;opacity:.78;margin-top:8px}
-
-.nav{margin-top:26px;display:flex;flex-direction:column;gap:12px}
-.nav a{
-  padding:16px 18px;
-  border-radius:18px;
-  color:#fff;
-  text-decoration:none;
-  background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.14);
-  font-size:19px;
-  font-weight:700;
-}
 
 .hamburger{
   position:fixed;
@@ -172,10 +140,8 @@ body::before{
 }
 
 .contentWrap{
-  /* ovo ostaje kao ranije: content kreće ispod top bloka */
   padding-top:calc(86px + 14px);
 }
-
 @media(min-width:900px){
   .contentWrap{padding-top:calc(120px + 14px);}
 }
@@ -214,13 +180,43 @@ body::before{
 .searchInline{padding:10px 14px}
 .searchInline input{border:none;background:transparent;width:100%;outline:none;font-size:14px}
 
+/* ================= STANJE RAČUNA (IZMENA) ================= */
 .balanceCard{
   padding:12px;
   text-align:right;
 }
-.balanceCard .label{font-size:12px;font-weight:700;display:block;margin-bottom:6px}
-.balanceCard .amount{font-size:22px;font-weight:900;line-height:1.05}
 
+.balanceCard .label{
+  font-size:12px;
+  font-weight:700;
+  display:block;
+  margin-bottom:6px;
+}
+
+.balanceAmount{
+  white-space:nowrap;              /* ❗ nikad novi red */
+}
+
+.balanceAmount .value{
+  font-size:20px;                  /* 👈 manji broj */
+  font-weight:900;
+  letter-spacing:0.2px;
+}
+
+.balanceAmount .currency{
+  font-size:11px;                  /* 👈 dosta manji RSD */
+  font-weight:700;
+  opacity:.55;
+  margin-left:4px;
+}
+
+/* Desktop */
+@media(min-width:900px){
+  .balanceAmount .value{font-size:32px;}
+  .balanceAmount .currency{font-size:13px;}
+}
+
+/* ================= OGLASNA ================= */
 .card{
   background:rgba(255,255,255,.86);
   border-radius:26px;
@@ -234,21 +230,18 @@ body::before{
   list-style:none;
   display:flex;
   flex-direction:column;
-  gap:10px
+  gap:10px;
 }
 .boardList li{
   background:rgba(15,23,42,.06);
   border:1px solid rgba(15,23,42,.10);
   padding:12px 14px;
   border-radius:16px;
-  font-weight:700
+  font-weight:700;
 }
 
 @media(min-width:900px){
   .meta{font-size:26px}
-  .balanceCard{padding:18px}
-  .balanceCard .label{font-size:14px;margin-bottom:8px}
-  .balanceCard .amount{font-size:36px}
   .card{padding:28px}
   .card h3{font-size:44px}
 }
@@ -257,7 +250,6 @@ body::before{
 
 <body>
 
-<!-- TOP RIGHT: ista visina kao pre, samo uvučeno ulevo da bude u liniji sa pretragom -->
 <div class="topRightBar">
   <div class="topRightTitle">
     <span>Portal</span>
@@ -272,19 +264,7 @@ body::before{
 <div class="overlay" id="overlay"></div>
 <div class="hamburger" id="hamburger">☰</div>
 
-<aside class="sidebar" id="sidebar">
-  <div class="brand">
-    <h1>PORTAL</h1>
-    <p>Upravnik zgrade</p>
-  </div>
-  <nav class="nav">
-    <a class="active">Finansije</a>
-    <a>Oglasna tabla</a>
-    <a>Forum</a>
-    <a>Zakonske regulative</a>
-    <a>Kontakt službe</a>
-  </nav>
-</aside>
+<aside class="sidebar" id="sidebar"></aside>
 
 <main class="main">
   <div class="contentWrap">
@@ -302,9 +282,13 @@ body::before{
         <div class="searchInline">
           <input placeholder="Pretraga (finansije, dokumenti, forum)">
         </div>
+
         <div class="balanceCard">
           <span class="label">Stanje računa</span>
-          <span class="amount">948.889,00 RSD</span>
+          <div class="balanceAmount">
+            <span class="value">948.889,00</span>
+            <span class="currency">RSD</span>
+          </div>
         </div>
       </div>
     </section>
