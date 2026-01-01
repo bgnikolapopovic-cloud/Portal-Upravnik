@@ -29,14 +29,14 @@ body{
   color: var(--ink);
 }
 
-/* 🔥 OŠTRIJA POZADINA */
+/* Oštrija, prozirna pozadina */
 body::before{
   content:"";
   position:fixed;
   inset:0;
-  background: rgba(255,255,255,.38);   /* manje bele */
-  backdrop-filter: blur(2px);           /* manji blur */
-  filter: contrast(1.15) saturate(1.12);/* oštrina + boje */
+  background: rgba(255,255,255,.38);
+  backdrop-filter: blur(2px);
+  filter: contrast(1.15) saturate(1.12);
   z-index:-2;
 }
 
@@ -102,7 +102,9 @@ body::before{
 }
 .nav a.active{background:rgba(255,255,255,.14)}
 
-.main{padding:44px 52px}
+.main{
+  padding:36px 52px; /* 👈 bilo 44px – podignuto sve */
+}
 
 /* hamburger */
 .hamburger{
@@ -113,14 +115,14 @@ body::before{
   box-shadow:var(--shadow);
   display:grid;place-items:center;
   cursor:pointer;
-  margin-bottom:22px;
+  margin-bottom:14px; /* 👈 manje razmaka */
 }
 
 /* desno gore pretraga */
 .topRight{
   display:flex;
   justify-content:flex-end;
-  margin-bottom:18px;
+  margin-bottom:8px; /* 👈 podignuto */
 }
 .searchInline{
   width:260px;
@@ -144,10 +146,10 @@ body::before{
   justify-content:space-between;
   align-items:flex-start;
   gap:40px;
-  margin-bottom:30px;
+  margin-bottom:26px; /* 👈 podignuto */
 }
 .titleBlock h2{font-size:54px;font-weight:800}
-.meta{margin-top:12px;font-size:26px;color:rgba(15,23,42,.62);font-weight:600}
+.meta{margin-top:10px;font-size:26px;color:rgba(15,23,42,.62);font-weight:600}
 
 /* saldo */
 .balanceCard{
@@ -176,7 +178,7 @@ body::before{
 
 @media(max-width:600px){
   :root{--sidebar-w:260px}
-  .main{padding:20px 18px}
+  .main{padding:18px}
   .titleBlock h2{font-size:34px}
   .meta{font-size:16px}
   .balanceCard{min-width:200px;padding:14px 16px}
