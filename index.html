@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Portal-Upravnik</title>
 
-<!-- Latin Extended font -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -13,9 +12,12 @@
 <style>
 :root{
   --bg-url: url("bg.png");
+
   --sidebar-w: 300px;
   --edge-w: 14px;
-  --menu-first-item-top: 128px;
+
+  /* ✅ PODIGNUTO: ranije 128px */
+  --menu-first-item-top: 92px;
 
   --ink:#0f172a;
   --muted:rgba(15,23,42,.65);
@@ -40,7 +42,7 @@ body{
   color: var(--ink);
 }
 
-/* Oštrija, prozirna pozadina */
+/* oštrija, prozirna pozadina */
 body::before{
   content:"";
   position:fixed;
@@ -153,16 +155,16 @@ body::before{
   padding-top:var(--menu-first-item-top);
 }
 
-/* pretraga */
+/* ✅ PRETRAGA u nivou naslova */
 .topRight{
   display:flex;
   justify-content:flex-end;
-  margin-bottom:12px;
+  margin-bottom:14px;
 }
 .searchInline{
-  width:260px;
+  width:300px; /* malo šire kao na slici */
   padding:10px 14px;
-  border-radius:16px;
+  border-radius:18px;
   background:var(--glass);
   border:1px solid var(--border);
   box-shadow:var(--shadow);
@@ -172,7 +174,7 @@ body::before{
   border:none;
   outline:none;
   background:transparent;
-  font-size:13px;
+  font-size:14px;
 }
 
 /* header */
@@ -184,19 +186,21 @@ body::before{
   margin-bottom:26px;
 }
 .titleBlock h2{
-  font-size:46px;
+  font-size:54px;
   font-weight:900;
+  letter-spacing:-0.02em;
 }
 .meta{
   margin-top:10px;
-  font-size:22px;
+  font-size:26px;
   color:rgba(15,23,42,.62);
   font-weight:600;
+  line-height:1.3;
 }
 
-/* stanje računa */
+/* ✅ stanje računa ispod pretrage */
 .balanceCard{
-  width:260px;
+  width:300px;
   padding:18px;
   border-radius:18px;
   background:rgba(255,255,255,.92);
@@ -213,38 +217,44 @@ body::before{
 }
 .balanceCard .amount{
   display:block;
-  font-size:30px;
+  font-size:38px;
   font-weight:900;
+  letter-spacing:-0.01em;
+  line-height:1.05;
 }
 
 /* sadržaj */
 .card{
   background:rgba(255,255,255,.86);
   border:1px solid var(--border);
-  border-radius:22px;
+  border-radius:26px;
   box-shadow:var(--shadow);
-  padding:24px;
-  max-width:1100px;
+  padding:28px;
+  max-width:1200px;
 }
 .card h3{
-  font-size:34px;
-  font-weight:800;
+  font-size:44px;
+  font-weight:900;
+  letter-spacing:-0.02em;
 }
 .card p{
-  margin-top:12px;
-  font-size:14px;
+  margin-top:10px;
+  font-size:16px;
   color:var(--muted);
 }
 
-/* mobilni */
 @media(max-width:600px){
-  :root{--sidebar-w:260px}
+  :root{
+    --sidebar-w:260px;
+    --menu-first-item-top: 86px; /* malo manje i na mobilnom */
+  }
   .main{padding:0 18px 22px 18px}
-  .titleBlock h2{font-size:32px}
-  .meta{font-size:16px}
-  .searchInline{width:220px}
-  .balanceCard{width:220px}
-  .balanceCard .amount{font-size:22px}
+  .titleBlock h2{font-size:38px}
+  .meta{font-size:18px}
+  .searchInline{width:260px}
+  .balanceCard{width:260px}
+  .balanceCard .amount{font-size:30px}
+  .card h3{font-size:30px}
 }
 </style>
 </head>
@@ -273,15 +283,15 @@ body::before{
 <main class="main">
   <div class="contentWrap">
 
+    <!-- ✅ PRETRAGA: u nivou naslova -->
     <div class="topRight">
       <div class="searchInline">
-        <input placeholder="Pretraga (finansije, dokumenti, forum)..." />
+        <input placeholder="Pretraga (finansije, dokumenti, forum)" />
       </div>
     </div>
 
     <section class="pageHeader">
       <div class="titleBlock">
-        <!-- ⬇️ OVDE JE IZMENJENO -->
         <h2>Portal-Upravnik</h2>
         <div class="meta">
           Ulica Primer 1<br/>
@@ -290,9 +300,10 @@ body::before{
         </div>
       </div>
 
+      <!-- ✅ stanje ispod pretrage -->
       <div class="balanceCard">
         <span class="label">Stanje računa</span>
-        <span class="amount">948.889,00 RSD</span>
+        <span class="amount">948.889,00<br/>RSD</span>
       </div>
     </section>
 
