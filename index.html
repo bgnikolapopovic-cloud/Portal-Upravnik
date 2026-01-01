@@ -13,9 +13,12 @@
 :root{
   --bg-url: url("bg.png");
 
-  --sidebar-w: 340px;
-  --edge-w: 16px;
-  --menu-first-item-top: 120px;
+  /* ✅ VEĆI SIDEBAR */
+  --sidebar-w: 340px;        /* bilo 300 */
+  --edge-w: 16px;            /* malo širi hotspot */
+
+  /* ✅ SPUSTI SADRŽAJ da sidebar vizuelno bude “iznad” naslova */
+  --menu-first-item-top: 120px; /* bilo 92 */
 
   --ink:#0f172a;
   --muted:rgba(15,23,42,.65);
@@ -27,12 +30,7 @@
   --side2:rgba(6,24,40,.92);
 }
 
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:"Inter",system-ui,Arial,sans-serif;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Inter",system-ui,Arial,sans-serif}
 
 body{
   min-height:100vh;
@@ -51,7 +49,7 @@ body::before{
   z-index:-2;
 }
 
-/* LOGO – duplo veći, sticky samo desktop */
+/* ✅ LOGO (duplo veći) + safe-area */
 .logoTop{
   position:absolute;
   top:calc(14px + env(safe-area-inset-top));
@@ -59,10 +57,13 @@ body::before{
   z-index:90;
 }
 .logoTop img{
-  height:92px;
+  height:92px; /* ✅ bilo 46 */
   width:auto;
+  display:block;
   filter: drop-shadow(0 10px 18px rgba(0,0,0,.25));
 }
+
+/* Sticky logo samo na desktopu */
 @media(min-width:900px){
   .logoTop{
     position:fixed;
@@ -71,13 +72,28 @@ body::before{
   }
 }
 
-/* sidebar */
+/* overlay */
+.overlay{
+  position:fixed; inset:0;
+  background:rgba(2,6,23,.25);
+  opacity:0; pointer-events:none;
+  transition:.2s;
+  z-index:40;
+}
+.overlay.show{opacity:1;pointer-events:auto}
+
+/* hover zona */
+.edgeHotspot{
+  position:fixed; left:0; top:0;
+  width:var(--edge-w); height:100vh;
+  z-index:60;
+}
+
+/* ✅ SIDEBAR veći */
 .sidebar{
-  position:fixed;
-  left:0;top:0;
-  width:var(--sidebar-w);
-  height:100vh;
-  padding:30px 22px;
+  position:fixed; left:0; top:0;
+  width:var(--sidebar-w); height:100vh;
+  padding:30px 22px; /* malo veći padding */
   background:linear-gradient(180deg,var(--side1),var(--side2)),var(--bg-url);
   background-size:cover;
   color:#fff;
@@ -89,31 +105,19 @@ body::before{
 .sidebar.open{transform:translateX(0)}
 .sidebar::before{
   content:"";
-  position:absolute;
-  inset:0;
+  position:absolute; inset:0;
   background:rgba(0,0,0,.22);
   backdrop-filter:blur(8px);
 }
 .sidebar>*{position:relative;z-index:1}
 
+/* veći brand */
 .brand{height:92px}
-.brand h1{
-  font-size:24px;
-  font-weight:900;
-  letter-spacing:.16em;
-}
-.brand p{
-  font-size:13px;
-  opacity:.78;
-  margin-top:8px;
-}
+.brand h1{font-size:24px;font-weight:900;letter-spacing:.16em}
+.brand p{font-size:13px;opacity:.78;margin-top:8px}
 
-.nav{
-  margin-top:26px;
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-}
+/* veće stavke menija */
+.nav{margin-top:26px;display:flex;flex-direction:column;gap:12px}
 .nav a{
   padding:16px 18px;
   border-radius:18px;
@@ -126,13 +130,24 @@ body::before{
 }
 .nav a.active{background:rgba(255,255,255,.14)}
 
+/* hamburger */
+.hamburger{
+  position:fixed;
+  left:18px; top:18px;
+  width:44px; height:44px;
+  border-radius:14px;
+  background:var(--glass);
+  border:1px solid var(--border);
+  box-shadow:var(--shadow);
+  display:grid; place-items:center;
+  cursor:pointer;
+  z-index:80;
+  user-select:none;
+}
+
 /* main */
-.main{
-  padding:0 52px 44px 52px;
-}
-.contentWrap{
-  padding-top:var(--menu-first-item-top);
-}
+.main{padding:0 52px 44px 52px}
+.contentWrap{padding-top:var(--menu-first-item-top)}
 
 .pageHeader{
   display:flex;
@@ -142,7 +157,6 @@ body::before{
   margin-bottom:26px;
 }
 
-/* NASLOV – vraćen */
 .titleBlock h2{
   font-size:54px;
   font-weight:900;
@@ -157,7 +171,6 @@ body::before{
   font-weight:600;
 }
 
-/* desno */
 .rightCol{
   display:flex;
   flex-direction:column;
@@ -173,6 +186,13 @@ body::before{
   border:1px solid var(--border);
   box-shadow:var(--shadow);
 }
+.searchInline input{
+  width:100%;
+  border:none;
+  outline:none;
+  background:transparent;
+  font-size:14px;
+}
 
 .balanceCard{
   width:300px;
@@ -183,18 +203,10 @@ body::before{
   box-shadow:0 16px 36px rgba(2,6,23,.14);
   text-align:right;
 }
-.balanceCard .label{
-  font-size:14px;
-  font-weight:700;
-  margin-bottom:8px;
-  display:block;
-}
-.balanceCard .amount{
-  font-size:36px;
-  font-weight:900;
-}
+.balanceCard .label{font-size:14px;font-weight:700;margin-bottom:8px;display:block}
+.balanceCard .amount{font-size:36px;font-weight:900;line-height:1.05}
 
-/* oglasna */
+/* oglasna tabla */
 .card{
   width:100%;
   background:rgba(255,255,255,.86);
@@ -202,24 +214,40 @@ body::before{
   padding:28px;
   box-shadow:var(--shadow);
 }
-.card h3{
-  font-size:44px;
-  font-weight:900;
+.card h3{font-size:44px;font-weight:900}
+.boardList{margin-top:14px;list-style:none;display:flex;flex-direction:column;gap:10px}
+.boardList li{
+  background:rgba(15,23,42,.06);
+  border:1px solid rgba(15,23,42,.10);
+  padding:12px 14px;
+  border-radius:16px;
+  font-weight:700;
 }
 
-/* mobilni */
+/* Mobilni: zadržavamo paralelno, ali prilagodimo širine + logo manji nego desktop (ali i dalje veći nego pre) */
 @media(max-width:700px){
   :root{
     --sidebar-w:300px;
+    --edge-w:14px;
     --menu-first-item-top:110px;
   }
+
   .main{padding:0 18px 22px}
+  .pageHeader{gap:14px}
+
+  .titleBlock{max-width:58vw}
   .titleBlock h2{font-size:38px}
   .meta{font-size:18px}
+
+  .rightCol{gap:10px}
   .searchInline,
   .balanceCard{width:min(42vw,220px)}
+
+  .balanceCard{padding:12px}
   .balanceCard .amount{font-size:22px}
-  .logoTop img{height:64px}
+
+  /* ✅ logo na mobilnom: veći nego pre, ali ne prevelik */
+  .logoTop img{height:64px;}
 }
 </style>
 </head>
@@ -230,7 +258,11 @@ body::before{
   <img src="logo.png" alt="Portal Upravnik logo">
 </div>
 
-<aside class="sidebar open">
+<div class="edgeHotspot" id="edgeHotspot"></div>
+<div class="overlay" id="overlay"></div>
+<div class="hamburger" id="hamburger">☰</div>
+
+<aside class="sidebar" id="sidebar">
   <div class="brand">
     <h1>PORTAL</h1>
     <p>Upravnik zgrade</p>
@@ -258,7 +290,9 @@ body::before{
       </div>
 
       <div class="rightCol">
-        <div class="searchInline">Pretraga</div>
+        <div class="searchInline">
+          <input placeholder="Pretraga (finansije, dokumenti, forum)">
+        </div>
         <div class="balanceCard">
           <span class="label">Stanje računa</span>
           <span class="amount">948.889,00 RSD</span>
@@ -268,10 +302,29 @@ body::before{
 
     <section class="card">
       <h3>Oglasna tabla</h3>
+      <ul class="boardList">
+        <li>Akcija čišćenja</li>
+        <li>Popravka krova</li>
+        <li>Krečenje</li>
+      </ul>
     </section>
 
   </div>
 </main>
+
+<script>
+const sidebar=document.getElementById("sidebar");
+const overlay=document.getElementById("overlay");
+const edge=document.getElementById("edgeHotspot");
+const burger=document.getElementById("hamburger");
+
+function openS(){sidebar.classList.add("open");overlay.classList.add("show")}
+function closeS(){sidebar.classList.remove("open");overlay.classList.remove("show")}
+
+edge.addEventListener("mouseenter", openS);
+overlay.addEventListener("click", closeS);
+burger.addEventListener("click", ()=> sidebar.classList.contains("open") ? closeS() : openS());
+</script>
 
 </body>
 </html>
