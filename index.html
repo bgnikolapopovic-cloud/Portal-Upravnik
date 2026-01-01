@@ -15,6 +15,8 @@
 
   --sidebar-w: 300px;
   --edge-w: 14px;
+
+  /* držimo podignut header */
   --menu-first-item-top: 92px;
 
   --ink:#0f172a;
@@ -27,21 +29,15 @@
   --side2:rgba(6,24,40,.92);
 }
 
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:"Inter",system-ui,Arial,sans-serif;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Inter",system-ui,Arial,sans-serif}
 
 body{
   min-height:100vh;
   background: var(--bg-url) center/cover no-repeat fixed;
   color: var(--ink);
-  overflow-x:hidden; /* ✅ nema horizontalnog scrolla */
+  overflow-x:hidden; /* ✅ nema horizontalnog skrola */
 }
 
-/* pozadina */
 body::before{
   content:"";
   position:fixed;
@@ -54,11 +50,9 @@ body::before{
 
 /* overlay */
 .overlay{
-  position:fixed;
-  inset:0;
+  position:fixed; inset:0;
   background:rgba(2,6,23,.25);
-  opacity:0;
-  pointer-events:none;
+  opacity:0; pointer-events:none;
   transition:.2s;
   z-index:40;
 }
@@ -66,19 +60,15 @@ body::before{
 
 /* hover zona */
 .edgeHotspot{
-  position:fixed;
-  left:0;top:0;
-  width:var(--edge-w);
-  height:100vh;
+  position:fixed; left:0; top:0;
+  width:var(--edge-w); height:100vh;
   z-index:60;
 }
 
 /* sidebar */
 .sidebar{
-  position:fixed;
-  left:0;top:0;
-  width:var(--sidebar-w);
-  height:100vh;
+  position:fixed; left:0; top:0;
+  width:var(--sidebar-w); height:100vh;
   padding:26px 20px;
   background:linear-gradient(180deg,var(--side1),var(--side2)),var(--bg-url);
   background-size:cover;
@@ -91,8 +81,7 @@ body::before{
 .sidebar.open{transform:translateX(0)}
 .sidebar::before{
   content:"";
-  position:absolute;
-  inset:0;
+  position:absolute; inset:0;
   background:rgba(0,0,0,.22);
   backdrop-filter:blur(8px);
 }
@@ -118,18 +107,16 @@ body::before{
 /* hamburger */
 .hamburger{
   position:fixed;
-  left:18px;
-  top:18px;
-  width:44px;
-  height:44px;
+  left:18px; top:18px;
+  width:44px; height:44px;
   border-radius:14px;
   background:var(--glass);
   border:1px solid var(--border);
   box-shadow:var(--shadow);
-  display:grid;
-  place-items:center;
+  display:grid; place-items:center;
   cursor:pointer;
   z-index:80;
+  user-select:none;
 }
 
 /* main */
@@ -140,12 +127,41 @@ body::before{
   padding-top:var(--menu-first-item-top);
 }
 
-/* pretraga */
-.topRight{
+/* header layout */
+.pageHeader{
   display:flex;
-  justify-content:flex-end;
-  margin-bottom:14px;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:40px;
+  margin-bottom:26px;
 }
+
+/* naslov u 2 reda */
+.titleBlock h2{
+  font-size:54px;
+  font-weight:900;
+  line-height:1.03;
+  letter-spacing:-0.02em;
+}
+.titleBlock h2 span{display:block}
+
+.meta{
+  margin-top:12px;
+  font-size:26px;
+  color:rgba(15,23,42,.62);
+  font-weight:600;
+  line-height:1.28;
+}
+
+/* desna kolona: pretraga + stanje */
+.rightCol{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:14px;
+}
+
+/* pretraga */
 .searchInline{
   width:300px;
   padding:10px 14px;
@@ -159,35 +175,10 @@ body::before{
   border:none;
   outline:none;
   background:transparent;
+  font-size:14px;
 }
 
-/* header */
-.pageHeader{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  gap:40px;
-  margin-bottom:26px;
-}
-
-/* 🔥 NASLOV U 2 REDA */
-.titleBlock h2{
-  font-size:54px;
-  font-weight:900;
-  line-height:1.05;
-}
-.titleBlock h2 span{
-  display:block;
-}
-
-.meta{
-  margin-top:12px;
-  font-size:26px;
-  color:rgba(15,23,42,.62);
-  font-weight:600;
-}
-
-/* stanje */
+/* stanje računa */
 .balanceCard{
   width:300px;
   padding:18px;
@@ -198,43 +189,93 @@ body::before{
   text-align:right;
 }
 .balanceCard .label{
+  display:block;
   font-size:14px;
   font-weight:700;
+  color:rgba(15,23,42,.75);
   margin-bottom:8px;
-  display:block;
 }
 .balanceCard .amount{
+  display:block;
   font-size:36px;
   font-weight:900;
+  letter-spacing:-0.01em;
   line-height:1.05;
 }
 
-/* content */
+/* Oglasna tabla - puna širina */
 .card{
+  width:100%;
   background:rgba(255,255,255,.86);
+  border:1px solid var(--border);
   border-radius:26px;
-  padding:28px;
-  max-width:1200px;
   box-shadow:var(--shadow);
+  padding:28px;
+}
+.card h3{
+  font-size:44px;
+  font-weight:900;
+  letter-spacing:-0.02em;
+}
+.card p{
+  margin-top:10px;
+  font-size:16px;
+  color:var(--muted);
+}
+.boardList{
+  margin-top:14px;
+  list-style:none;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.boardList li{
+  background:rgba(15,23,42,.06);
+  border:1px solid rgba(15,23,42,.10);
+  padding:12px 14px;
+  border-radius:16px;
+  font-weight:700;
+  color:rgba(15,23,42,.85);
 }
 
-/* ✅ MOBILNI – BEZ SCROLLA */
+/* ✅ MOBILNI: ostaje paralelno, samo smanjujemo desnu stranu da stane */
 @media(max-width:700px){
   .main{padding:0 18px 22px}
+
   .pageHeader{
-    flex-direction:column;
-    gap:18px;
+    gap:14px; /* manje razmaka */
   }
-  .topRight{
-    justify-content:flex-start;
-  }
-  .searchInline,
-  .balanceCard{
-    width:100%;
-  }
+
+  /* levo smanji naslov/metu */
+  .titleBlock{max-width:58vw}
   .titleBlock h2{font-size:38px}
   .meta{font-size:18px}
-  .balanceCard .amount{font-size:28px}
+
+  /* desno smanji pretragu + stanje da ostanu paralelno */
+  .rightCol{align-items:flex-end; gap:10px}
+  .searchInline,
+  .balanceCard{
+    width:min(42vw, 220px); /* ✅ staje desno bez skrola */
+  }
+  .searchInline input{font-size:13px}
+
+  .balanceCard{padding:12px}
+  .balanceCard .label{font-size:12px;margin-bottom:6px}
+  .balanceCard .amount{font-size:22px}
+  .card h3{font-size:30px}
+}
+
+/* ekstra mali telefoni */
+@media(max-width:420px){
+  .titleBlock{max-width:56vw}
+  .titleBlock h2{font-size:34px}
+  .meta{font-size:16px}
+
+  .searchInline,
+  .balanceCard{
+    width:min(44vw, 200px);
+  }
+  .balanceCard .amount{font-size:20px}
 }
 </style>
 </head>
@@ -262,18 +303,9 @@ body::before{
 <main class="main">
   <div class="contentWrap">
 
-    <div class="topRight">
-      <div class="searchInline">
-        <input placeholder="Pretraga (finansije, dokumenti, forum)">
-      </div>
-    </div>
-
     <section class="pageHeader">
       <div class="titleBlock">
-        <h2>
-          <span>Portal</span>
-          <span>Upravnik</span>
-        </h2>
+        <h2><span>Portal</span><span>Upravnik</span></h2>
         <div class="meta">
           Ulica Primer 1<br>
           Zgrada 12<br>
@@ -281,15 +313,27 @@ body::before{
         </div>
       </div>
 
-      <div class="balanceCard">
-        <span class="label">Stanje računa</span>
-        <span class="amount">948.889,00 RSD</span>
+      <div class="rightCol">
+        <div class="searchInline">
+          <input placeholder="Pretraga (finansije, dokumenti, forum)">
+        </div>
+
+        <div class="balanceCard">
+          <span class="label">Stanje računa</span>
+          <span class="amount">948.889,00 RSD</span>
+        </div>
       </div>
     </section>
 
     <section class="card">
       <h3>Oglasna tabla</h3>
       <p>Ovde se prikazuju važna obaveštenja upravnika za stanare.</p>
+
+      <ul class="boardList">
+        <li>Akcija čišćenja</li>
+        <li>Popravka krova</li>
+        <li>Krečenje</li>
+      </ul>
     </section>
 
   </div>
