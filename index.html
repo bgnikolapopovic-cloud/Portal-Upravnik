@@ -59,7 +59,7 @@ body::before{
   filter: blur(2px);
 }
 
-/* TOP RIGHT BRAND */
+/* ================= TOP RIGHT BRAND (VRAĆEN) ================= */
 .topRightBar{
   position:fixed;
   top:calc(10px + env(safe-area-inset-top));
@@ -72,6 +72,7 @@ body::before{
 }
 
 .topRightTitle{
+  text-align:left;
   font-weight:900;
   line-height:1.05;
 }
@@ -90,6 +91,7 @@ body::before{
 .topRightLogo img{
   height:56px;
   border-radius:16px;
+  display:block;
 }
 
 @media(min-width:900px){
@@ -97,7 +99,7 @@ body::before{
   .topRightLogo img{height:92px;}
 }
 
-/* LOGIN */
+/* ================= LOGIN ================= */
 .loginWrap{
   min-height:100vh;
   display:grid;
@@ -193,6 +195,17 @@ body.mode-portal #portalScreen{display:block;}
 <body class="mode-login">
 <div class="ambient"></div>
 
+<!-- TOP RIGHT BRAND -->
+<div class="topRightBar">
+  <div class="topRightTitle">
+    <span>Portal</span>
+    <span>Upravnik</span>
+  </div>
+  <div class="topRightLogo">
+    <img src="logo.png" alt="Portal Upravnik logo">
+  </div>
+</div>
+
 <!-- LOGIN -->
 <section class="loginWrap" id="loginScreen">
   <div class="loginCard">
@@ -227,9 +240,9 @@ body.mode-portal #portalScreen{display:block;}
   </div>
 </section>
 
-<!-- PORTAL PLACEHOLDER -->
+<!-- PORTAL (placeholder dok radimo frontend) -->
 <div id="portalScreen">
-  <h1 style="padding:40px">Dobrodošli u Portal ✅</h1>
+  <h1 style="padding:40px">Dobrodošli u Portal</h1>
   <button id="logoutBtn" style="margin:40px">Odjava</button>
 </div>
 
