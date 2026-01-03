@@ -12,9 +12,12 @@
 <style>
 :root{
   --bg-url: url("bg.png");
+
   --sidebar-w: 340px;
   --edge-w: 16px;
-  --menu-first-item-top: 120px;
+
+  /* padding main (mobile-first) */
+  --main-pad: 18px;
 
   --ink:#0f172a;
   --muted:rgba(15,23,42,.65);
@@ -24,6 +27,10 @@
 
   --side1:rgba(10,35,56,.92);
   --side2:rgba(6,24,40,.92);
+}
+
+@media(min-width:900px){
+  :root{ --main-pad: 52px; }
 }
 
 *{margin:0;padding:0;box-sizing:border-box;font-family:"Inter",system-ui,Arial,sans-serif}
@@ -39,35 +46,55 @@ body::before{
   content:"";
   position:fixed;
   inset:0;
-  background: rgba(255,255,255,.38);
-  backdrop-filter: blur(2px);
-  filter: contrast(1.15) saturate(1.12);
+  background: rgba(255,255,255,.32);
+  backdrop-filter: blur(1.4px);
+  filter: contrast(1.35) saturate(1.25);
   z-index:-2;
 }
 
-/* ✅ FADE SIDEBAR SAMO KADA JE ZATVOREN */
-body:not(.sidebar-open) .sidebar{
-  filter: brightness(1.18);
+/* ================= TOP RIGHT (NE MENJAMO VISINU, SAMO UVUCENO KAO PRETRAGA) ================= */
+.topRightBar{
+  position:fixed;
+  top:calc(10px + env(safe-area-inset-top));
+  right:calc(var(--main-pad) + env(safe-area-inset-right));
+  display:flex;
+  align-items:center;
+  gap:12px;
+  z-index:95;
+  pointer-events:none;
 }
 
-/* LOGO */
-.logoTop{
-  position:absolute;
-  top:14px;
-  right:14px;
-  z-index:90;
+.topRightTitle{
+  text-align:left;
+  font-weight:900;
+  line-height:1.05;
 }
-.logoTop img{
-  height:92px;
+.topRightTitle span{
+  display:block;
+  font-size:18px; /* mobile */
+}
+
+/* LOGO – ovalno */
+.topRightLogo{
+  padding:6px;
+  background:rgba(255,255,255,.72);
+  border:1px solid var(--border);
   border-radius:22px;
-  filter: drop-shadow(0 10px 18px rgba(0,0,0,.25));
+  box-shadow:var(--shadow);
+}
+.topRightLogo img{
+  height:56px; /* mobile */
+  width:auto;
+  display:block;
+  border-radius:16px;
 }
 
 @media(min-width:900px){
-  .logoTop{position:fixed;}
+  .topRightTitle span{font-size:22px;}
+  .topRightLogo img{height:92px;}
 }
 
-/* overlay */
+/* ================= overlay + hover zona ================= */
 .overlay{
   position:fixed; inset:0;
   background:rgba(2,6,23,.25);
@@ -77,14 +104,13 @@ body:not(.sidebar-open) .sidebar{
 }
 .overlay.show{opacity:1;pointer-events:auto}
 
-/* hotspot */
 .edgeHotspot{
   position:fixed; left:0; top:0;
   width:var(--edge-w); height:100vh;
   z-index:60;
 }
 
-/* SIDEBAR */
+/* ================= SIDEBAR (radi kao ranije) ================= */
 .sidebar{
   position:fixed; left:0; top:0;
   width:var(--sidebar-w); height:100vh;
@@ -94,11 +120,10 @@ body:not(.sidebar-open) .sidebar{
   color:#fff;
   box-shadow:18px 0 40px rgba(0,0,0,.28);
   transform:translateX(calc(-1 * (var(--sidebar-w) - var(--edge-w))));
-  transition:.25s ease;
+  transition:.2s;
   z-index:70;
 }
-.sidebar.open{transform:translateX(0);filter:none}
-
+.sidebar.open{transform:translateX(0)}
 .sidebar::before{
   content:"";
   position:absolute; inset:0;
@@ -124,6 +149,7 @@ body:not(.sidebar-open) .sidebar{
 }
 .nav a.active{background:rgba(255,255,255,.14)}
 
+/* hamburger */
 .hamburger{
   position:fixed;
   left:18px; top:18px;
@@ -135,43 +161,47 @@ body:not(.sidebar-open) .sidebar{
   display:grid; place-items:center;
   cursor:pointer;
   z-index:80;
+  user-select:none;
 }
 
-/* MAIN */
-.main{padding:0 52px 44px}
-.contentWrap{padding-top:var(--menu-first-item-top)}
+/* ================= MAIN ================= */
+.main{
+  padding:0 var(--main-pad) 22px;
+}
+
+.contentWrap{
+  /* ostaje isto kao kod tebe: da ne upada ispod top-right */
+  padding-top:calc(86px + 14px);
+}
+@media(min-width:900px){
+  .contentWrap{padding-top:calc(120px + 14px);}
+}
 
 .pageHeader{
   display:flex;
   justify-content:space-between;
-  gap:40px;
-  margin-bottom:26px;
+  gap:14px;
+  margin-bottom:18px;
 }
 
-.titleBlock h2{
-  font-size:54px;
-  font-weight:900;
-  line-height:1.03;
-}
-.titleBlock h2 span{display:block}
-
+.leftInfo{max-width:52vw}
 .meta{
-  margin-top:12px;
-  font-size:26px;
+  font-size:18px;
   color:rgba(15,23,42,.62);
   font-weight:600;
+  line-height:1.28;
 }
 
 .rightCol{
   display:flex;
   flex-direction:column;
   align-items:flex-end;
-  gap:14px;
+  gap:10px;
 }
 
 .searchInline,
 .balanceCard{
-  width:300px;
+  width:clamp(180px,42vw,300px);
   border-radius:18px;
   background:var(--glass);
   border:1px solid var(--border);
@@ -180,32 +210,69 @@ body:not(.sidebar-open) .sidebar{
 
 .searchInline{padding:10px 14px}
 .searchInline input{
-  width:100%;
-  border:none;
-  outline:none;
-  background:transparent;
+  border:none;background:transparent;width:100%;
+  outline:none;font-size:14px;
 }
 
+/* ================= STANJE RAČUNA (brojevi manji + RSD mali) ================= */
 .balanceCard{
-  padding:18px;
+  padding:12px;
   text-align:right;
 }
-.balanceCard .label{font-size:14px;font-weight:700}
-.balanceCard .amount{font-size:30px;font-weight:900}
 
+.balanceCard .label{
+  font-size:12px;
+  font-weight:700;
+  display:block;
+  margin-bottom:6px;
+}
+
+.balanceAmount{
+  white-space:nowrap; /* nikad u novi red */
+}
+
+.balanceAmount .value{
+  font-size:20px;
+  font-weight:900;
+  letter-spacing:0.2px;
+}
+
+.balanceAmount .currency{
+  font-size:11px;
+  font-weight:700;
+  opacity:.55;
+  margin-left:4px;
+}
+
+@media(min-width:900px){
+  .meta{font-size:26px;}
+  .balanceAmount .value{font-size:32px;}
+  .balanceAmount .currency{font-size:13px;}
+  .balanceCard{padding:18px;}
+}
+
+/* ================= OGLASNA TABLA (VELIKIM SLOVIMA) ================= */
 .card{
   background:rgba(255,255,255,.86);
   border-radius:26px;
-  padding:28px;
+  padding:22px;
   box-shadow:var(--shadow);
 }
+
 .card h3{
-  font-size:44px;
+  text-transform:uppercase;
+  letter-spacing:.16em;
+  font-size:22px;
   font-weight:900;
-  letter-spacing:.12em;
 }
 
-.boardList{margin-top:14px;list-style:none;display:flex;flex-direction:column;gap:10px}
+.boardList{
+  margin-top:14px;
+  list-style:none;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
 .boardList li{
   background:rgba(15,23,42,.06);
   border:1px solid rgba(15,23,42,.10);
@@ -214,28 +281,31 @@ body:not(.sidebar-open) .sidebar{
   font-weight:700;
 }
 
-/* MOBILE */
-@media(max-width:700px){
-  .main{padding:0 18px}
-  .titleBlock h2{font-size:38px}
-  .meta{font-size:18px}
-  .searchInline,.balanceCard{width:220px}
-  .balanceCard .amount{font-size:22px}
-  .logoTop img{height:64px}
+@media(min-width:900px){
+  .card{padding:28px;}
+  .card h3{font-size:26px;}
 }
 </style>
 </head>
 
 <body>
 
-<div class="logoTop">
-  <img src="logo.png" alt="Portal Upravnik logo">
+<!-- TOP RIGHT -->
+<div class="topRightBar">
+  <div class="topRightTitle">
+    <span>Portal</span>
+    <span>Upravnik</span>
+  </div>
+  <div class="topRightLogo">
+    <img src="logo.png" alt="Portal Upravnik logo">
+  </div>
 </div>
 
 <div class="edgeHotspot" id="edgeHotspot"></div>
 <div class="overlay" id="overlay"></div>
 <div class="hamburger" id="hamburger">☰</div>
 
+<!-- ✅ SIDEBAR VRACEN -->
 <aside class="sidebar" id="sidebar">
   <div class="brand">
     <h1>PORTAL</h1>
@@ -254,8 +324,7 @@ body:not(.sidebar-open) .sidebar{
   <div class="contentWrap">
 
     <section class="pageHeader">
-      <div class="titleBlock">
-        <h2><span>Portal</span><span>Upravnik</span></h2>
+      <div class="leftInfo">
         <div class="meta">
           Ulica Primer 1<br>
           Zgrada 12<br>
@@ -267,15 +336,19 @@ body:not(.sidebar-open) .sidebar{
         <div class="searchInline">
           <input placeholder="Pretraga (finansije, dokumenti, forum)">
         </div>
+
         <div class="balanceCard">
           <span class="label">Stanje računa</span>
-          <span class="amount">948.889,00 RSD</span>
+          <div class="balanceAmount">
+            <span class="value">948.889,00</span>
+            <span class="currency">RSD</span>
+          </div>
         </div>
       </div>
     </section>
 
     <section class="card">
-      <h3>OGLASNA TABLA</h3>
+      <h3>Oglasna tabla</h3>
       <ul class="boardList">
         <li>Akcija čišćenja</li>
         <li>Popravka krova</li>
@@ -287,26 +360,35 @@ body:not(.sidebar-open) .sidebar{
 </main>
 
 <script>
-const sidebar=document.getElementById("sidebar");
-const overlay=document.getElementById("overlay");
-const edge=document.getElementById("edgeHotspot");
-const burger=document.getElementById("hamburger");
+const sidebar = document.getElementById("sidebar");
+const overlay = document.getElementById("overlay");
+const edge = document.getElementById("edgeHotspot");
+const burger = document.getElementById("hamburger");
 
 function openS(){
   sidebar.classList.add("open");
-  document.body.classList.add("sidebar-open");
   overlay.classList.add("show");
 }
 function closeS(){
   sidebar.classList.remove("open");
-  document.body.classList.remove("sidebar-open");
   overlay.classList.remove("show");
 }
 
+/* Hover (desktop) */
 edge.addEventListener("mouseenter", openS);
+
+/* Klik (mobilni/desktop) */
+burger.addEventListener("click", () => {
+  sidebar.classList.contains("open") ? closeS() : openS();
+});
 overlay.addEventListener("click", closeS);
-burger.addEventListener("click", ()=> sidebar.classList.contains("open") ? closeS() : openS());
+
+/* Bonus: zatvori ESC */
+document.addEventListener("keydown", (e) => {
+  if(e.key === "Escape") closeS();
+});
 </script>
 
 </body>
 </html>
+
