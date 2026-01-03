@@ -144,22 +144,6 @@ body::before{
   border-bottom:1px solid rgba(15,23,42,.10);
 }
 
-.loginHead .brandText{
-  display:flex;
-  flex-direction:column;
-  line-height:1.05;
-}
-.loginHead .brandText b{
-  font-size:14px;
-  letter-spacing:.18em;
-  font-weight:900;
-}
-.loginHead .brandText span{
-  margin-top:6px;
-  font-weight:800;
-  opacity:.75;
-  font-size:13px;
-}
 .loginHead .miniLogo{
   padding:8px;
   border-radius:22px;
@@ -510,18 +494,17 @@ body.mode-portal #portalScreen{display:block;}
   <div class="loginCard">
     <div class="loginInner">
 
+      <!-- ✅ IZMENJENO: umesto "PORTAL / Upravnik zgrade" odmah pise "Prijava" -->
       <div class="loginHead">
-        <div class="brandText">
-          <b>PORTAL</b>
-          <span>Upravnik zgrade</span>
-        </div>
+        <div class="formTitle" style="margin:0;font-size:26px;">Prijava</div>
         <div class="miniLogo">
           <img src="logo.png" alt="Portal Upravnik logo">
         </div>
       </div>
 
-      <div class="formTitle">Prijava</div>
-      <div class="formSub">Unesite pristupne podatke. Registracija nije dostupna.</div>
+      <div class="formSub" style="margin-top:12px;">
+        Unesite pristupne podatke. Registracija nije dostupna.
+      </div>
 
       <div class="field">
         <label for="email">Email</label>
