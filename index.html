@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Portal Upravnik</title>
+<title>Portal Upravnik - Login</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,20 +12,15 @@
 <style>
 :root{
   --bg-url: url("bg.png");
-
-  --sidebar-w: 340px;
-  --edge-w: 16px;
-
-  --main-pad: 18px;
-
   --ink:#0f172a;
   --muted:rgba(15,23,42,.65);
   --glass:rgba(255,255,255,.88);
+  --glass2:rgba(255,255,255,.72);
   --border:rgba(15,23,42,.14);
   --shadow:0 18px 40px rgba(2,6,23,.10);
 
-  --side1:rgba(10,35,56,.92);
-  --side2:rgba(6,24,40,.92);
+  --main-pad:18px;
+  --accent:#0f172a;
 }
 
 @media(min-width:900px){
@@ -45,13 +40,13 @@ body::before{
   content:"";
   position:fixed;
   inset:0;
-  background: rgba(255,255,255,.32);
+  background: rgba(255,255,255,.34);
   backdrop-filter: blur(1.4px);
   filter: contrast(1.35) saturate(1.25);
   z-index:-2;
 }
 
-/* TOP RIGHT */
+/* top-right brand (kao portal) */
 .topRightBar{
   position:fixed;
   top:calc(10px + env(safe-area-inset-top));
@@ -82,227 +77,198 @@ body::before{
   .topRightLogo img{height:92px;}
 }
 
-/* overlay + hover zona */
-.overlay{
-  position:fixed; inset:0;
-  background:rgba(2,6,23,.25);
-  opacity:0; pointer-events:none;
-  transition:.2s;
-  z-index:40;
-}
-.overlay.show{opacity:1;pointer-events:auto}
-.edgeHotspot{
-  position:fixed; left:0; top:0;
-  width:var(--edge-w); height:100vh;
-  z-index:60;
-}
-
-/* SIDEBAR */
-.sidebar{
-  position:fixed; left:0; top:0;
-  width:var(--sidebar-w); height:100vh;
-  padding:30px 22px;
-  background:linear-gradient(180deg,var(--side1),var(--side2)),var(--bg-url);
-  background-size:cover;
-  color:#fff;
-  box-shadow:18px 0 40px rgba(0,0,0,.28);
-  transform:translateX(calc(-1 * (var(--sidebar-w) - var(--edge-w))));
-  transition:.2s;
-  z-index:70;
-}
-.sidebar.open{transform:translateX(0)}
-body:not(.sidebar-open) .sidebar{ filter: brightness(1.20); }
-body.sidebar-open .sidebar{ filter:none; }
-
-.sidebar::before{
-  content:"";
-  position:absolute; inset:0;
-  background:rgba(0,0,0,.22);
-  backdrop-filter:blur(8px);
-}
-.sidebar>*{position:relative;z-index:1}
-
-.brand{height:92px}
-.brand h1{font-size:24px;font-weight:900;letter-spacing:.16em}
-.brand p{font-size:13px;opacity:.78;margin-top:8px}
-
-.nav{margin-top:26px;display:flex;flex-direction:column;gap:12px}
-.nav a{
-  padding:16px 18px;
-  border-radius:18px;
-  color:#fff;
-  text-decoration:none;
-  background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.14);
-  font-size:19px;
-  font-weight:700;
-  display:block;
-}
-.nav a.active{background:rgba(255,255,255,.14)}
-
-/* hamburger */
-.hamburger{
-  position:fixed;
-  left:18px; top:18px;
-  width:44px; height:44px;
-  border-radius:14px;
-  background:var(--glass);
-  border:1px solid var(--border);
-  box-shadow:var(--shadow);
-  display:grid; place-items:center;
-  cursor:pointer;
-  z-index:80;
-  user-select:none;
-}
-
-/* MAIN */
-.main{ padding:0 var(--main-pad) 22px; }
-.contentWrap{ padding-top:calc(86px + 14px); }
-@media(min-width:900px){
-  .contentWrap{padding-top:calc(120px + 14px);}
-}
-
-.pageHeader{
-  display:flex;
-  justify-content:space-between;
-  gap:14px;
-  margin-bottom:18px;
-}
-.leftInfo{max-width:52vw}
-.meta{
-  font-size:18px;
-  color:rgba(15,23,42,.62);
-  font-weight:600;
-  line-height:1.28;
-}
-.rightCol{
-  display:flex;
-  flex-direction:column;
-  align-items:flex-end;
-  gap:10px;
-}
-.searchInline,
-.balanceCard{
-  width:clamp(180px,42vw,300px);
-  border-radius:18px;
-  background:var(--glass);
-  border:1px solid var(--border);
-  box-shadow:var(--shadow);
-}
-.searchInline{padding:10px 14px}
-.searchInline input{
-  border:none;background:transparent;width:100%;
-  outline:none;font-size:14px;
-}
-.balanceCard{
-  padding:12px;
-  text-align:right;
-}
-.balanceCard .label{
-  font-size:12px;
-  font-weight:700;
-  display:block;
-  margin-bottom:6px;
-}
-.balanceAmount{ white-space:nowrap; }
-.balanceAmount .value{ font-size:20px; font-weight:900; letter-spacing:0.2px; }
-.balanceAmount .currency{ font-size:11px; font-weight:700; opacity:.55; margin-left:4px; }
-
-@media(min-width:900px){
-  .meta{font-size:26px;}
-  .balanceAmount .value{font-size:32px;}
-  .balanceAmount .currency{font-size:13px;}
-  .balanceCard{padding:18px;}
-}
-
-/* CARDS */
-.card{
-  background:rgba(255,255,255,.86);
-  border-radius:26px;
-  padding:22px;
-  box-shadow:var(--shadow);
-}
-.card h3{
-  text-transform:uppercase;
-  letter-spacing:.16em;
-  font-size:22px;
-  font-weight:900;
-}
-@media(min-width:900px){
-  .card{padding:28px;}
-  .card h3{font-size:26px;}
-}
-.list{
-  margin-top:14px;
-  list-style:none;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-.list li{
-  background:rgba(15,23,42,.06);
-  border:1px solid rgba(15,23,42,.10);
-  padding:12px 14px;
-  border-radius:16px;
-  font-weight:700;
-}
-.muted{ color:rgba(15,23,42,.65); font-weight:600; margin-top:10px; line-height:1.45; }
-
-/* PAGES */
-.page{ display:none; }
-.page.active{ display:block; }
-
-/* ✅ LOGIN SCREEN */
+/* ===== Login layout ===== */
 .loginWrap{
   min-height:100vh;
   display:grid;
   place-items:center;
-  padding:22px var(--main-pad);
+  padding:24px var(--main-pad);
 }
+
+/* “ambient” gradient blobs */
+.ambient{
+  position:fixed;
+  inset:-20%;
+  z-index:-1;
+  pointer-events:none;
+  background:
+    radial-gradient(600px 380px at 18% 22%, rgba(59,130,246,.22), transparent 60%),
+    radial-gradient(620px 420px at 82% 26%, rgba(14,165,233,.18), transparent 60%),
+    radial-gradient(720px 520px at 50% 84%, rgba(15,23,42,.12), transparent 62%);
+  filter: blur(2px);
+}
+
+.loginShell{
+  width:min(980px, 100%);
+  display:grid;
+  gap:18px;
+}
+
+@media(min-width:900px){
+  .loginShell{
+    grid-template-columns: 1.05fr .95fr;
+    align-items:stretch;
+    gap:22px;
+  }
+}
+
+/* Left promo card */
+.promo{
+  border-radius:30px;
+  background:rgba(255,255,255,.70);
+  border:1px solid rgba(15,23,42,.12);
+  box-shadow:var(--shadow);
+  padding:22px;
+  position:relative;
+  overflow:hidden;
+}
+
+.promo::before{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  background:
+    radial-gradient(500px 320px at 15% 25%, rgba(59,130,246,.18), transparent 55%),
+    radial-gradient(520px 380px at 85% 35%, rgba(14,165,233,.14), transparent 55%);
+  pointer-events:none;
+}
+
+.promoInner{position:relative; z-index:1;}
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 12px;
+  border-radius:999px;
+  background:rgba(255,255,255,.72);
+  border:1px solid rgba(15,23,42,.12);
+  font-weight:900;
+  letter-spacing:.04em;
+  font-size:12px;
+  box-shadow:0 10px 22px rgba(2,6,23,.06);
+}
+.badgeDot{
+  width:10px;height:10px;border-radius:999px;
+  background:rgba(15,23,42,.85);
+  box-shadow:0 0 0 4px rgba(15,23,42,.08);
+}
+
+.promo h1{
+  margin-top:14px;
+  font-size:34px;
+  line-height:1.05;
+  font-weight:900;
+  letter-spacing:.02em;
+}
+.promo p{
+  margin-top:12px;
+  color:var(--muted);
+  font-weight:700;
+  line-height:1.45;
+  font-size:15px;
+  max-width:54ch;
+}
+.features{
+  margin-top:16px;
+  display:grid;
+  gap:10px;
+}
+.feature{
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  padding:12px 12px;
+  border-radius:18px;
+  background:rgba(255,255,255,.58);
+  border:1px solid rgba(15,23,42,.10);
+}
+.ico{
+  width:38px;height:38px;border-radius:16px;
+  display:grid;place-items:center;
+  background:rgba(15,23,42,.92);
+  color:#fff;
+  font-weight:900;
+  flex:0 0 auto;
+}
+.feature b{display:block;font-weight:900}
+.feature span{display:block;color:var(--muted);font-weight:700;font-size:13px;margin-top:2px}
+
+/* Right login card */
 .loginCard{
-  width:min(520px, 100%);
-  border-radius:28px;
+  border-radius:30px;
   background:rgba(255,255,255,.90);
   border:1px solid rgba(15,23,42,.14);
   box-shadow:var(--shadow);
-  padding:24px;
+  padding:22px;
+  overflow:hidden;
+  position:relative;
 }
-.loginTop{
+
+.loginCard::before{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  background:
+    radial-gradient(520px 320px at 22% 18%, rgba(59,130,246,.14), transparent 60%),
+    radial-gradient(520px 320px at 86% 18%, rgba(14,165,233,.10), transparent 60%);
+  pointer-events:none;
+}
+
+.loginInner{position:relative; z-index:1;}
+
+.loginHead{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:14px;
-  margin-bottom:14px;
+  gap:12px;
+  padding-bottom:12px;
+  border-bottom:1px solid rgba(15,23,42,.10);
 }
-.loginBrand{
+.loginHead .brandText{
   display:flex;
   flex-direction:column;
   line-height:1.05;
 }
-.loginBrand b{
-  font-size:22px;
-  letter-spacing:.14em;
+.loginHead .brandText b{
+  font-size:14px;
+  letter-spacing:.18em;
+  font-weight:900;
 }
-.loginBrand span{
-  font-weight:800;
-  opacity:.7;
+.loginHead .brandText span{
   margin-top:6px;
+  font-weight:800;
+  opacity:.75;
+  font-size:13px;
 }
-.loginLogo{
+.loginHead .miniLogo{
   padding:8px;
   border-radius:22px;
-  background:rgba(255,255,255,.78);
-  border:1px solid rgba(15,23,42,.14);
+  background:rgba(255,255,255,.72);
+  border:1px solid rgba(15,23,42,.12);
 }
-.loginLogo img{
-  height:58px;
+.loginHead .miniLogo img{
+  height:54px;
   width:auto;
   border-radius:16px;
   display:block;
 }
-.field{
-  margin-top:12px;
+
+/* form */
+.formTitle{
+  margin-top:16px;
+  font-weight:900;
+  font-size:22px;
+  letter-spacing:.02em;
 }
+.formSub{
+  margin-top:6px;
+  color:var(--muted);
+  font-weight:700;
+  font-size:13px;
+  line-height:1.4;
+}
+
+.field{ margin-top:12px; }
 .field label{
   display:block;
   font-size:12px;
@@ -312,87 +278,155 @@ body.sidebar-open .sidebar{ filter:none; }
   opacity:.7;
   margin-bottom:6px;
 }
+.inputWrap{
+  position:relative;
+}
 .field input{
   width:100%;
   border-radius:18px;
   border:1px solid rgba(15,23,42,.14);
-  background:rgba(255,255,255,.92);
+  background:rgba(255,255,255,.94);
   padding:14px 14px;
   font-size:15px;
   outline:none;
+  transition:.15s;
 }
+.field input:focus{
+  border-color:rgba(15,23,42,.28);
+  box-shadow:0 0 0 5px rgba(15,23,42,.06);
+}
+
+.eyeBtn{
+  position:absolute;
+  right:10px;
+  top:50%;
+  transform:translateY(-50%);
+  border:none;
+  background:rgba(15,23,42,.06);
+  border:1px solid rgba(15,23,42,.14);
+  border-radius:14px;
+  padding:8px 10px;
+  cursor:pointer;
+  font-weight:900;
+  user-select:none;
+}
+
 .row{
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:12px;
   margin-top:12px;
+  flex-wrap:wrap;
+}
+.check{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:800;
+  color:rgba(15,23,42,.75);
+  font-size:13px;
+}
+.check input{width:18px;height:18px}
+
+.btnRow{
+  display:flex;
+  gap:10px;
+  margin-top:14px;
 }
 .btn{
+  flex:1;
   border:none;
   cursor:pointer;
   border-radius:18px;
   padding:14px 16px;
   font-weight:900;
   letter-spacing:.02em;
-  box-shadow:var(--shadow);
+  transition:.15s;
 }
 .btnPrimary{
   background:rgba(15,23,42,.92);
   color:white;
+  box-shadow:0 18px 36px rgba(2,6,23,.18);
 }
+.btnPrimary:hover{ transform:translateY(-1px); }
 .btnGhost{
   background:rgba(15,23,42,.06);
   border:1px solid rgba(15,23,42,.14);
   box-shadow:none;
 }
+.btnGhost:hover{ transform:translateY(-1px); }
+
 .error{
   margin-top:10px;
-  font-weight:800;
+  font-weight:900;
   color:#9f1239;
   display:none;
 }
-.hint{
-  margin-top:10px;
-  font-size:13px;
-  font-weight:700;
-  opacity:.7;
-  line-height:1.4;
-}
-.topBarMini{
+.help{
+  margin-top:14px;
+  padding-top:12px;
+  border-top:1px solid rgba(15,23,42,.10);
   display:flex;
-  gap:10px;
-  align-items:center;
-}
-.pill{
-  border-radius:999px;
-  padding:10px 12px;
-  background:rgba(255,255,255,.72);
-  border:1px solid rgba(15,23,42,.14);
-  box-shadow:var(--shadow);
-  font-weight:900;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
   font-size:13px;
+  font-weight:800;
+  color:rgba(15,23,42,.72);
 }
-.logoutBtn{
-  cursor:pointer;
-  user-select:none;
+.help a{
+  color:rgba(15,23,42,.86);
+  text-decoration:none;
+  border-bottom:1px dashed rgba(15,23,42,.35);
+}
+.smallHint{
+  margin-top:10px;
+  font-size:12px;
+  font-weight:800;
+  opacity:.72;
 }
 
-/* sakrij top UI u login modu */
-body.mode-login .topRightBar,
-body.mode-login .hamburger,
-body.mode-login .sidebar,
-body.mode-login .edgeHotspot,
-body.mode-login .overlay,
-body.mode-login .main{
+/* ===== Portal (minimal placeholder, samo da vidis prelaz) ===== */
+.portalWrap{
   display:none;
+  padding:24px var(--main-pad);
 }
+.portalCard{
+  max-width:980px;
+  margin:0 auto;
+  border-radius:28px;
+  background:rgba(255,255,255,.86);
+  border:1px solid rgba(15,23,42,.14);
+  box-shadow:var(--shadow);
+  padding:22px;
+}
+.portalCard h2{font-weight:900;letter-spacing:.02em}
+.portalCard p{margin-top:10px;color:var(--muted);font-weight:700}
+.portalCard button{
+  margin-top:14px;
+  border:none;
+  border-radius:18px;
+  padding:12px 14px;
+  font-weight:900;
+  cursor:pointer;
+  background:rgba(15,23,42,.92);
+  color:#fff;
+}
+
+/* mode toggles */
+body.mode-portal .loginWrap{display:none}
+body.mode-login .portalWrap{display:none}
+body.mode-portal .portalWrap{display:block}
+
 </style>
 </head>
 
-<body>
+<body class="mode-login">
 
-<!-- TOP RIGHT (portal) -->
+<div class="ambient"></div>
+
+<!-- TOP RIGHT -->
 <div class="topRightBar">
   <div class="topRightTitle">
     <span>Portal</span>
@@ -403,199 +437,158 @@ body.mode-login .main{
   </div>
 </div>
 
-<div class="edgeHotspot" id="edgeHotspot"></div>
-<div class="overlay" id="overlay"></div>
-<div class="hamburger" id="hamburger">☰</div>
+<!-- LOGIN -->
+<section class="loginWrap">
+  <div class="loginShell">
 
-<!-- SIDEBAR -->
-<aside class="sidebar" id="sidebar">
-  <div class="brand">
-    <h1>PORTAL</h1>
-    <p>Upravnik zgrade</p>
-  </div>
-  <nav class="nav" id="nav">
-    <a href="#finansije" data-page="finansije" class="active">Finansije</a>
-    <a href="#oglasna" data-page="oglasna">Oglasna tabla</a>
-    <a href="#forum" data-page="forum">Forum</a>
-    <a href="#zakoni" data-page="zakoni">Zakonske regulative</a>
-    <a href="#kontakt" data-page="kontakt">Kontakt sluzbe</a>
-  </nav>
-</aside>
+    <aside class="promo">
+      <div class="promoInner">
+        <div class="badge"><span class="badgeDot"></span> SIGURAN PRISTUP</div>
+        <h1>Dobrodosli u<br>Portal Upravnik</h1>
+        <p>
+          Centralno mesto za finansije, oglase, dokumenta i komunikaciju stanara.
+          Prijavite se da nastavite.
+        </p>
 
-<!-- ✅ LOGIN SCREEN -->
-<section class="loginWrap" id="loginScreen">
-  <div class="loginCard">
-    <div class="loginTop">
-      <div class="loginBrand">
-        <b>PORTAL</b>
-        <span>Upravnik zgrade</span>
+        <div class="features">
+          <div class="feature">
+            <div class="ico">F</div>
+            <div>
+              <b>Finansije</b>
+              <span>Stanje racuna, fond, troskovi i dugovanja.</span>
+            </div>
+          </div>
+          <div class="feature">
+            <div class="ico">O</div>
+            <div>
+              <b>Oglasna tabla</b>
+              <span>Vazna obavestenja i planovi radova.</span>
+            </div>
+          </div>
+          <div class="feature">
+            <div class="ico">R</div>
+            <div>
+              <b>Regulative</b>
+              <span>Dokumenta i pravila zgrade na jednom mestu.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="smallHint">
+          Demo nalog: <b>upravnik@demo.rs</b> / <b>123456</b>
+        </div>
       </div>
-      <div class="loginLogo">
-        <img src="logo.png" alt="Portal Upravnik logo">
+    </aside>
+
+    <div class="loginCard">
+      <div class="loginInner">
+
+        <div class="loginHead">
+          <div class="brandText">
+            <b>PORTAL</b>
+            <span>Upravnik zgrade</span>
+          </div>
+          <div class="miniLogo">
+            <img src="logo.png" alt="Portal Upravnik logo">
+          </div>
+        </div>
+
+        <div class="formTitle">Prijava</div>
+        <div class="formSub">Unesite podatke da biste pristupili portalu.</div>
+
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" type="email" placeholder="npr. upravnik@zgrada.rs" autocomplete="username">
+        </div>
+
+        <div class="field">
+          <label for="pass">Lozinka</label>
+          <div class="inputWrap">
+            <input id="pass" type="password" placeholder="Unesi lozinku" autocomplete="current-password">
+            <button class="eyeBtn" id="togglePass" type="button">👁</button>
+          </div>
+        </div>
+
+        <div class="row">
+          <label class="check">
+            <input id="remember" type="checkbox" checked>
+            Zapamti me
+          </label>
+          <a href="#" onclick="return false" style="font-weight:900;text-decoration:none;opacity:.8">Zaboravljena lozinka?</a>
+        </div>
+
+        <div class="btnRow">
+          <button class="btn btnPrimary" id="loginBtn">Uloguj se</button>
+          <button class="btn btnGhost" id="demoBtn" type="button">Demo</button>
+        </div>
+
+        <div class="error" id="loginError">Pogresan email ili lozinka.</div>
+
+        <div class="help">
+          <span>Nemate nalog? <a href="#" onclick="return false">Kontaktirajte upravnika</a></span>
+          <span>Podrska: <a href="#" onclick="return false">help@portal.rs</a></span>
+        </div>
+
       </div>
     </div>
 
-    <div class="field">
-      <label for="email">Email</label>
-      <input id="email" type="email" placeholder="npr. upravnik@zgrada.rs" autocomplete="username">
-    </div>
-
-    <div class="field">
-      <label for="pass">Lozinka</label>
-      <input id="pass" type="password" placeholder="Unesi lozinku" autocomplete="current-password">
-    </div>
-
-    <div class="row">
-      <button class="btn btnPrimary" id="loginBtn">Uloguj se</button>
-      <button class="btn btnGhost" id="demoBtn" type="button">Demo login</button>
-    </div>
-
-    <div class="error" id="loginError">Pogresan email ili lozinka.</div>
-
-    <div class="hint">
-      Za sada je ovo demo (frontend).<br>
-      <b>Demo nalog:</b> upravnik@demo.rs / 123456
-    </div>
   </div>
 </section>
 
-<!-- PORTAL -->
-<main class="main" id="portalApp">
-  <div class="contentWrap">
-
-    <section class="pageHeader">
-      <div class="leftInfo">
-        <div class="meta" id="buildingMeta">
-          Ulica Primer 1<br>
-          Zgrada 12<br>
-          48 jedinica
-        </div>
-      </div>
-
-      <div class="rightCol">
-        <div class="topBarMini">
-          <div class="pill" id="userPill">Gost</div>
-          <div class="pill logoutBtn" id="logoutBtn">Odjava</div>
-        </div>
-
-        <div class="searchInline">
-          <input id="searchInput" placeholder="Pretraga (finansije, dokumenti, forum)">
-        </div>
-
-        <div class="balanceCard" id="balanceCard">
-          <span class="label">Stanje racuna</span>
-          <div class="balanceAmount">
-            <span class="value" id="balanceValue">948.889,00</span>
-            <span class="currency">RSD</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="card page active" id="page-finansije">
-      <h3>Finansije</h3>
-      <ul class="list">
-        <li data-search="mesecni prihod 320.000 rsd">Mesecni prihod: 320.000 RSD</li>
-        <li data-search="mesecni troskovi 210.000 rsd">Mesecni troskovi: 210.000 RSD</li>
-        <li data-search="dugovanja 145.000 rsd">Dugovanja: 145.000 RSD</li>
-        <li data-search="rezervni fond 680.000 rsd">Rezervni fond: 680.000 RSD</li>
-      </ul>
-      <p class="muted">Kasnije ovo postaje realno iz baze (uplate, troskovi, dugovanja, fond).</p>
-    </section>
-
-    <section class="card page" id="page-oglasna">
-      <h3>Oglasna tabla</h3>
-      <ul class="list">
-        <li data-search="akcija ciscenja">Akcija ciscenja</li>
-        <li data-search="popravka krova">Popravka krova</li>
-        <li data-search="krecenje">Krecenje</li>
-        <li data-search="servis lifta petak">Obavestenje: servis lifta u petak</li>
-      </ul>
-    </section>
-
-    <section class="card page" id="page-forum">
-      <h3>Forum</h3>
-      <ul class="list">
-        <li data-search="buka posle 23">Buka u hodniku posle 23h</li>
-        <li data-search="parking mesta">Parking mesta - predlog raspodele</li>
-        <li data-search="kucni red">Molba za postovanje kucnog reda</li>
-      </ul>
-    </section>
-
-    <section class="card page" id="page-zakoni">
-      <h3>Zakonske regulative</h3>
-      <ul class="list">
-        <li data-search="zakon o stanovanju">Zakon o stanovanju i odrzavanju zgrada</li>
-        <li data-search="kucni red">Kucni red i odluke skupstine</li>
-        <li data-search="obaveze upravnika">Obaveze i odgovornost upravnika</li>
-      </ul>
-    </section>
-
-    <section class="card page" id="page-kontakt">
-      <h3>Kontakt sluzbe</h3>
-      <ul class="list">
-        <li data-search="hitna pomoc 194">Hitna pomoc: 194</li>
-        <li data-search="policija 192">Policija: 192</li>
-        <li data-search="vatrogasci 193">Vatrogasci: 193</li>
-        <li data-search="lift servis">Lift servis: (dodati broj)</li>
-        <li data-search="upravnik kontakt">Upravnik: (dodati kontakt)</li>
-      </ul>
-    </section>
-
+<!-- PORTAL placeholder (samo da vidis prelaz; kasnije ovde ubacujemo tvoj pravi portal kod) -->
+<section class="portalWrap">
+  <div class="portalCard">
+    <h2>Ulogovani ste ✅</h2>
+    <p>Ovo je samo demo prelaz. Sledeci korak: ovde ubacujemo vas pravi Portal UI (dashboard).</p>
+    <button id="logoutBtn">Odjava</button>
   </div>
-</main>
+</section>
 
 <script>
-/* ========= SESSION (demo) ========= */
-const SESSION_KEY = "pu_session_v1";
 const DEMO_EMAIL = "upravnik@demo.rs";
 const DEMO_PASS  = "123456";
+const KEY = "pu_login_demo";
 
-function setSession(user){
-  localStorage.setItem(SESSION_KEY, JSON.stringify(user));
-}
-function getSession(){
-  try { return JSON.parse(localStorage.getItem(SESSION_KEY)); }
-  catch { return null; }
-}
-function clearSession(){
-  localStorage.removeItem(SESSION_KEY);
-}
-
-/* ========= UI MODE TOGGLE ========= */
-const loginScreen = document.getElementById("loginScreen");
-const portalApp = document.getElementById("portalApp");
-const userPill = document.getElementById("userPill");
-
-function showLogin(){
-  document.body.classList.add("mode-login");
-  loginScreen.style.display = "grid";
-  portalApp.style.display = "none";
-}
-function showPortal(user){
-  document.body.classList.remove("mode-login");
-  loginScreen.style.display = "none";
-  portalApp.style.display = "block";
-  userPill.textContent = user?.email || "Korisnik";
-}
-
-/* ========= LOGIN HANDLERS ========= */
 const emailEl = document.getElementById("email");
 const passEl = document.getElementById("pass");
 const loginBtn = document.getElementById("loginBtn");
 const demoBtn = document.getElementById("demoBtn");
-const loginError = document.getElementById("loginError");
+const errEl = document.getElementById("loginError");
+const togglePass = document.getElementById("togglePass");
+const remember = document.getElementById("remember");
+
+function setMode(mode){
+  document.body.classList.toggle("mode-login", mode === "login");
+  document.body.classList.toggle("mode-portal", mode === "portal");
+}
+
+function saveSession(email){
+  if(remember.checked){
+    localStorage.setItem(KEY, email);
+  }else{
+    localStorage.removeItem(KEY);
+  }
+}
+
+function isLogged(){
+  return !!localStorage.getItem(KEY);
+}
+
+togglePass.addEventListener("click", () => {
+  const isPass = passEl.type === "password";
+  passEl.type = isPass ? "text" : "password";
+  togglePass.textContent = isPass ? "🙈" : "👁";
+});
 
 function attemptLogin(email, pass){
   const ok = (email === DEMO_EMAIL && pass === DEMO_PASS);
   if(!ok){
-    loginError.style.display = "block";
+    errEl.style.display = "block";
     return;
   }
-  loginError.style.display = "none";
-  const user = { email, role: "upravnik", ts: Date.now() };
-  setSession(user);
-  showPortal(user);
+  errEl.style.display = "none";
+  saveSession(email);
+  setMode("portal");
 }
 
 loginBtn.addEventListener("click", () => {
@@ -614,87 +607,17 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-/* ========= LOGOUT ========= */
 document.getElementById("logoutBtn").addEventListener("click", () => {
-  clearSession();
-  showLogin();
+  localStorage.removeItem(KEY);
+  setMode("login");
 });
 
-/* ========= SIDEBAR / NAV / SEARCH (portal) ========= */
-const sidebar = document.getElementById("sidebar");
-const overlay = document.getElementById("overlay");
-const edge = document.getElementById("edgeHotspot");
-const burger = document.getElementById("hamburger");
-const nav = document.getElementById("nav");
-const searchInput = document.getElementById("searchInput");
-
-const pages = ["finansije","oglasna","forum","zakoni","kontakt"];
-
-function openS(){
-  sidebar.classList.add("open");
-  overlay.classList.add("show");
-  document.body.classList.add("sidebar-open");
-}
-function closeS(){
-  sidebar.classList.remove("open");
-  overlay.classList.remove("show");
-  document.body.classList.remove("sidebar-open");
-}
-edge.addEventListener("mouseenter", openS);
-burger.addEventListener("click", () => sidebar.classList.contains("open") ? closeS() : openS());
-overlay.addEventListener("click", closeS);
-document.addEventListener("keydown", (e) => { if(e.key === "Escape") closeS(); });
-
-function setActiveNav(page){
-  [...nav.querySelectorAll("a")].forEach(a => {
-    a.classList.toggle("active", a.dataset.page === page);
-  });
-}
-function getCurrentPage(){
-  const hash = (location.hash || "#finansije").replace("#","");
-  return pages.includes(hash) ? hash : "finansije";
-}
-function showPage(page){
-  pages.forEach(p => {
-    const el = document.getElementById("page-" + p);
-    if(!el) return;
-    el.classList.toggle("active", p === page);
-  });
-  setActiveNav(page);
-  applySearchFilter();
-  closeS();
-}
-function applySearchFilter(){
-  const q = (searchInput.value || "").trim().toLowerCase();
-  const page = getCurrentPage();
-  const pageEl = document.getElementById("page-" + page);
-  if(!pageEl) return;
-
-  const items = pageEl.querySelectorAll("[data-search], li[data-search]");
-  items.forEach(item => {
-    const hay = (item.getAttribute("data-search") || item.textContent || "").toLowerCase();
-    const show = !q || hay.includes(q);
-    item.style.display = show ? "" : "none";
-  });
-}
-
-nav.addEventListener("click", (e) => {
-  const a = e.target.closest("a[data-page]");
-  if(!a) return;
-  showPage(a.dataset.page);
-});
-window.addEventListener("hashchange", () => showPage(getCurrentPage()));
-searchInput.addEventListener("input", applySearchFilter);
-
-/* ========= INIT ========= */
 (function init(){
-  const session = getSession();
-  if(session){
-    showPortal(session);
+  if(isLogged()){
+    setMode("portal");
   }else{
-    showLogin();
+    setMode("login");
   }
-  showPage(getCurrentPage());
 })();
 </script>
 
