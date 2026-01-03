@@ -86,6 +86,7 @@ body::before{
   font-size:18px; /* mobile */
 }
 
+/* LOGO – ovalno */
 .topRightLogo{
   padding:6px;
   background:rgba(255,255,255,.72);
@@ -140,6 +141,7 @@ body::before{
   border-bottom:1px solid rgba(15,23,42,.10);
 }
 
+/* Prijava je gore odmah */
 .formTitle{
   margin:0;
   font-weight:900;
@@ -411,7 +413,6 @@ body.sidebar-open .sidebar{ filter:none; }
   .card h3{font-size:26px;}
 }
 
-/* list */
 .boardList{
   margin-top:14px;
   list-style:none;
@@ -532,7 +533,6 @@ body.mode-portal #portalScreen{display:block;}
       <p>Upravnik zgrade</p>
     </div>
 
-    <!-- ✅ SIDEBAR sa data-page -->
     <nav class="nav" id="nav">
       <a href="#" class="active" data-page="home">Home</a>
       <a href="#" data-page="finansije">Finansije</a>
@@ -546,7 +546,6 @@ body.mode-portal #portalScreen{display:block;}
   <main class="main">
     <div class="contentWrap">
 
-      <!-- Header ostaje isti na svim stranicama -->
       <section class="pageHeader">
         <div class="leftInfo">
           <div class="meta">
@@ -576,7 +575,6 @@ body.mode-portal #portalScreen{display:block;}
         </div>
       </section>
 
-      <!-- ✅ PAGES -->
       <section class="page active" id="page-home">
         <section class="card">
           <h3>Home</h3>
@@ -588,6 +586,11 @@ body.mode-portal #portalScreen{display:block;}
             <li>Istaknuto: Popravka krova - dokument na oglasnoj tabli</li>
             <li>Forum: Otvorena anketa - Predlog za novu rasvetu</li>
           </ul>
+
+          <!-- admin-only (bez estetskih izmena, samo prikaz/sakrivanje) -->
+          <div class="smallText" data-role="admin" style="margin-top:12px;">
+            Admin: ovde ce biti upravljanje korisnicima, regulativama i kontaktima (placeholder).
+          </div>
         </section>
       </section>
 
@@ -597,6 +600,12 @@ body.mode-portal #portalScreen{display:block;}
           <div class="smallText">
             Ovde ce biti lista finansijskih promena + dokumenti (izvodi, racuni) sa pregledom/zoomom i mogucnoscu stampanja izvestaja.
           </div>
+
+          <!-- upravnik-only (bez estetskih izmena, samo prikaz/sakrivanje) -->
+          <div class="smallText" data-role="upravnik" style="margin-top:12px;">
+            Upravnik: ovde ce doci opcije za upload dokumenata i unos/edit finansijskih promena (placeholder).
+          </div>
+
           <ul class="boardList">
             <li>02.01.2026 — Rashod — Tekuce odrzavanje — “Uplata servisu”</li>
             <li>28.12.2025 — Prihod — Uplata stanara</li>
@@ -608,6 +617,12 @@ body.mode-portal #portalScreen{display:block;}
       <section class="page" id="page-oglasna">
         <section class="card">
           <h3>Oglasna tabla</h3>
+
+          <!-- upravnik-only (placeholder) -->
+          <div class="smallText" data-role="upravnik">
+            Upravnik: ovde ce doci opcije za postavljanje dokumenata/obavestenja (placeholder).
+          </div>
+
           <ul class="boardList">
             <li>Akcija ciscenja</li>
             <li>Popravka krova</li>
@@ -622,6 +637,12 @@ body.mode-portal #portalScreen{display:block;}
           <div class="smallText">
             Predlozi za skupstinu stanara (bez komentara). Ovde ce biti ankete sa vremenskim ogranicenjem.
           </div>
+
+          <!-- stanar-only (placeholder) -->
+          <div class="smallText" data-role="stanar">
+            Stanar: ovde ce doci forma za predlog + glasanje (placeholder).
+          </div>
+
           <ul class="boardList">
             <li>Predlog: Nova rasveta u hodniku — (anketa: otvorena)</li>
             <li>Predlog: Zamena interfona — (anketa: zatvorena)</li>
@@ -635,6 +656,12 @@ body.mode-portal #portalScreen{display:block;}
           <div class="smallText">
             Informativna stranica sa zakonima i propisima. Sadrzaj menja administrator.
           </div>
+
+          <!-- admin-only (placeholder) -->
+          <div class="smallText" data-role="admin">
+            Admin: ovde ce doci upload/izmena regulativa (placeholder).
+          </div>
+
           <ul class="boardList">
             <li>Zakon o stanovanju i odrzavanju zgrada (PDF)</li>
             <li>Pravilnik o upravljanju stambenim zajednicama (PDF)</li>
@@ -645,6 +672,12 @@ body.mode-portal #portalScreen{display:block;}
       <section class="page" id="page-kontakt">
         <section class="card">
           <h3>Kontakt sluzbe</h3>
+
+          <!-- admin-only (placeholder) -->
+          <div class="smallText" data-role="admin">
+            Admin: ovde ce doci izmena kontakata i brojeva (placeholder).
+          </div>
+
           <ul class="boardList">
             <li>Vatrogasci: 193</li>
             <li>Hitna pomoc: 194</li>
@@ -660,13 +693,22 @@ body.mode-portal #portalScreen{display:block;}
 </div>
 
 <script>
-/* ===== DEMO AUTH (frontend) ===== */
-const DEMO_EMAIL = "upravnik@demo.rs";
-const DEMO_PASS  = "123456";
+/* =========================
+   DEMO AUTH (frontend)
+   - login isti za sve
+   - posle logina: role routing (admin/upravnik/stanar)
+   ========================= */
+
+/* Demo korisnici (kasnije ovo dolazi iz backenda) */
+const DEMO_USERS = [
+  { email: "admin@demo.rs",   pass: "123456", role: "admin"   },
+  { email: "upravnik@demo.rs",pass: "123456", role: "upravnik"},
+  { email: "stanar@demo.rs",  pass: "123456", role: "stanar"  }
+];
 
 /* remember me: persistent (localStorage) + session-only (sessionStorage) */
-const KEY_PERSIST = "pu_session_persist_v1";
-const KEY_SESSION = "pu_session_session_v1";
+const KEY_PERSIST = "pu_session_persist_v2";
+const KEY_SESSION = "pu_session_session_v2";
 
 const emailEl = document.getElementById("email");
 const passEl = document.getElementById("pass");
@@ -686,17 +728,20 @@ function clearSessions(){
   sessionStorage.removeItem(KEY_SESSION);
 }
 
-function saveSession(email){
+function saveSession(sessionObj){
   clearSessions();
+  const payload = JSON.stringify(sessionObj);
   if(remember && remember.checked){
-    localStorage.setItem(KEY_PERSIST, email);
+    localStorage.setItem(KEY_PERSIST, payload);
   }else{
-    sessionStorage.setItem(KEY_SESSION, email);
+    sessionStorage.setItem(KEY_SESSION, payload);
   }
 }
 
 function getSession(){
-  return localStorage.getItem(KEY_PERSIST) || sessionStorage.getItem(KEY_SESSION);
+  const raw = localStorage.getItem(KEY_PERSIST) || sessionStorage.getItem(KEY_SESSION);
+  if(!raw) return null;
+  try { return JSON.parse(raw); } catch { return null; }
 }
 
 togglePass.addEventListener("click", () => {
@@ -705,15 +750,33 @@ togglePass.addEventListener("click", () => {
   togglePass.textContent = isPass ? "🙈" : "👁";
 });
 
+function applyRoleUI(role){
+  // sakrij/prikazi elemente koji imaju data-role
+  const roleEls = document.querySelectorAll("[data-role]");
+  roleEls.forEach(el => {
+    const need = el.getAttribute("data-role");
+    el.style.display = (need === role) ? "" : "none";
+  });
+}
+
 function attemptLogin(email, pass){
-  const ok = (email === DEMO_EMAIL && pass === DEMO_PASS);
-  if(!ok){
+  const u = DEMO_USERS.find(x => x.email === email && x.pass === pass);
+  if(!u){
     errEl.style.display = "block";
     return;
   }
+
   errEl.style.display = "none";
-  saveSession(email);
-  userPill.textContent = email;
+
+  const session = {
+    email: u.email,
+    role: u.role
+    // kasnije: community_id za stanara, community_ids[] za upravnika
+  };
+
+  saveSession(session);
+  userPill.textContent = session.email;
+  applyRoleUI(session.role);
   setMode("portal");
 }
 
@@ -775,15 +838,11 @@ function showPage(name){
   Object.values(pages).forEach(p => p.classList.remove("active"));
   (pages[name] || pages.home).classList.add("active");
 
-  // active link
   [...nav.querySelectorAll("a[data-page]")].forEach(a => {
     a.classList.toggle("active", a.dataset.page === name);
   });
 
-  // mobile UX: zatvori sidebar posle klika
   closeS();
-
-  // (opciono) reset scroll
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -796,11 +855,14 @@ nav.addEventListener("click", (e) => {
 
 /* INIT */
 (function init(){
-  const email = getSession();
-  if(email){
-    userPill.textContent = email;
+  const session = getSession();
+  if(session && session.email && session.role){
+    userPill.textContent = session.email;
+    applyRoleUI(session.role);
     setMode("portal");
   }else{
+    // default: sakrij sve role-specific blokove
+    applyRoleUI("stanar");
     setMode("login");
   }
 })();
