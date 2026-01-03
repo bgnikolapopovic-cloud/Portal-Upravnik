@@ -713,9 +713,9 @@ body.mode-portal #portalScreen{display:block;}
 
               <div class="grow field">
                 <label for="fDocs">Dokumenti (vise fajlova)</label>
-                <input id="fDocs" type="file" multiple>
+                <input id="fDocs" type="file" multiple accept="application/pdf">
                 <div class="smallText" id="fileHint" style="margin-top:6px;">
-                  Ukupna velicina fajlova po unosu max 10MB.
+                  Ukupna velicina fajlova po unosu max 10MB. Klik na fajl u listi = otvori PDF.
                 </div>
               </div>
 
@@ -732,7 +732,8 @@ body.mode-portal #portalScreen{display:block;}
           <ul class="boardList" id="financeList"></ul>
 
           <div class="smallText" style="margin-top:10px;">
-            Napomena: U prvoj fazi podaci su demo (cuvaju se lokalno). Kasnije sve ide u bazu uz kontrole pristupa.
+            Napomena: Ovo je demo. PDF se cuva u localStorage kao dataURL (moze da pukne za velike fajlove).
+            Za realno resenje ide Storage (Supabase/Firebase).
           </div>
         </section>
       </section>
@@ -821,12 +822,12 @@ const DEMO_USERS = [
   { email: "stanar@demo.rs",        pass: "123456", role: "stanar" }
 ];
 
-const KEY_PERSIST = "pu_session_persist_v5";
-const KEY_SESSION = "pu_session_session_v5";
+const KEY_PERSIST = "pu_session_persist_v6";
+const KEY_SESSION = "pu_session_session_v6";
 
 /* ===== demo finance storage (local) ===== */
-const FIN_KEY = "pu_finance_items_v1";
-const FIRM_KEY = "pu_finance_firms_v1";
+const FIN_KEY = "pu_finance_items_v2";
+const FIRM_KEY = "pu_finance_firms_v2";
 
 const emailEl = document.getElementById("email");
 const passEl = document.getElementById("pass");
@@ -993,10 +994,27 @@ nav.addEventListener("click", (e) => {
 });
 
 /* ================= FINANSIJE MODULE (demo) ================= */
+function cryptoRandom(){
+  return "id_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
+}
+
+function formatRSD(n){
+  const x = Number(n||0);
+  return x.toLocaleString("sr-RS", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function daysBetween(aMs, bMs){
+  const day = 1000*60*60*24;
+  return Math.floor(Math.abs(aMs - bMs) / day);
+}
+
+function canEdit(item){
+  return daysBetween(Date.now(), item.createdAt) <= 30;
+}
+
 function loadItems(){
   const raw = localStorage.getItem(FIN_KEY);
   if(!raw){
-    // inicijalni demo
     const seed = [
       { id: cryptoRandom(), createdAt: Date.now()-1000*60*60*24*2, date: "2026-01-02", type:"rashod", category:"tekuce odrzavanje", firm:"Servis DOO", desc:"Uplata servisu", amount: 24000, docs: [] },
       { id: cryptoRandom(), createdAt: Date.now()-1000*60*60*24*6, date: "2025-12-28", type:"prihod", category:"ostalo", firm:"", desc:"Uplata stanara", amount: 120000, docs: [] },
@@ -1024,26 +1042,6 @@ function loadFirms(){
 
 function saveFirms(firms){
   localStorage.setItem(FIRM_KEY, JSON.stringify(firms));
-}
-
-function cryptoRandom(){
-  // bez biblioteka, radi svuda
-  return "id_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
-}
-
-function formatRSD(n){
-  const x = Number(n||0);
-  return x.toLocaleString("sr-RS", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-
-function daysBetween(aMs, bMs){
-  const day = 1000*60*60*24;
-  return Math.floor(Math.abs(aMs - bMs) / day);
-}
-
-function canEdit(item){
-  // upravnik moze ispravku do 30 dana od kreiranja unosa (demo: createdAt)
-  return daysBetween(Date.now(), item.createdAt) <= 30;
 }
 
 function renderFirmSelect(){
@@ -1077,19 +1075,41 @@ function renderFinanceList(){
     li.textContent =
       `${item.date} — ${item.type === "rashod" ? "Rashod" : "Prihod"} — ${item.category}${firmPart} — "${item.desc}" — ${formatRSD(item.amount)} RSD${editTag}`;
 
-    // dokumenti prikaz
+    /* dokumenti prikaz + klik za otvaranje */
     if(item.docs && item.docs.length){
       const ul = document.createElement("ul");
       ul.className = "fileList";
+
       item.docs.forEach(d => {
         const fli = document.createElement("li");
+        fli.style.cursor = "pointer";
+        fli.title = "Klik za otvaranje";
         fli.innerHTML = `<span>${d.name}</span><small>${d.sizeKB} KB</small>`;
+
+        fli.addEventListener("click", () => {
+          if(!d.dataURL){
+            alert("Ovaj fajl je sacuvan u starom demo formatu (bez sadrzaja). Uploaduj ponovo.");
+            return;
+          }
+          const w = window.open();
+          if(!w){
+            alert("Browser je blokirao pop-up. Dozvoli pop-up za ovaj sajt.");
+            return;
+          }
+          w.document.write(`
+            <title>${d.name}</title>
+            <iframe src="${d.dataURL}" style="position:fixed; inset:0; width:100%; height:100%; border:0;"></iframe>
+          `);
+          w.document.close();
+        });
+
         ul.appendChild(fli);
       });
+
       li.appendChild(ul);
     }
 
-    // upravnik: dugme obrisi (samo demo) + samo ako je u 30 dana
+    /* upravnik: dugme obrisi (demo) u 30 dana */
     if(CURRENT_SESSION && CURRENT_SESSION.role === "upravnik"){
       const actions = document.createElement("div");
       actions.style.marginTop = "10px";
@@ -1138,6 +1158,16 @@ function totalFilesSizeBytes(fileList){
   return sum;
 }
 
+/* NOVO: file -> dataURL (da stanar moze da otvori PDF) */
+function fileToDataURL(file){
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(String(r.result || ""));
+    r.onerror = () => reject(new Error("File read error"));
+    r.readAsDataURL(file);
+  });
+}
+
 function financeInit(){
   renderFirmSelect();
   renderFinanceList();
@@ -1159,9 +1189,9 @@ if(cancelFinanceBtn){
   });
 }
 
-/* upravnik: save stavke */
+/* upravnik: save stavke (async zbog dataURL) */
 if(saveFinanceBtn){
-  saveFinanceBtn.addEventListener("click", () => {
+  saveFinanceBtn.addEventListener("click", async () => {
     financeError.style.display = "none";
 
     if(!CURRENT_SESSION || CURRENT_SESSION.role !== "upravnik"){
@@ -1174,7 +1204,6 @@ if(saveFinanceBtn){
     const type = fType.value;
     const category = fCategory.value;
 
-    // firma: ako upisao novu, nju uzmi; u suprotnom dropdown
     const firmNew = (fFirmNew.value||"").trim();
     let firm = firmNew || (fFirm.value||"").trim();
 
@@ -1207,8 +1236,23 @@ if(saveFinanceBtn){
       renderFirmSelect();
     }
 
-    // dokumenti: (demo) cuvamo samo ime i velicinu
-    const docs = files.map(f => ({ name: f.name, sizeKB: Math.ceil((f.size||0)/1024) }));
+    // dokumenti: cuvamo ime + velicinu + dataURL (PDF preview)
+    const docs = [];
+    try{
+      for(const f of files){
+        const dataURL = await fileToDataURL(f);
+        docs.push({
+          name: f.name,
+          sizeKB: Math.ceil((f.size||0)/1024),
+          mime: f.type || "application/pdf",
+          dataURL
+        });
+      }
+    }catch(err){
+      financeError.textContent = "Greska: ne mogu da procitam fajl (FileReader).";
+      financeError.style.display = "block";
+      return;
+    }
 
     const item = {
       id: cryptoRandom(),
@@ -1222,9 +1266,16 @@ if(saveFinanceBtn){
       docs
     };
 
-    const items = loadItems();
-    items.push(item);
-    saveItems(items);
+    // localStorage moze da pukne ako je PDF veliki
+    try{
+      const items = loadItems();
+      items.push(item);
+      saveItems(items);
+    }catch(e){
+      financeError.textContent = "Greska: localStorage limit (PDF je prevelik za demo). Probaj manji PDF.";
+      financeError.style.display = "block";
+      return;
+    }
 
     financeFormWrap.style.display = "none";
     resetFinanceForm();
@@ -1243,7 +1294,6 @@ if(saveFinanceBtn){
     setMode("portal");
   }else{
     CURRENT_SESSION = null;
-    // sakrij role-specific blokove dok nije ulogovan
     applyRoleUI("stanar");
     setMode("login");
   }
