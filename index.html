@@ -167,7 +167,7 @@ body::before{
   margin-bottom:6px;
 }
 .inputWrap{ position:relative; }
-.field input{
+.field input, .field select, .field textarea{
   width:100%;
   border-radius:18px;
   border:1px solid rgba(15,23,42,.14);
@@ -177,7 +177,8 @@ body::before{
   outline:none;
   transition:.15s;
 }
-.field input:focus{
+.field textarea{min-height:86px; resize:vertical;}
+.field input:focus, .field select:focus, .field textarea:focus{
   border-color:rgba(15,23,42,.28);
   box-shadow:0 0 0 5px rgba(15,23,42,.06);
 }
@@ -237,6 +238,13 @@ body::before{
   box-shadow:0 18px 36px rgba(2,6,23,.18);
 }
 .btnPrimary:hover{ transform:translateY(-1px); }
+
+.btnGhost{
+  background:rgba(255,255,255,.72);
+  border:1px solid rgba(15,23,42,.14);
+  box-shadow:var(--shadow);
+  color:rgba(15,23,42,.92);
+}
 
 .error{
   margin-top:10px;
@@ -455,6 +463,48 @@ body.sidebar-open .sidebar{ filter:none; }
 .page{ display:none; }
 .page.active{ display:block; }
 
+/* mali badge */
+.badge{
+  display:inline-block;
+  padding:6px 10px;
+  border-radius:999px;
+  font-weight:900;
+  font-size:12px;
+  border:1px solid rgba(15,23,42,.14);
+  background:rgba(255,255,255,.72);
+  box-shadow:var(--shadow);
+}
+
+/* simple table-like row */
+.fRow{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  align-items:flex-start;
+}
+.fRow .grow{flex:1; min-width:220px;}
+.fRow .half{flex:1; min-width:220px;}
+
+/* files list */
+.fileList{
+  margin-top:10px;
+  list-style:none;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.fileList li{
+  background:rgba(15,23,42,.06);
+  border:1px solid rgba(15,23,42,.10);
+  padding:10px 12px;
+  border-radius:14px;
+  font-weight:800;
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+.fileList small{opacity:.7; font-weight:900;}
+
 /* mode switching */
 body.mode-login #portalScreen{display:none;}
 body.mode-portal #loginScreen{display:none;}
@@ -586,30 +636,104 @@ body.mode-portal #portalScreen{display:block;}
             <li>Forum: Otvorena anketa - Predlog za novu rasvetu</li>
           </ul>
 
-          <!-- admin-only (samo prikaz/sakrivanje) -->
           <div class="smallText" data-role="admin" style="margin-top:12px;">
             Admin: placeholder (upravljanje korisnicima, regulativama i kontaktima).
           </div>
         </section>
       </section>
 
+      <!-- ===================== FINANSIJE (MODUL) ===================== -->
       <section class="page" id="page-finansije">
         <section class="card">
           <h3>Finansije</h3>
+
           <div class="smallText">
-            Ovde ce biti lista finansijskih promena + dokumenti (izvodi, racuni) sa pregledom/zoomom i mogucnoscu stampanja izvestaja.
+            Pregled finansijskih promena i dokumenata. Stanar ima uvid (read-only). Upravnik ima unos i upload.
           </div>
 
-          <!-- upravnik-only (samo prikaz/sakrivanje) -->
+          <!-- UPRAVNIK TOOLBAR -->
           <div class="smallText" data-role="upravnik" style="margin-top:12px;">
-            Upravnik: placeholder (upload dokumenata i unos/edit finansijskih promena).
+            <div class="fRow">
+              <div class="grow">
+                <span class="badge">Upravnik</span>
+                <span class="badge" style="margin-left:8px;">Upload limit: 10MB po unosu</span>
+              </div>
+              <div>
+                <button class="btn btnGhost" id="addFinanceBtn" type="button">Dodaj finansijsku stavku</button>
+              </div>
+            </div>
           </div>
 
-          <ul class="boardList">
-            <li>02.01.2026 — Rashod — Tekuce odrzavanje — “Uplata servisu”</li>
-            <li>28.12.2025 — Prihod — Uplata stanara</li>
-            <li>15.12.2025 — Rashod — Hitna intervencija — “Vodoinstalater”</li>
-          </ul>
+          <!-- ADD/EDIT FORM (upravnik-only) -->
+          <div id="financeFormWrap" data-role="upravnik" style="display:none; margin-top:12px;">
+            <div class="fRow">
+              <div class="half field">
+                <label for="fDate">Datum</label>
+                <input id="fDate" type="date">
+              </div>
+
+              <div class="half field">
+                <label for="fType">Tip</label>
+                <select id="fType">
+                  <option value="rashod">Rashod</option>
+                  <option value="prihod">Prihod</option>
+                </select>
+              </div>
+
+              <div class="half field">
+                <label for="fCategory">Kategorija</label>
+                <select id="fCategory">
+                  <option value="hitna intervencija">Hitna intervencija</option>
+                  <option value="tekuce odrzavanje">Tekuce odrzavanje</option>
+                  <option value="lift">Lift</option>
+                  <option value="ostalo">Ostalo</option>
+                  <option value="drugo">Drugo</option>
+                </select>
+              </div>
+
+              <div class="half field">
+                <label for="fFirm">Firma (dropdown)</label>
+                <select id="fFirm"></select>
+              </div>
+
+              <div class="grow field">
+                <label for="fFirmNew">Nova firma (opciono)</label>
+                <input id="fFirmNew" type="text" placeholder="Unesi novu firmu ako ne postoji u listi">
+              </div>
+
+              <div class="grow field">
+                <label for="fDesc">Opis</label>
+                <input id="fDesc" type="text" placeholder="npr. placanje racuna / uplata stanara">
+              </div>
+
+              <div class="grow field">
+                <label for="fAmount">Iznos (RSD)</label>
+                <input id="fAmount" type="number" step="0.01" placeholder="npr. 12500">
+              </div>
+
+              <div class="grow field">
+                <label for="fDocs">Dokumenti (vise fajlova)</label>
+                <input id="fDocs" type="file" multiple>
+                <div class="smallText" id="fileHint" style="margin-top:6px;">
+                  Ukupna velicina fajlova po unosu max 10MB.
+                </div>
+              </div>
+
+              <div class="grow" style="display:flex; gap:10px; margin-top:6px;">
+                <button class="btn btnPrimary" id="saveFinanceBtn" type="button">Sacuvaj</button>
+                <button class="btn btnGhost" id="cancelFinanceBtn" type="button">Otkaži</button>
+              </div>
+
+              <div class="error" id="financeError" style="display:none;">Greska: proveri polja i limit fajlova (10MB).</div>
+            </div>
+          </div>
+
+          <!-- LISTA PROMENA -->
+          <ul class="boardList" id="financeList"></ul>
+
+          <div class="smallText" style="margin-top:10px;">
+            Napomena: U prvoj fazi podaci su demo (cuvaju se lokalno). Kasnije sve ide u bazu uz kontrole pristupa.
+          </div>
         </section>
       </section>
 
@@ -617,7 +741,6 @@ body.mode-portal #portalScreen{display:block;}
         <section class="card">
           <h3>Oglasna tabla</h3>
 
-          <!-- upravnik-only (samo prikaz/sakrivanje) -->
           <div class="smallText" data-role="upravnik">
             Upravnik: placeholder (postavljanje dokumenata/obavestenja).
           </div>
@@ -637,7 +760,6 @@ body.mode-portal #portalScreen{display:block;}
             Predlozi za skupstinu stanara (bez komentara). Ovde ce biti ankete sa vremenskim ogranicenjem.
           </div>
 
-          <!-- stanar-only (samo prikaz/sakrivanje) -->
           <div class="smallText" data-role="stanar">
             Stanar: placeholder (forma za predlog + glasanje).
           </div>
@@ -656,7 +778,6 @@ body.mode-portal #portalScreen{display:block;}
             Informativna stranica sa zakonima i propisima. Sadrzaj menja administrator.
           </div>
 
-          <!-- admin-only (samo prikaz/sakrivanje) -->
           <div class="smallText" data-role="admin">
             Admin: placeholder (upload/izmena regulativa).
           </div>
@@ -672,7 +793,6 @@ body.mode-portal #portalScreen{display:block;}
         <section class="card">
           <h3>Kontakt sluzbe</h3>
 
-          <!-- admin-only (samo prikaz/sakrivanje) -->
           <div class="smallText" data-role="admin">
             Admin: placeholder (izmena kontakata i brojeva).
           </div>
@@ -694,17 +814,19 @@ body.mode-portal #portalScreen{display:block;}
 <script>
 /* =========================
    DEMO LOGIN (isti za sve)
-   - razdvajanje nakon logina po ulozi
    ========================= */
-
 const DEMO_USERS = [
   { email: "administrator@demo.rs", pass: "123456", role: "admin" },
   { email: "upravnik@demo.rs",      pass: "123456", role: "upravnik" },
   { email: "stanar@demo.rs",        pass: "123456", role: "stanar" }
 ];
 
-const KEY_PERSIST = "pu_session_persist_v4";
-const KEY_SESSION = "pu_session_session_v4";
+const KEY_PERSIST = "pu_session_persist_v5";
+const KEY_SESSION = "pu_session_session_v5";
+
+/* ===== demo finance storage (local) ===== */
+const FIN_KEY = "pu_finance_items_v1";
+const FIRM_KEY = "pu_finance_firms_v1";
 
 const emailEl = document.getElementById("email");
 const passEl = document.getElementById("pass");
@@ -714,6 +836,26 @@ const togglePass = document.getElementById("togglePass");
 const remember = document.getElementById("remember");
 const userPill = document.getElementById("userPill");
 
+/* finance elements */
+const financeList = document.getElementById("financeList");
+const addFinanceBtn = document.getElementById("addFinanceBtn");
+const financeFormWrap = document.getElementById("financeFormWrap");
+const saveFinanceBtn = document.getElementById("saveFinanceBtn");
+const cancelFinanceBtn = document.getElementById("cancelFinanceBtn");
+const financeError = document.getElementById("financeError");
+
+const fDate = document.getElementById("fDate");
+const fType = document.getElementById("fType");
+const fCategory = document.getElementById("fCategory");
+const fFirm = document.getElementById("fFirm");
+const fFirmNew = document.getElementById("fFirmNew");
+const fDesc = document.getElementById("fDesc");
+const fAmount = document.getElementById("fAmount");
+const fDocs = document.getElementById("fDocs");
+
+let CURRENT_SESSION = null;
+
+/* ---------- helpers ---------- */
 function setMode(mode){
   document.body.classList.toggle("mode-login", mode === "login");
   document.body.classList.toggle("mode-portal", mode === "portal");
@@ -725,12 +867,13 @@ function clearSessions(){
 }
 
 function saveSession(sessionObj){
-  clearSessions();
   const payload = JSON.stringify(sessionObj);
   if(remember && remember.checked){
     localStorage.setItem(KEY_PERSIST, payload);
+    sessionStorage.removeItem(KEY_SESSION);
   }else{
     sessionStorage.setItem(KEY_SESSION, payload);
+    localStorage.removeItem(KEY_PERSIST);
   }
 }
 
@@ -754,23 +897,27 @@ function applyRoleUI(role){
   });
 }
 
+/* ---------- login ---------- */
 function attemptLogin(email, pass){
   const u = DEMO_USERS.find(x => x.email === email && x.pass === pass);
   if(!u){
     errEl.style.display = "block";
     return;
   }
-
   errEl.style.display = "none";
-  const session = { email: u.email, role: u.role };
-  saveSession(session);
 
-  userPill.textContent = session.email;
-  applyRoleUI(session.role);
+  CURRENT_SESSION = { email: u.email, role: u.role };
+  saveSession(CURRENT_SESSION);
+
+  userPill.textContent = CURRENT_SESSION.email;
+  applyRoleUI(CURRENT_SESSION.role);
+
+  // init finance view each time
+  financeInit();
+
   setMode("portal");
 }
 
-/* login actions */
 loginBtn.addEventListener("click", () => {
   attemptLogin((emailEl.value||"").trim(), (passEl.value||"").trim());
 });
@@ -781,14 +928,15 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-/* logout */
+/* ---------- logout ---------- */
 document.getElementById("logoutBtn").addEventListener("click", () => {
   clearSessions();
+  CURRENT_SESSION = null;
   closeS();
   setMode("login");
 });
 
-/* ===== SIDEBAR behavior ===== */
+/* ================= SIDEBAR behavior ================= */
 const sidebar = document.getElementById("sidebar");
 const overlay = document.getElementById("overlay");
 const edge = document.getElementById("edgeHotspot");
@@ -814,7 +962,7 @@ document.addEventListener("keydown", (e) => {
   if(e.key === "Escape") closeS();
 });
 
-/* ===== SPA NAV (pages) ===== */
+/* ================= SPA NAV (pages) ================= */
 const nav = document.getElementById("nav");
 const pages = {
   home: document.getElementById("page-home"),
@@ -844,15 +992,258 @@ nav.addEventListener("click", (e) => {
   showPage(a.dataset.page);
 });
 
+/* ================= FINANSIJE MODULE (demo) ================= */
+function loadItems(){
+  const raw = localStorage.getItem(FIN_KEY);
+  if(!raw){
+    // inicijalni demo
+    const seed = [
+      { id: cryptoRandom(), createdAt: Date.now()-1000*60*60*24*2, date: "2026-01-02", type:"rashod", category:"tekuce odrzavanje", firm:"Servis DOO", desc:"Uplata servisu", amount: 24000, docs: [] },
+      { id: cryptoRandom(), createdAt: Date.now()-1000*60*60*24*6, date: "2025-12-28", type:"prihod", category:"ostalo", firm:"", desc:"Uplata stanara", amount: 120000, docs: [] },
+      { id: cryptoRandom(), createdAt: Date.now()-1000*60*60*24*20, date: "2025-12-15", type:"rashod", category:"hitna intervencija", firm:"Vodoinstalater", desc:"Hitna intervencija", amount: 18000, docs: [] }
+    ];
+    localStorage.setItem(FIN_KEY, JSON.stringify(seed));
+    return seed;
+  }
+  try { return JSON.parse(raw) || []; } catch { return []; }
+}
+
+function saveItems(items){
+  localStorage.setItem(FIN_KEY, JSON.stringify(items));
+}
+
+function loadFirms(){
+  const raw = localStorage.getItem(FIRM_KEY);
+  if(!raw){
+    const seed = ["Servis DOO","Vodoinstalater","Lift Servis"];
+    localStorage.setItem(FIRM_KEY, JSON.stringify(seed));
+    return seed;
+  }
+  try { return JSON.parse(raw) || []; } catch { return []; }
+}
+
+function saveFirms(firms){
+  localStorage.setItem(FIRM_KEY, JSON.stringify(firms));
+}
+
+function cryptoRandom(){
+  // bez biblioteka, radi svuda
+  return "id_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
+}
+
+function formatRSD(n){
+  const x = Number(n||0);
+  return x.toLocaleString("sr-RS", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function daysBetween(aMs, bMs){
+  const day = 1000*60*60*24;
+  return Math.floor(Math.abs(aMs - bMs) / day);
+}
+
+function canEdit(item){
+  // upravnik moze ispravku do 30 dana od kreiranja unosa (demo: createdAt)
+  return daysBetween(Date.now(), item.createdAt) <= 30;
+}
+
+function renderFirmSelect(){
+  const firms = loadFirms();
+  fFirm.innerHTML = "";
+  const opt0 = document.createElement("option");
+  opt0.value = "";
+  opt0.textContent = "(Izaberi firmu)";
+  fFirm.appendChild(opt0);
+
+  firms.forEach(name => {
+    const o = document.createElement("option");
+    o.value = name;
+    o.textContent = name;
+    fFirm.appendChild(o);
+  });
+}
+
+function renderFinanceList(){
+  const items = loadItems().slice().sort((a,b) => (b.date||"").localeCompare(a.date||""));
+  financeList.innerHTML = "";
+
+  items.forEach(item => {
+    const li = document.createElement("li");
+
+    const firmPart = item.firm ? (" — " + item.firm) : "";
+    const editTag = (CURRENT_SESSION && CURRENT_SESSION.role === "upravnik")
+      ? (canEdit(item) ? " (edit 30 dana)" : " (zakljucano)")
+      : "";
+
+    li.textContent =
+      `${item.date} — ${item.type === "rashod" ? "Rashod" : "Prihod"} — ${item.category}${firmPart} — "${item.desc}" — ${formatRSD(item.amount)} RSD${editTag}`;
+
+    // dokumenti prikaz
+    if(item.docs && item.docs.length){
+      const ul = document.createElement("ul");
+      ul.className = "fileList";
+      item.docs.forEach(d => {
+        const fli = document.createElement("li");
+        fli.innerHTML = `<span>${d.name}</span><small>${d.sizeKB} KB</small>`;
+        ul.appendChild(fli);
+      });
+      li.appendChild(ul);
+    }
+
+    // upravnik: dugme obrisi (samo demo) + samo ako je u 30 dana
+    if(CURRENT_SESSION && CURRENT_SESSION.role === "upravnik"){
+      const actions = document.createElement("div");
+      actions.style.marginTop = "10px";
+      actions.style.display = "flex";
+      actions.style.gap = "10px";
+      actions.style.flexWrap = "wrap";
+
+      const del = document.createElement("button");
+      del.className = "btn btnGhost";
+      del.type = "button";
+      del.textContent = "Obrisi (demo)";
+      del.disabled = !canEdit(item);
+      del.addEventListener("click", () => {
+        const next = loadItems().filter(x => x.id !== item.id);
+        saveItems(next);
+        renderFinanceList();
+      });
+
+      actions.appendChild(del);
+      li.appendChild(actions);
+    }
+
+    financeList.appendChild(li);
+  });
+}
+
+function resetFinanceForm(){
+  financeError.style.display = "none";
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth()+1).padStart(2,"0");
+  const dd = String(today.getDate()).padStart(2,"0");
+  fDate.value = `${yyyy}-${mm}-${dd}`;
+  fType.value = "rashod";
+  fCategory.value = "tekuce odrzavanje";
+  fFirm.value = "";
+  fFirmNew.value = "";
+  fDesc.value = "";
+  fAmount.value = "";
+  if(fDocs) fDocs.value = "";
+}
+
+function totalFilesSizeBytes(fileList){
+  let sum = 0;
+  for(const f of fileList) sum += (f.size || 0);
+  return sum;
+}
+
+function financeInit(){
+  renderFirmSelect();
+  renderFinanceList();
+  resetFinanceForm();
+  if(financeFormWrap) financeFormWrap.style.display = "none";
+}
+
+/* upravnik: otvori/zatvori formu */
+if(addFinanceBtn){
+  addFinanceBtn.addEventListener("click", () => {
+    financeFormWrap.style.display = (financeFormWrap.style.display === "none" || financeFormWrap.style.display === "") ? "block" : "none";
+    if(financeFormWrap.style.display === "block") resetFinanceForm();
+  });
+}
+if(cancelFinanceBtn){
+  cancelFinanceBtn.addEventListener("click", () => {
+    financeFormWrap.style.display = "none";
+    resetFinanceForm();
+  });
+}
+
+/* upravnik: save stavke */
+if(saveFinanceBtn){
+  saveFinanceBtn.addEventListener("click", () => {
+    financeError.style.display = "none";
+
+    if(!CURRENT_SESSION || CURRENT_SESSION.role !== "upravnik"){
+      financeError.textContent = "Nemate dozvolu.";
+      financeError.style.display = "block";
+      return;
+    }
+
+    const date = (fDate.value||"").trim();
+    const type = fType.value;
+    const category = fCategory.value;
+
+    // firma: ako upisao novu, nju uzmi; u suprotnom dropdown
+    const firmNew = (fFirmNew.value||"").trim();
+    let firm = firmNew || (fFirm.value||"").trim();
+
+    const desc = (fDesc.value||"").trim();
+    const amount = Number((fAmount.value||"").trim());
+
+    if(!date || !type || !category || !desc || !Number.isFinite(amount)){
+      financeError.textContent = "Greska: popuni obavezna polja (datum, opis, iznos).";
+      financeError.style.display = "block";
+      return;
+    }
+
+    // 10MB limit po unosu
+    const files = [...(fDocs.files || [])];
+    const total = totalFilesSizeBytes(files);
+    const LIMIT = 10 * 1024 * 1024; // 10MB
+    if(total > LIMIT){
+      financeError.textContent = "Greska: ukupna velicina fajlova prelazi 10MB.";
+      financeError.style.display = "block";
+      return;
+    }
+
+    // upisi firmu u bazu firmi ako je nova
+    if(firmNew){
+      const firms = loadFirms();
+      if(!firms.includes(firmNew)){
+        firms.push(firmNew);
+        saveFirms(firms);
+      }
+      renderFirmSelect();
+    }
+
+    // dokumenti: (demo) cuvamo samo ime i velicinu
+    const docs = files.map(f => ({ name: f.name, sizeKB: Math.ceil((f.size||0)/1024) }));
+
+    const item = {
+      id: cryptoRandom(),
+      createdAt: Date.now(),
+      date,
+      type,
+      category,
+      firm,
+      desc,
+      amount,
+      docs
+    };
+
+    const items = loadItems();
+    items.push(item);
+    saveItems(items);
+
+    financeFormWrap.style.display = "none";
+    resetFinanceForm();
+    renderFinanceList();
+  });
+}
+
 /* INIT */
 (function init(){
   const session = getSession();
   if(session && session.email && session.role){
+    CURRENT_SESSION = session;
     userPill.textContent = session.email;
     applyRoleUI(session.role);
+    financeInit();
     setMode("portal");
   }else{
-    // default: sakrij sve role-specific blokove dok nije ulogovan
+    CURRENT_SESSION = null;
+    // sakrij role-specific blokove dok nije ulogovan
     applyRoleUI("stanar");
     setMode("login");
   }
