@@ -475,7 +475,7 @@ body.sidebar-open .sidebar{ filter:none; }
   box-shadow:var(--shadow);
 }
 
-/* simple table-like row */
+/* simple row */
 .fRow{
   display:flex;
   flex-wrap:wrap;
@@ -714,7 +714,7 @@ body.mode-portal #portalScreen{display:block;}
               <div class="grow field">
                 <label for="fDocs">Dokumenti (vise fajlova)</label>
                 <input id="fDocs" type="file" multiple accept="application/pdf">
-                <div class="smallText" id="fileHint" style="margin-top:6px;">
+                <div class="smallText" style="margin-top:6px;">
                   Ukupna velicina fajlova po unosu max 10MB. Klik na fajl u listi = otvori PDF.
                 </div>
               </div>
@@ -732,8 +732,7 @@ body.mode-portal #portalScreen{display:block;}
           <ul class="boardList" id="financeList"></ul>
 
           <div class="smallText" style="margin-top:10px;">
-            Napomena: Ovo je demo. PDF se cuva u localStorage kao dataURL (moze da pukne za velike fajlove).
-            Za realno resenje ide Storage (Supabase/Firebase).
+            Napomena: Ovo je demo. PDF se cuva u localStorage kao dataURL (razlicito po uredjaju/browseru).
           </div>
         </section>
       </section>
@@ -754,21 +753,58 @@ body.mode-portal #portalScreen{display:block;}
         </section>
       </section>
 
+      <!-- ===================== FORUM (MODUL) ===================== -->
       <section class="page" id="page-forum">
         <section class="card">
           <h3>Forum</h3>
+
           <div class="smallText">
-            Predlozi za skupstinu stanara (bez komentara). Ovde ce biti ankete sa vremenskim ogranicenjem.
+            Jednosmerna komunikacija: stanar predlaze, bez komentara. Opcionalno anketa sa vremenom trajanja.
           </div>
 
-          <div class="smallText" data-role="stanar">
-            Stanar: placeholder (forma za predlog + glasanje).
+          <!-- STANAR: KREIRANJE PREDLOGA -->
+          <div data-role="stanar" id="forumCreateWrap" style="margin-top:12px;">
+            <div class="fRow">
+              <div class="grow field">
+                <label for="pTitle">Naslov predloga</label>
+                <input id="pTitle" type="text" placeholder="npr. Zamena svetla u hodniku">
+              </div>
+              <div class="grow field">
+                <label for="pBody">Opis</label>
+                <textarea id="pBody" placeholder="Kratak opis predloga (bez licnih podataka)"></textarea>
+              </div>
+
+              <div class="half field">
+                <label for="pPoll">Anketa</label>
+                <select id="pPoll">
+                  <option value="ne">Ne</option>
+                  <option value="da">Da (Da/Ne glasanje)</option>
+                </select>
+              </div>
+
+              <div class="half field">
+                <label for="pDays">Trajanje ankete (dani)</label>
+                <input id="pDays" type="number" min="1" max="30" value="7">
+              </div>
+
+              <div class="grow" style="display:flex; gap:10px; margin-top:6px;">
+                <button class="btn btnPrimary" id="createProposalBtn" type="button">Objavi predlog</button>
+                <button class="btn btnGhost" id="clearProposalBtn" type="button">Ocisti</button>
+              </div>
+
+              <div class="error" id="forumError" style="display:none;">Greska: proveri polja.</div>
+            </div>
           </div>
 
-          <ul class="boardList">
-            <li>Predlog: Nova rasveta u hodniku — (anketa: otvorena)</li>
-            <li>Predlog: Zamena interfona — (anketa: zatvorena)</li>
-          </ul>
+          <div class="smallText" data-role="upravnik" style="margin-top:12px;">
+            Upravnik: samo uvid (bez pisanja i bez glasanja).
+          </div>
+          <div class="smallText" data-role="admin" style="margin-top:12px;">
+            Administrator: za sada samo uvid (kasnije moderacija/izvestaji).
+          </div>
+
+          <!-- LISTA PREDLOGA -->
+          <ul class="boardList" id="forumList"></ul>
         </section>
       </section>
 
@@ -822,12 +858,15 @@ const DEMO_USERS = [
   { email: "stanar@demo.rs",        pass: "123456", role: "stanar" }
 ];
 
-const KEY_PERSIST = "pu_session_persist_v6";
-const KEY_SESSION = "pu_session_session_v6";
+const KEY_PERSIST = "pu_session_persist_v7";
+const KEY_SESSION = "pu_session_session_v7";
 
 /* ===== demo finance storage (local) ===== */
 const FIN_KEY = "pu_finance_items_v2";
 const FIRM_KEY = "pu_finance_firms_v2";
+
+/* ===== forum storage (local) ===== */
+const FORUM_KEY = "pu_forum_proposals_v1";
 
 const emailEl = document.getElementById("email");
 const passEl = document.getElementById("pass");
@@ -836,6 +875,8 @@ const errEl = document.getElementById("loginError");
 const togglePass = document.getElementById("togglePass");
 const remember = document.getElementById("remember");
 const userPill = document.getElementById("userPill");
+
+let CURRENT_SESSION = null;
 
 /* finance elements */
 const financeList = document.getElementById("financeList");
@@ -854,7 +895,15 @@ const fDesc = document.getElementById("fDesc");
 const fAmount = document.getElementById("fAmount");
 const fDocs = document.getElementById("fDocs");
 
-let CURRENT_SESSION = null;
+/* forum elements */
+const forumList = document.getElementById("forumList");
+const pTitle = document.getElementById("pTitle");
+const pBody = document.getElementById("pBody");
+const pPoll = document.getElementById("pPoll");
+const pDays = document.getElementById("pDays");
+const createProposalBtn = document.getElementById("createProposalBtn");
+const clearProposalBtn = document.getElementById("clearProposalBtn");
+const forumError = document.getElementById("forumError");
 
 /* ---------- helpers ---------- */
 function setMode(mode){
@@ -913,8 +962,8 @@ function attemptLogin(email, pass){
   userPill.textContent = CURRENT_SESSION.email;
   applyRoleUI(CURRENT_SESSION.role);
 
-  // init finance view each time
   financeInit();
+  forumInit();
 
   setMode("portal");
 }
@@ -1060,6 +1109,15 @@ function renderFirmSelect(){
   });
 }
 
+function fileToDataURL(file){
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(String(r.result || ""));
+    r.onerror = () => reject(new Error("File read error"));
+    r.readAsDataURL(file);
+  });
+}
+
 function renderFinanceList(){
   const items = loadItems().slice().sort((a,b) => (b.date||"").localeCompare(a.date||""));
   financeList.innerHTML = "";
@@ -1075,7 +1133,6 @@ function renderFinanceList(){
     li.textContent =
       `${item.date} — ${item.type === "rashod" ? "Rashod" : "Prihod"} — ${item.category}${firmPart} — "${item.desc}" — ${formatRSD(item.amount)} RSD${editTag}`;
 
-    /* dokumenti prikaz + klik za otvaranje */
     if(item.docs && item.docs.length){
       const ul = document.createElement("ul");
       ul.className = "fileList";
@@ -1109,7 +1166,6 @@ function renderFinanceList(){
       li.appendChild(ul);
     }
 
-    /* upravnik: dugme obrisi (demo) u 30 dana */
     if(CURRENT_SESSION && CURRENT_SESSION.role === "upravnik"){
       const actions = document.createElement("div");
       actions.style.marginTop = "10px";
@@ -1158,24 +1214,14 @@ function totalFilesSizeBytes(fileList){
   return sum;
 }
 
-/* NOVO: file -> dataURL (da stanar moze da otvori PDF) */
-function fileToDataURL(file){
-  return new Promise((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = () => resolve(String(r.result || ""));
-    r.onerror = () => reject(new Error("File read error"));
-    r.readAsDataURL(file);
-  });
-}
-
 function financeInit(){
+  if(!financeList) return;
   renderFirmSelect();
   renderFinanceList();
   resetFinanceForm();
   if(financeFormWrap) financeFormWrap.style.display = "none";
 }
 
-/* upravnik: otvori/zatvori formu */
 if(addFinanceBtn){
   addFinanceBtn.addEventListener("click", () => {
     financeFormWrap.style.display = (financeFormWrap.style.display === "none" || financeFormWrap.style.display === "") ? "block" : "none";
@@ -1189,7 +1235,6 @@ if(cancelFinanceBtn){
   });
 }
 
-/* upravnik: save stavke (async zbog dataURL) */
 if(saveFinanceBtn){
   saveFinanceBtn.addEventListener("click", async () => {
     financeError.style.display = "none";
@@ -1216,7 +1261,6 @@ if(saveFinanceBtn){
       return;
     }
 
-    // 10MB limit po unosu
     const files = [...(fDocs.files || [])];
     const total = totalFilesSizeBytes(files);
     const LIMIT = 10 * 1024 * 1024; // 10MB
@@ -1226,7 +1270,6 @@ if(saveFinanceBtn){
       return;
     }
 
-    // upisi firmu u bazu firmi ako je nova
     if(firmNew){
       const firms = loadFirms();
       if(!firms.includes(firmNew)){
@@ -1236,7 +1279,6 @@ if(saveFinanceBtn){
       renderFirmSelect();
     }
 
-    // dokumenti: cuvamo ime + velicinu + dataURL (PDF preview)
     const docs = [];
     try{
       for(const f of files){
@@ -1266,7 +1308,6 @@ if(saveFinanceBtn){
       docs
     };
 
-    // localStorage moze da pukne ako je PDF veliki
     try{
       const items = loadItems();
       items.push(item);
@@ -1283,6 +1324,252 @@ if(saveFinanceBtn){
   });
 }
 
+/* ================= FORUM MODULE (demo) ================= */
+function loadProposals(){
+  const raw = localStorage.getItem(FORUM_KEY);
+  if(!raw){
+    const seed = [
+      {
+        id: cryptoRandom(),
+        createdAt: Date.now() - 1000*60*60*24*3,
+        title: "Nova rasveta u hodniku",
+        body: "Predlog da se zamene sijalice LED rasvetom zbog ustede.",
+        createdBy: "stanar",
+        poll: { enabled: true, endsAt: Date.now() + 1000*60*60*24*4, votesYes: [], votesNo: [] }
+      },
+      {
+        id: cryptoRandom(),
+        createdAt: Date.now() - 1000*60*60*24*10,
+        title: "Zamena interfona",
+        body: "Predlog da se proveri ponuda za zamenu interfona u zgradi.",
+        createdBy: "stanar",
+        poll: { enabled: true, endsAt: Date.now() - 1000*60*60*24*1, votesYes: ["demo@x"], votesNo: [] }
+      }
+    ];
+    localStorage.setItem(FORUM_KEY, JSON.stringify(seed));
+    return seed;
+  }
+  try { return JSON.parse(raw) || []; } catch { return []; }
+}
+
+function saveProposals(items){
+  localStorage.setItem(FORUM_KEY, JSON.stringify(items));
+}
+
+function fmtDateTime(ms){
+  const d = new Date(ms);
+  return d.toLocaleString("sr-RS");
+}
+
+function pollStatus(poll){
+  if(!poll || !poll.enabled) return { txt: "Bez ankete", open: false };
+  const open = Date.now() < poll.endsAt;
+  return { txt: open ? "Anketa otvorena" : "Anketa zatvorena", open };
+}
+
+function hasVoted(poll, email){
+  if(!poll || !poll.enabled) return false;
+  return (poll.votesYes||[]).includes(email) || (poll.votesNo||[]).includes(email);
+}
+
+function renderForum(){
+  if(!forumList) return;
+  const items = loadProposals().slice().sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+  forumList.innerHTML = "";
+
+  items.forEach(p => {
+    const li = document.createElement("li");
+
+    const top = document.createElement("div");
+    top.style.display = "flex";
+    top.style.justifyContent = "space-between";
+    top.style.gap = "10px";
+    top.style.flexWrap = "wrap";
+
+    const left = document.createElement("div");
+    left.style.fontWeight = "900";
+    left.textContent = p.title;
+
+    const right = document.createElement("div");
+    right.style.display = "flex";
+    right.style.gap = "8px";
+    right.style.alignItems = "center";
+
+    const meta = document.createElement("span");
+    meta.className = "badge";
+    meta.textContent = fmtDateTime(p.createdAt);
+
+    const pol = document.createElement("span");
+    pol.className = "badge";
+    const st = pollStatus(p.poll);
+    pol.textContent = st.txt;
+
+    right.appendChild(meta);
+    right.appendChild(pol);
+
+    top.appendChild(left);
+    top.appendChild(right);
+
+    const body = document.createElement("div");
+    body.className = "smallText";
+    body.style.marginTop = "8px";
+    body.textContent = p.body;
+
+    li.appendChild(top);
+    li.appendChild(body);
+
+    if(p.poll && p.poll.enabled){
+      const pollBox = document.createElement("div");
+      pollBox.className = "smallText";
+      pollBox.style.marginTop = "10px";
+
+      const yes = (p.poll.votesYes||[]).length;
+      const no = (p.poll.votesNo||[]).length;
+
+      const ends = document.createElement("div");
+      ends.textContent = "Istice: " + new Date(p.poll.endsAt).toLocaleString("sr-RS");
+      pollBox.appendChild(ends);
+
+      const count = document.createElement("div");
+      count.style.marginTop = "6px";
+      count.innerHTML = `<span class="badge">Da: ${yes}</span> <span class="badge" style="margin-left:8px;">Ne: ${no}</span>`;
+      pollBox.appendChild(count);
+
+      // Stanar moze da glasa samo dok je otvoreno i jednom
+      if(CURRENT_SESSION && CURRENT_SESSION.role === "stanar"){
+        const already = hasVoted(p.poll, CURRENT_SESSION.email);
+        if(st.open && !already){
+          const row = document.createElement("div");
+          row.style.display = "flex";
+          row.style.gap = "10px";
+          row.style.marginTop = "8px";
+          row.style.flexWrap = "wrap";
+
+          const btnYes = document.createElement("button");
+          btnYes.className = "btn btnPrimary";
+          btnYes.type = "button";
+          btnYes.style.flex = "unset";
+          btnYes.style.padding = "12px 16px";
+          btnYes.textContent = "Glasaj: DA";
+
+          const btnNo = document.createElement("button");
+          btnNo.className = "btn btnGhost";
+          btnNo.type = "button";
+          btnNo.style.flex = "unset";
+          btnNo.style.padding = "12px 16px";
+          btnNo.textContent = "Glasaj: NE";
+
+          btnYes.addEventListener("click", () => vote(p.id, "yes"));
+          btnNo.addEventListener("click", () => vote(p.id, "no"));
+
+          row.appendChild(btnYes);
+          row.appendChild(btnNo);
+          pollBox.appendChild(row);
+        }else{
+          const note = document.createElement("div");
+          note.style.marginTop = "8px";
+          note.innerHTML = `<span class="badge">${already ? "Vec ste glasali" : "Anketa je zatvorena"}</span>`;
+          pollBox.appendChild(note);
+        }
+      }else{
+        // upravnik/admin: samo pregled
+        const note = document.createElement("div");
+        note.style.marginTop = "8px";
+        note.innerHTML = `<span class="badge">Pregled (bez glasanja)</span>`;
+        pollBox.appendChild(note);
+      }
+
+      li.appendChild(pollBox);
+    }
+
+    forumList.appendChild(li);
+  });
+}
+
+function resetProposalForm(){
+  if(!pTitle) return;
+  forumError.style.display = "none";
+  pTitle.value = "";
+  pBody.value = "";
+  pPoll.value = "ne";
+  pDays.value = 7;
+}
+
+function forumInit(){
+  if(!forumList) return;
+  renderForum();
+  resetProposalForm();
+}
+
+function vote(proposalId, dir){
+  const items = loadProposals();
+  const idx = items.findIndex(x => x.id === proposalId);
+  if(idx === -1) return;
+
+  const p = items[idx];
+  if(!p.poll || !p.poll.enabled) return;
+
+  const st = pollStatus(p.poll);
+  if(!st.open) return;
+
+  if(!CURRENT_SESSION || CURRENT_SESSION.role !== "stanar") return;
+  if(hasVoted(p.poll, CURRENT_SESSION.email)) return;
+
+  p.poll.votesYes = p.poll.votesYes || [];
+  p.poll.votesNo = p.poll.votesNo || [];
+
+  if(dir === "yes") p.poll.votesYes.push(CURRENT_SESSION.email);
+  else p.poll.votesNo.push(CURRENT_SESSION.email);
+
+  items[idx] = p;
+  saveProposals(items);
+  renderForum();
+}
+
+/* stanar kreira predlog */
+if(createProposalBtn){
+  createProposalBtn.addEventListener("click", () => {
+    forumError.style.display = "none";
+
+    if(!CURRENT_SESSION || CURRENT_SESSION.role !== "stanar"){
+      forumError.textContent = "Nemate dozvolu.";
+      forumError.style.display = "block";
+      return;
+    }
+
+    const title = (pTitle.value||"").trim();
+    const body = (pBody.value||"").trim();
+    const pollOn = (pPoll.value === "da");
+    const days = Math.max(1, Math.min(30, Number(pDays.value||7)));
+
+    if(!title || !body){
+      forumError.textContent = "Greska: popuni naslov i opis.";
+      forumError.style.display = "block";
+      return;
+    }
+
+    const proposal = {
+      id: cryptoRandom(),
+      createdAt: Date.now(),
+      title,
+      body,
+      createdBy: "stanar",
+      poll: pollOn ? { enabled: true, endsAt: Date.now() + 1000*60*60*24*days, votesYes: [], votesNo: [] } : { enabled:false }
+    };
+
+    const items = loadProposals();
+    items.push(proposal);
+    saveProposals(items);
+
+    resetProposalForm();
+    renderForum();
+  });
+}
+
+if(clearProposalBtn){
+  clearProposalBtn.addEventListener("click", resetProposalForm);
+}
+
 /* INIT */
 (function init(){
   const session = getSession();
@@ -1291,6 +1578,7 @@ if(saveFinanceBtn){
     userPill.textContent = session.email;
     applyRoleUI(session.role);
     financeInit();
+    forumInit();
     setMode("portal");
   }else{
     CURRENT_SESSION = null;
