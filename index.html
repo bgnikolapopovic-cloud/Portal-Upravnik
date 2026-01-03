@@ -124,6 +124,17 @@ body::before{
   z-index:70;
 }
 .sidebar.open{transform:translateX(0)}
+
+/* ✅ NOVO: dok je SIDEBAR ZATVOREN, omekšaj (fade ~50%) taj levi "tamni rub" */
+body:not(.sidebar-open) .sidebar{
+  filter: brightness(1.20);
+}
+
+/* Kada je otvoren, nema filtera (ostaje originalno) */
+body.sidebar-open .sidebar{
+  filter:none;
+}
+
 .sidebar::before{
   content:"";
   position:absolute; inset:0;
@@ -305,7 +316,7 @@ body::before{
 <div class="overlay" id="overlay"></div>
 <div class="hamburger" id="hamburger">☰</div>
 
-<!-- ✅ SIDEBAR VRACEN -->
+<!-- ✅ SIDEBAR -->
 <aside class="sidebar" id="sidebar">
   <div class="brand">
     <h1>PORTAL</h1>
@@ -368,10 +379,12 @@ const burger = document.getElementById("hamburger");
 function openS(){
   sidebar.classList.add("open");
   overlay.classList.add("show");
+  document.body.classList.add("sidebar-open");   // ✅ NOVO
 }
 function closeS(){
   sidebar.classList.remove("open");
   overlay.classList.remove("show");
+  document.body.classList.remove("sidebar-open"); // ✅ NOVO
 }
 
 /* Hover (desktop) */
@@ -391,4 +404,3 @@ document.addEventListener("keydown", (e) => {
 
 </body>
 </html>
-
