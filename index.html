@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Portal Upravnik - Login</title>
+<title>Portal Upravnik</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,15 +12,20 @@
 <style>
 :root{
   --bg-url: url("bg.png");
+
+  --sidebar-w: 340px;
+  --edge-w: 16px;
+
+  --main-pad: 18px;
+
   --ink:#0f172a;
   --muted:rgba(15,23,42,.65);
   --glass:rgba(255,255,255,.88);
-  --glass2:rgba(255,255,255,.72);
   --border:rgba(15,23,42,.14);
   --shadow:0 18px 40px rgba(2,6,23,.10);
 
-  --main-pad:18px;
-  --accent:#0f172a;
+  --side1:rgba(10,35,56,.92);
+  --side2:rgba(6,24,40,.92);
 }
 
 @media(min-width:900px){
@@ -40,13 +45,26 @@ body::before{
   content:"";
   position:fixed;
   inset:0;
-  background: rgba(255,255,255,.34);
+  background: rgba(255,255,255,.32);
   backdrop-filter: blur(1.4px);
   filter: contrast(1.35) saturate(1.25);
   z-index:-2;
 }
 
-/* top-right brand (kao portal) */
+/* ambient blobovi (login) */
+.ambient{
+  position:fixed;
+  inset:-20%;
+  z-index:-1;
+  pointer-events:none;
+  background:
+    radial-gradient(600px 380px at 18% 22%, rgba(59,130,246,.22), transparent 60%),
+    radial-gradient(620px 420px at 82% 26%, rgba(14,165,233,.18), transparent 60%),
+    radial-gradient(720px 520px at 50% 84%, rgba(15,23,42,.12), transparent 62%);
+  filter: blur(2px);
+}
+
+/* TOP RIGHT */
 .topRightBar{
   position:fixed;
   top:calc(10px + env(safe-area-inset-top));
@@ -57,8 +75,17 @@ body::before{
   z-index:95;
   pointer-events:none;
 }
-.topRightTitle{ text-align:left; font-weight:900; line-height:1.05; }
-.topRightTitle span{ display:block; font-size:18px; }
+
+.topRightTitle{
+  text-align:left;
+  font-weight:900;
+  line-height:1.05;
+}
+.topRightTitle span{
+  display:block;
+  font-size:18px;
+}
+
 .topRightLogo{
   padding:6px;
   background:rgba(255,255,255,.72);
@@ -72,12 +99,13 @@ body::before{
   display:block;
   border-radius:16px;
 }
+
 @media(min-width:900px){
   .topRightTitle span{font-size:22px;}
   .topRightLogo img{height:92px;}
 }
 
-/* ===== Login layout ===== */
+/* ================= LOGIN SCREEN ================= */
 .loginWrap{
   min-height:100vh;
   display:grid;
@@ -85,123 +113,15 @@ body::before{
   padding:24px var(--main-pad);
 }
 
-/* “ambient” gradient blobs */
-.ambient{
-  position:fixed;
-  inset:-20%;
-  z-index:-1;
-  pointer-events:none;
-  background:
-    radial-gradient(600px 380px at 18% 22%, rgba(59,130,246,.22), transparent 60%),
-    radial-gradient(620px 420px at 82% 26%, rgba(14,165,233,.18), transparent 60%),
-    radial-gradient(720px 520px at 50% 84%, rgba(15,23,42,.12), transparent 62%);
-  filter: blur(2px);
-}
-
-.loginShell{
-  width:min(980px, 100%);
-  display:grid;
-  gap:18px;
-}
-
-@media(min-width:900px){
-  .loginShell{
-    grid-template-columns: 1.05fr .95fr;
-    align-items:stretch;
-    gap:22px;
-  }
-}
-
-/* Left promo card */
-.promo{
-  border-radius:30px;
-  background:rgba(255,255,255,.70);
-  border:1px solid rgba(15,23,42,.12);
-  box-shadow:var(--shadow);
-  padding:22px;
-  position:relative;
-  overflow:hidden;
-}
-
-.promo::before{
-  content:"";
-  position:absolute;
-  inset:-2px;
-  background:
-    radial-gradient(500px 320px at 15% 25%, rgba(59,130,246,.18), transparent 55%),
-    radial-gradient(520px 380px at 85% 35%, rgba(14,165,233,.14), transparent 55%);
-  pointer-events:none;
-}
-
-.promoInner{position:relative; z-index:1;}
-.badge{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:10px 12px;
-  border-radius:999px;
-  background:rgba(255,255,255,.72);
-  border:1px solid rgba(15,23,42,.12);
-  font-weight:900;
-  letter-spacing:.04em;
-  font-size:12px;
-  box-shadow:0 10px 22px rgba(2,6,23,.06);
-}
-.badgeDot{
-  width:10px;height:10px;border-radius:999px;
-  background:rgba(15,23,42,.85);
-  box-shadow:0 0 0 4px rgba(15,23,42,.08);
-}
-
-.promo h1{
-  margin-top:14px;
-  font-size:34px;
-  line-height:1.05;
-  font-weight:900;
-  letter-spacing:.02em;
-}
-.promo p{
-  margin-top:12px;
-  color:var(--muted);
-  font-weight:700;
-  line-height:1.45;
-  font-size:15px;
-  max-width:54ch;
-}
-.features{
-  margin-top:16px;
-  display:grid;
-  gap:10px;
-}
-.feature{
-  display:flex;
-  gap:10px;
-  align-items:flex-start;
-  padding:12px 12px;
-  border-radius:18px;
-  background:rgba(255,255,255,.58);
-  border:1px solid rgba(15,23,42,.10);
-}
-.ico{
-  width:38px;height:38px;border-radius:16px;
-  display:grid;place-items:center;
-  background:rgba(15,23,42,.92);
-  color:#fff;
-  font-weight:900;
-  flex:0 0 auto;
-}
-.feature b{display:block;font-weight:900}
-.feature span{display:block;color:var(--muted);font-weight:700;font-size:13px;margin-top:2px}
-
-/* Right login card */
 .loginCard{
+  width:min(560px, 100%);
   border-radius:30px;
   background:rgba(255,255,255,.90);
   border:1px solid rgba(15,23,42,.14);
   box-shadow:var(--shadow);
   padding:22px;
-  overflow:hidden;
   position:relative;
+  overflow:hidden;
 }
 
 .loginCard::before{
@@ -213,7 +133,6 @@ body::before{
     radial-gradient(520px 320px at 86% 18%, rgba(14,165,233,.10), transparent 60%);
   pointer-events:none;
 }
-
 .loginInner{position:relative; z-index:1;}
 
 .loginHead{
@@ -224,6 +143,7 @@ body::before{
   padding-bottom:12px;
   border-bottom:1px solid rgba(15,23,42,.10);
 }
+
 .loginHead .brandText{
   display:flex;
   flex-direction:column;
@@ -253,7 +173,6 @@ body::before{
   display:block;
 }
 
-/* form */
 .formTitle{
   margin-top:16px;
   font-weight:900;
@@ -278,9 +197,7 @@ body::before{
   opacity:.7;
   margin-bottom:6px;
 }
-.inputWrap{
-  position:relative;
-}
+.inputWrap{ position:relative; }
 .field input{
   width:100%;
   border-radius:18px;
@@ -319,6 +236,7 @@ body::before{
   margin-top:12px;
   flex-wrap:wrap;
 }
+
 .check{
   display:flex;
   align-items:center;
@@ -350,12 +268,6 @@ body::before{
   box-shadow:0 18px 36px rgba(2,6,23,.18);
 }
 .btnPrimary:hover{ transform:translateY(-1px); }
-.btnGhost{
-  background:rgba(15,23,42,.06);
-  border:1px solid rgba(15,23,42,.14);
-  box-shadow:none;
-}
-.btnGhost:hover{ transform:translateY(-1px); }
 
 .error{
   margin-top:10px;
@@ -363,62 +275,218 @@ body::before{
   color:#9f1239;
   display:none;
 }
-.help{
-  margin-top:14px;
+
+.smallHint{
+  margin-top:12px;
   padding-top:12px;
   border-top:1px solid rgba(15,23,42,.10);
-  display:flex;
-  justify-content:space-between;
-  gap:12px;
-  flex-wrap:wrap;
-  font-size:13px;
-  font-weight:800;
-  color:rgba(15,23,42,.72);
-}
-.help a{
-  color:rgba(15,23,42,.86);
-  text-decoration:none;
-  border-bottom:1px dashed rgba(15,23,42,.35);
-}
-.smallHint{
-  margin-top:10px;
   font-size:12px;
   font-weight:800;
   opacity:.72;
 }
 
-/* ===== Portal (minimal placeholder, samo da vidis prelaz) ===== */
-.portalWrap{
-  display:none;
-  padding:24px var(--main-pad);
+/* ================= PORTAL (tvoj UI) ================= */
+.overlay{
+  position:fixed; inset:0;
+  background:rgba(2,6,23,.25);
+  opacity:0; pointer-events:none;
+  transition:.2s;
+  z-index:40;
 }
-.portalCard{
-  max-width:980px;
-  margin:0 auto;
-  border-radius:28px;
+.overlay.show{opacity:1;pointer-events:auto}
+
+.edgeHotspot{
+  position:fixed; left:0; top:0;
+  width:var(--edge-w); height:100vh;
+  z-index:60;
+}
+
+/* sidebar */
+.sidebar{
+  position:fixed; left:0; top:0;
+  width:var(--sidebar-w); height:100vh;
+  padding:30px 22px;
+  background:linear-gradient(180deg,var(--side1),var(--side2)),var(--bg-url);
+  background-size:cover;
+  color:#fff;
+  box-shadow:18px 0 40px rgba(0,0,0,.28);
+  transform:translateX(calc(-1 * (var(--sidebar-w) - var(--edge-w))));
+  transition:.2s;
+  z-index:70;
+}
+.sidebar.open{transform:translateX(0)}
+body:not(.sidebar-open) .sidebar{ filter: brightness(1.20); }
+body.sidebar-open .sidebar{ filter:none; }
+
+.sidebar::before{
+  content:"";
+  position:absolute; inset:0;
+  background:rgba(0,0,0,.22);
+  backdrop-filter:blur(8px);
+}
+.sidebar>*{position:relative;z-index:1}
+
+.brand{height:92px}
+.brand h1{font-size:24px;font-weight:900;letter-spacing:.16em}
+.brand p{font-size:13px;opacity:.78;margin-top:8px}
+
+.nav{margin-top:26px;display:flex;flex-direction:column;gap:12px}
+.nav a{
+  padding:16px 18px;
+  border-radius:18px;
+  color:#fff;
+  text-decoration:none;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.14);
+  font-size:19px;
+  font-weight:700;
+  display:block;
+}
+.nav a.active{background:rgba(255,255,255,.14)}
+
+/* hamburger */
+.hamburger{
+  position:fixed;
+  left:18px; top:18px;
+  width:44px; height:44px;
+  border-radius:14px;
+  background:var(--glass);
+  border:1px solid var(--border);
+  box-shadow:var(--shadow);
+  display:grid; place-items:center;
+  cursor:pointer;
+  z-index:80;
+  user-select:none;
+}
+
+/* MAIN */
+.main{ padding:0 var(--main-pad) 22px; }
+
+.contentWrap{ padding-top:calc(86px + 14px); }
+@media(min-width:900px){
+  .contentWrap{padding-top:calc(120px + 14px);}
+}
+
+.pageHeader{
+  display:flex;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:18px;
+}
+
+.leftInfo{max-width:52vw}
+.meta{
+  font-size:18px;
+  color:rgba(15,23,42,.62);
+  font-weight:600;
+  line-height:1.28;
+}
+
+.rightCol{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:10px;
+}
+
+.searchInline,
+.balanceCard{
+  width:clamp(180px,42vw,300px);
+  border-radius:18px;
+  background:var(--glass);
+  border:1px solid var(--border);
+  box-shadow:var(--shadow);
+}
+
+.searchInline{padding:10px 14px}
+.searchInline input{
+  border:none;background:transparent;width:100%;
+  outline:none;font-size:14px;
+}
+
+/* stanje */
+.balanceCard{
+  padding:12px;
+  text-align:right;
+}
+.balanceCard .label{
+  font-size:12px;
+  font-weight:700;
+  display:block;
+  margin-bottom:6px;
+}
+.balanceAmount{ white-space:nowrap; }
+.balanceAmount .value{
+  font-size:20px;
+  font-weight:900;
+  letter-spacing:0.2px;
+}
+.balanceAmount .currency{
+  font-size:11px;
+  font-weight:700;
+  opacity:.55;
+  margin-left:4px;
+}
+@media(min-width:900px){
+  .meta{font-size:26px;}
+  .balanceAmount .value{font-size:32px;}
+  .balanceAmount .currency{font-size:13px;}
+  .balanceCard{padding:18px;}
+}
+
+/* cards */
+.card{
   background:rgba(255,255,255,.86);
+  border-radius:26px;
+  padding:22px;
+  box-shadow:var(--shadow);
+}
+.card h3{
+  text-transform:uppercase;
+  letter-spacing:.16em;
+  font-size:22px;
+  font-weight:900;
+}
+.boardList{
+  margin-top:14px;
+  list-style:none;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.boardList li{
+  background:rgba(15,23,42,.06);
+  border:1px solid rgba(15,23,42,.10);
+  padding:12px 14px;
+  border-radius:16px;
+  font-weight:700;
+}
+@media(min-width:900px){
+  .card{padding:28px;}
+  .card h3{font-size:26px;}
+}
+
+/* top pills */
+.topMini{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+.pill{
+  border-radius:999px;
+  padding:10px 12px;
+  background:rgba(255,255,255,.72);
   border:1px solid rgba(15,23,42,.14);
   box-shadow:var(--shadow);
-  padding:22px;
-}
-.portalCard h2{font-weight:900;letter-spacing:.02em}
-.portalCard p{margin-top:10px;color:var(--muted);font-weight:700}
-.portalCard button{
-  margin-top:14px;
-  border:none;
-  border-radius:18px;
-  padding:12px 14px;
   font-weight:900;
-  cursor:pointer;
-  background:rgba(15,23,42,.92);
-  color:#fff;
+  font-size:13px;
 }
+.pillBtn{ cursor:pointer; user-select:none; }
 
-/* mode toggles */
-body.mode-portal .loginWrap{display:none}
-body.mode-login .portalWrap{display:none}
-body.mode-portal .portalWrap{display:block}
-
+/* mode switching */
+body.mode-login #portalScreen{display:none;}
+body.mode-portal #loginScreen{display:none;}
+body.mode-portal #portalScreen{display:block;}
 </style>
 </head>
 
@@ -437,125 +505,139 @@ body.mode-portal .portalWrap{display:block}
   </div>
 </div>
 
-<!-- LOGIN -->
-<section class="loginWrap">
-  <div class="loginShell">
+<!-- LOGIN SCREEN -->
+<section class="loginWrap" id="loginScreen">
+  <div class="loginCard">
+    <div class="loginInner">
 
-    <aside class="promo">
-      <div class="promoInner">
-        <div class="badge"><span class="badgeDot"></span> SIGURAN PRISTUP</div>
-        <h1>Dobrodosli u<br>Portal Upravnik</h1>
-        <p>
-          Centralno mesto za finansije, oglase, dokumenta i komunikaciju stanara.
-          Prijavite se da nastavite.
-        </p>
-
-        <div class="features">
-          <div class="feature">
-            <div class="ico">F</div>
-            <div>
-              <b>Finansije</b>
-              <span>Stanje racuna, fond, troskovi i dugovanja.</span>
-            </div>
-          </div>
-          <div class="feature">
-            <div class="ico">O</div>
-            <div>
-              <b>Oglasna tabla</b>
-              <span>Vazna obavestenja i planovi radova.</span>
-            </div>
-          </div>
-          <div class="feature">
-            <div class="ico">R</div>
-            <div>
-              <b>Regulative</b>
-              <span>Dokumenta i pravila zgrade na jednom mestu.</span>
-            </div>
-          </div>
+      <div class="loginHead">
+        <div class="brandText">
+          <b>PORTAL</b>
+          <span>Upravnik zgrade</span>
         </div>
-
-        <div class="smallHint">
-          Demo nalog: <b>upravnik@demo.rs</b> / <b>123456</b>
+        <div class="miniLogo">
+          <img src="logo.png" alt="Portal Upravnik logo">
         </div>
       </div>
-    </aside>
 
-    <div class="loginCard">
-      <div class="loginInner">
+      <div class="formTitle">Prijava</div>
+      <div class="formSub">Unesite pristupne podatke. Registracija nije dostupna.</div>
 
-        <div class="loginHead">
-          <div class="brandText">
-            <b>PORTAL</b>
-            <span>Upravnik zgrade</span>
-          </div>
-          <div class="miniLogo">
-            <img src="logo.png" alt="Portal Upravnik logo">
-          </div>
-        </div>
-
-        <div class="formTitle">Prijava</div>
-        <div class="formSub">Unesite podatke da biste pristupili portalu.</div>
-
-        <div class="field">
-          <label for="email">Email</label>
-          <input id="email" type="email" placeholder="npr. upravnik@zgrada.rs" autocomplete="username">
-        </div>
-
-        <div class="field">
-          <label for="pass">Lozinka</label>
-          <div class="inputWrap">
-            <input id="pass" type="password" placeholder="Unesi lozinku" autocomplete="current-password">
-            <button class="eyeBtn" id="togglePass" type="button">👁</button>
-          </div>
-        </div>
-
-        <div class="row">
-          <label class="check">
-            <input id="remember" type="checkbox" checked>
-            Zapamti me
-          </label>
-          <a href="#" onclick="return false" style="font-weight:900;text-decoration:none;opacity:.8">Zaboravljena lozinka?</a>
-        </div>
-
-        <div class="btnRow">
-          <button class="btn btnPrimary" id="loginBtn">Uloguj se</button>
-          <button class="btn btnGhost" id="demoBtn" type="button">Demo</button>
-        </div>
-
-        <div class="error" id="loginError">Pogresan email ili lozinka.</div>
-
-        <div class="help">
-          <span>Nemate nalog? <a href="#" onclick="return false">Kontaktirajte upravnika</a></span>
-          <span>Podrska: <a href="#" onclick="return false">help@portal.rs</a></span>
-        </div>
-
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" placeholder="npr. upravnik@zgrada.rs" autocomplete="username">
       </div>
+
+      <div class="field">
+        <label for="pass">Lozinka</label>
+        <div class="inputWrap">
+          <input id="pass" type="password" placeholder="Unesi lozinku" autocomplete="current-password">
+          <button class="eyeBtn" id="togglePass" type="button">👁</button>
+        </div>
+      </div>
+
+      <div class="row">
+        <label class="check">
+          <input id="remember" type="checkbox" checked>
+          Zapamti me
+        </label>
+      </div>
+
+      <div class="btnRow">
+        <button class="btn btnPrimary" id="loginBtn">Uloguj se</button>
+      </div>
+
+      <div class="error" id="loginError">Pogresan email ili lozinka.</div>
+
+      <div class="smallHint">
+        Demo nalog: <b>upravnik@demo.rs</b> / <b>123456</b>
+      </div>
+
     </div>
-
   </div>
 </section>
 
-<!-- PORTAL placeholder (samo da vidis prelaz; kasnije ovde ubacujemo tvoj pravi portal kod) -->
-<section class="portalWrap">
-  <div class="portalCard">
-    <h2>Ulogovani ste ✅</h2>
-    <p>Ovo je samo demo prelaz. Sledeci korak: ovde ubacujemo vas pravi Portal UI (dashboard).</p>
-    <button id="logoutBtn">Odjava</button>
-  </div>
-</section>
+<!-- PORTAL SCREEN (tvoj pravi UI) -->
+<div id="portalScreen">
+
+  <div class="edgeHotspot" id="edgeHotspot"></div>
+  <div class="overlay" id="overlay"></div>
+  <div class="hamburger" id="hamburger">☰</div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <h1>PORTAL</h1>
+      <p>Upravnik zgrade</p>
+    </div>
+    <nav class="nav">
+      <a class="active">Finansije</a>
+      <a>Oglasna tabla</a>
+      <a>Forum</a>
+      <a>Zakonske regulative</a>
+      <a>Kontakt sluzbe</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <div class="contentWrap">
+
+      <section class="pageHeader">
+        <div class="leftInfo">
+          <div class="meta">
+            Ulica Primer 1<br>
+            Zgrada 12<br>
+            48 jedinica
+          </div>
+        </div>
+
+        <div class="rightCol">
+
+          <div class="topMini">
+            <div class="pill" id="userPill">Korisnik</div>
+            <div class="pill pillBtn" id="logoutBtn">Odjava</div>
+          </div>
+
+          <div class="searchInline">
+            <input placeholder="Pretraga (finansije, dokumenti, forum)">
+          </div>
+
+          <div class="balanceCard">
+            <span class="label">Stanje racuna</span>
+            <div class="balanceAmount">
+              <span class="value">948.889,00</span>
+              <span class="currency">RSD</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h3>Oglasna tabla</h3>
+        <ul class="boardList">
+          <li>Akcija ciscenja</li>
+          <li>Popravka krova</li>
+          <li>Krecenje</li>
+        </ul>
+      </section>
+
+    </div>
+  </main>
+
+</div>
 
 <script>
+/* ===== DEMO AUTH (frontend) ===== */
 const DEMO_EMAIL = "upravnik@demo.rs";
 const DEMO_PASS  = "123456";
-const KEY = "pu_login_demo";
+const KEY = "pu_session_demo_v1";
 
 const emailEl = document.getElementById("email");
 const passEl = document.getElementById("pass");
 const loginBtn = document.getElementById("loginBtn");
-const demoBtn = document.getElementById("demoBtn");
 const errEl = document.getElementById("loginError");
 const togglePass = document.getElementById("togglePass");
 const remember = document.getElementById("remember");
+const userPill = document.getElementById("userPill");
 
 function setMode(mode){
   document.body.classList.toggle("mode-login", mode === "login");
@@ -570,8 +652,8 @@ function saveSession(email){
   }
 }
 
-function isLogged(){
-  return !!localStorage.getItem(KEY);
+function getSession(){
+  return localStorage.getItem(KEY);
 }
 
 togglePass.addEventListener("click", () => {
@@ -588,17 +670,12 @@ function attemptLogin(email, pass){
   }
   errEl.style.display = "none";
   saveSession(email);
+  userPill.textContent = email;
   setMode("portal");
 }
 
 loginBtn.addEventListener("click", () => {
   attemptLogin((emailEl.value||"").trim(), (passEl.value||"").trim());
-});
-
-demoBtn.addEventListener("click", () => {
-  emailEl.value = DEMO_EMAIL;
-  passEl.value = DEMO_PASS;
-  attemptLogin(DEMO_EMAIL, DEMO_PASS);
 });
 
 document.addEventListener("keydown", (e) => {
@@ -612,8 +689,36 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
   setMode("login");
 });
 
+/* ===== SIDEBAR behavior (tvoj kod) ===== */
+const sidebar = document.getElementById("sidebar");
+const overlay = document.getElementById("overlay");
+const edge = document.getElementById("edgeHotspot");
+const burger = document.getElementById("hamburger");
+
+function openS(){
+  sidebar.classList.add("open");
+  overlay.classList.add("show");
+  document.body.classList.add("sidebar-open");
+}
+function closeS(){
+  sidebar.classList.remove("open");
+  overlay.classList.remove("show");
+  document.body.classList.remove("sidebar-open");
+}
+edge.addEventListener("mouseenter", openS);
+burger.addEventListener("click", () => {
+  sidebar.classList.contains("open") ? closeS() : openS();
+});
+overlay.addEventListener("click", closeS);
+document.addEventListener("keydown", (e) => {
+  if(e.key === "Escape") closeS();
+});
+
+/* INIT */
 (function init(){
-  if(isLogged()){
+  const email = getSession();
+  if(email){
+    userPill.textContent = email;
     setMode("portal");
   }else{
     setMode("login");
