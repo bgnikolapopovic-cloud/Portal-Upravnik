@@ -86,7 +86,6 @@ body::before{
   font-size:18px; /* mobile */
 }
 
-/* LOGO – ovalno */
 .topRightLogo{
   padding:6px;
   background:rgba(255,255,255,.72);
@@ -141,7 +140,6 @@ body::before{
   border-bottom:1px solid rgba(15,23,42,.10);
 }
 
-/* Prijava je gore odmah */
 .formTitle{
   margin:0;
   font-weight:900;
@@ -408,6 +406,12 @@ body.sidebar-open .sidebar{ filter:none; }
   font-size:22px;
   font-weight:900;
 }
+@media(min-width:900px){
+  .card{padding:28px;}
+  .card h3{font-size:26px;}
+}
+
+/* list */
 .boardList{
   margin-top:14px;
   list-style:none;
@@ -422,12 +426,15 @@ body.sidebar-open .sidebar{ filter:none; }
   border-radius:16px;
   font-weight:700;
 }
-@media(min-width:900px){
-  .card{padding:28px;}
-  .card h3{font-size:26px;}
+
+.smallText{
+  margin-top:10px;
+  font-weight:700;
+  color:rgba(15,23,42,.65);
+  line-height:1.45;
 }
 
-/* top pills (portal) */
+/* pills (portal) */
 .topMini{
   display:flex;
   gap:10px;
@@ -444,6 +451,10 @@ body.sidebar-open .sidebar{ filter:none; }
 }
 .pillBtn{ cursor:pointer; user-select:none; }
 
+/* pages switch */
+.page{ display:none; }
+.page.active{ display:block; }
+
 /* mode switching */
 body.mode-login #portalScreen{display:none;}
 body.mode-portal #loginScreen{display:none;}
@@ -454,7 +465,7 @@ body.mode-portal #portalScreen{display:block;}
 <body class="mode-login">
 <div class="ambient"></div>
 
-<!-- TOP RIGHT BRAND (uvek prisutan) -->
+<!-- TOP RIGHT BRAND -->
 <div class="topRightBar">
   <div class="topRightTitle">
     <span>Portal</span>
@@ -508,7 +519,7 @@ body.mode-portal #portalScreen{display:block;}
   </div>
 </section>
 
-<!-- PORTAL SCREEN (tvoj pravi UI) -->
+<!-- PORTAL SCREEN -->
 <div id="portalScreen">
 
   <div class="edgeHotspot" id="edgeHotspot"></div>
@@ -520,18 +531,22 @@ body.mode-portal #portalScreen{display:block;}
       <h1>PORTAL</h1>
       <p>Upravnik zgrade</p>
     </div>
-    <nav class="nav">
-      <a class="active">Finansije</a>
-      <a>Oglasna tabla</a>
-      <a>Forum</a>
-      <a>Zakonske regulative</a>
-      <a>Kontakt sluzbe</a>
+
+    <!-- ✅ SIDEBAR sa data-page -->
+    <nav class="nav" id="nav">
+      <a href="#" class="active" data-page="home">Home</a>
+      <a href="#" data-page="finansije">Finansije</a>
+      <a href="#" data-page="oglasna">Oglasna tabla</a>
+      <a href="#" data-page="forum">Forum</a>
+      <a href="#" data-page="regulative">Zakonske regulative</a>
+      <a href="#" data-page="kontakt">Kontakt sluzbe</a>
     </nav>
   </aside>
 
   <main class="main">
     <div class="contentWrap">
 
+      <!-- Header ostaje isti na svim stranicama -->
       <section class="pageHeader">
         <div class="leftInfo">
           <div class="meta">
@@ -542,14 +557,13 @@ body.mode-portal #portalScreen{display:block;}
         </div>
 
         <div class="rightCol">
-
           <div class="topMini">
             <div class="pill" id="userPill">Korisnik</div>
             <div class="pill pillBtn" id="logoutBtn">Odjava</div>
           </div>
 
           <div class="searchInline">
-            <input placeholder="Pretraga (finansije, dokumenti, forum)">
+            <input id="globalSearch" placeholder="Pretraga (finansije, dokumenti, forum)">
           </div>
 
           <div class="balanceCard">
@@ -562,13 +576,82 @@ body.mode-portal #portalScreen{display:block;}
         </div>
       </section>
 
-      <section class="card">
-        <h3>Oglasna tabla</h3>
-        <ul class="boardList">
-          <li>Akcija ciscenja</li>
-          <li>Popravka krova</li>
-          <li>Krecenje</li>
-        </ul>
+      <!-- ✅ PAGES -->
+      <section class="page active" id="page-home">
+        <section class="card">
+          <h3>Home</h3>
+          <div class="smallText">
+            Ovde ide kratak pregled (stanje racuna, poslednje promene, istaknuta obavestenja).
+          </div>
+          <ul class="boardList" style="margin-top:12px;">
+            <li>Poslednja promena: Rashod - Tekuce odrzavanje (02.01.2026)</li>
+            <li>Istaknuto: Popravka krova - dokument na oglasnoj tabli</li>
+            <li>Forum: Otvorena anketa - Predlog za novu rasvetu</li>
+          </ul>
+        </section>
+      </section>
+
+      <section class="page" id="page-finansije">
+        <section class="card">
+          <h3>Finansije</h3>
+          <div class="smallText">
+            Ovde ce biti lista finansijskih promena + dokumenti (izvodi, racuni) sa pregledom/zoomom i mogucnoscu stampanja izvestaja.
+          </div>
+          <ul class="boardList">
+            <li>02.01.2026 — Rashod — Tekuce odrzavanje — “Uplata servisu”</li>
+            <li>28.12.2025 — Prihod — Uplata stanara</li>
+            <li>15.12.2025 — Rashod — Hitna intervencija — “Vodoinstalater”</li>
+          </ul>
+        </section>
+      </section>
+
+      <section class="page" id="page-oglasna">
+        <section class="card">
+          <h3>Oglasna tabla</h3>
+          <ul class="boardList">
+            <li>Akcija ciscenja</li>
+            <li>Popravka krova</li>
+            <li>Krecenje</li>
+          </ul>
+        </section>
+      </section>
+
+      <section class="page" id="page-forum">
+        <section class="card">
+          <h3>Forum</h3>
+          <div class="smallText">
+            Predlozi za skupstinu stanara (bez komentara). Ovde ce biti ankete sa vremenskim ogranicenjem.
+          </div>
+          <ul class="boardList">
+            <li>Predlog: Nova rasveta u hodniku — (anketa: otvorena)</li>
+            <li>Predlog: Zamena interfona — (anketa: zatvorena)</li>
+          </ul>
+        </section>
+      </section>
+
+      <section class="page" id="page-regulative">
+        <section class="card">
+          <h3>Zakonske regulative</h3>
+          <div class="smallText">
+            Informativna stranica sa zakonima i propisima. Sadrzaj menja administrator.
+          </div>
+          <ul class="boardList">
+            <li>Zakon o stanovanju i odrzavanju zgrada (PDF)</li>
+            <li>Pravilnik o upravljanju stambenim zajednicama (PDF)</li>
+          </ul>
+        </section>
+      </section>
+
+      <section class="page" id="page-kontakt">
+        <section class="card">
+          <h3>Kontakt sluzbe</h3>
+          <ul class="boardList">
+            <li>Vatrogasci: 193</li>
+            <li>Hitna pomoc: 194</li>
+            <li>Policija: 192</li>
+            <li>EPS kvarovi: (placeholder)</li>
+          </ul>
+        </section>
       </section>
 
     </div>
@@ -580,7 +663,10 @@ body.mode-portal #portalScreen{display:block;}
 /* ===== DEMO AUTH (frontend) ===== */
 const DEMO_EMAIL = "upravnik@demo.rs";
 const DEMO_PASS  = "123456";
-const KEY = "pu_session_demo_v1";
+
+/* remember me: persistent (localStorage) + session-only (sessionStorage) */
+const KEY_PERSIST = "pu_session_persist_v1";
+const KEY_SESSION = "pu_session_session_v1";
 
 const emailEl = document.getElementById("email");
 const passEl = document.getElementById("pass");
@@ -595,16 +681,22 @@ function setMode(mode){
   document.body.classList.toggle("mode-portal", mode === "portal");
 }
 
+function clearSessions(){
+  localStorage.removeItem(KEY_PERSIST);
+  sessionStorage.removeItem(KEY_SESSION);
+}
+
 function saveSession(email){
-  if(remember.checked){
-    localStorage.setItem(KEY, email);
+  clearSessions();
+  if(remember && remember.checked){
+    localStorage.setItem(KEY_PERSIST, email);
   }else{
-    localStorage.removeItem(KEY);
+    sessionStorage.setItem(KEY_SESSION, email);
   }
 }
 
 function getSession(){
-  return localStorage.getItem(KEY);
+  return localStorage.getItem(KEY_PERSIST) || sessionStorage.getItem(KEY_SESSION);
 }
 
 togglePass.addEventListener("click", () => {
@@ -635,14 +727,7 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-/* logout (zatvori sidebar + vrati na login) */
-document.getElementById("logoutBtn").addEventListener("click", () => {
-  localStorage.removeItem(KEY);
-  closeS();           // zatvori sidebar ako je otvoren
-  setMode("login");
-});
-
-/* ===== SIDEBAR behavior (tvoj kod) ===== */
+/* ===== SIDEBAR behavior ===== */
 const sidebar = document.getElementById("sidebar");
 const overlay = document.getElementById("overlay");
 const edge = document.getElementById("edgeHotspot");
@@ -658,6 +743,7 @@ function closeS(){
   overlay.classList.remove("show");
   document.body.classList.remove("sidebar-open");
 }
+
 edge.addEventListener("mouseenter", openS);
 burger.addEventListener("click", () => {
   sidebar.classList.contains("open") ? closeS() : openS();
@@ -665,6 +751,47 @@ burger.addEventListener("click", () => {
 overlay.addEventListener("click", closeS);
 document.addEventListener("keydown", (e) => {
   if(e.key === "Escape") closeS();
+});
+
+/* logout */
+document.getElementById("logoutBtn").addEventListener("click", () => {
+  clearSessions();
+  closeS();
+  setMode("login");
+});
+
+/* ===== SPA NAV (pages) ===== */
+const nav = document.getElementById("nav");
+const pages = {
+  home: document.getElementById("page-home"),
+  finansije: document.getElementById("page-finansije"),
+  oglasna: document.getElementById("page-oglasna"),
+  forum: document.getElementById("page-forum"),
+  regulative: document.getElementById("page-regulative"),
+  kontakt: document.getElementById("page-kontakt")
+};
+
+function showPage(name){
+  Object.values(pages).forEach(p => p.classList.remove("active"));
+  (pages[name] || pages.home).classList.add("active");
+
+  // active link
+  [...nav.querySelectorAll("a[data-page]")].forEach(a => {
+    a.classList.toggle("active", a.dataset.page === name);
+  });
+
+  // mobile UX: zatvori sidebar posle klika
+  closeS();
+
+  // (opciono) reset scroll
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+nav.addEventListener("click", (e) => {
+  const a = e.target.closest("a[data-page]");
+  if(!a) return;
+  e.preventDefault();
+  showPage(a.dataset.page);
 });
 
 /* INIT */
