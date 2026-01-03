@@ -141,7 +141,6 @@ body::before{
   border-bottom:1px solid rgba(15,23,42,.10);
 }
 
-/* Prijava je gore odmah */
 .formTitle{
   margin:0;
   font-weight:900;
@@ -246,6 +245,216 @@ body::before{
   display:none;
 }
 
+/* ================= overlay + hover zona (PORTAL) ================= */
+.overlay{
+  position:fixed; inset:0;
+  background:rgba(2,6,23,.25);
+  opacity:0; pointer-events:none;
+  transition:.2s;
+  z-index:40;
+}
+.overlay.show{opacity:1;pointer-events:auto}
+
+.edgeHotspot{
+  position:fixed; left:0; top:0;
+  width:var(--edge-w); height:100vh;
+  z-index:60;
+}
+
+/* ================= SIDEBAR ================= */
+.sidebar{
+  position:fixed; left:0; top:0;
+  width:var(--sidebar-w); height:100vh;
+  padding:30px 22px;
+  background:linear-gradient(180deg,var(--side1),var(--side2)),var(--bg-url);
+  background-size:cover;
+  color:#fff;
+  box-shadow:18px 0 40px rgba(0,0,0,.28);
+  transform:translateX(calc(-1 * (var(--sidebar-w) - var(--edge-w))));
+  transition:.2s;
+  z-index:70;
+}
+.sidebar.open{transform:translateX(0)}
+body:not(.sidebar-open) .sidebar{ filter: brightness(1.20); }
+body.sidebar-open .sidebar{ filter:none; }
+
+.sidebar::before{
+  content:"";
+  position:absolute; inset:0;
+  background:rgba(0,0,0,.22);
+  backdrop-filter:blur(8px);
+}
+.sidebar>*{position:relative;z-index:1}
+
+.brand{height:92px}
+.brand h1{font-size:24px;font-weight:900;letter-spacing:.16em}
+.brand p{font-size:13px;opacity:.78;margin-top:8px}
+
+.nav{margin-top:26px;display:flex;flex-direction:column;gap:12px}
+.nav a{
+  padding:16px 18px;
+  border-radius:18px;
+  color:#fff;
+  text-decoration:none;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.14);
+  font-size:19px;
+  font-weight:700;
+  display:block;
+}
+.nav a.active{background:rgba(255,255,255,.14)}
+
+/* hamburger */
+.hamburger{
+  position:fixed;
+  left:18px; top:18px;
+  width:44px; height:44px;
+  border-radius:14px;
+  background:var(--glass);
+  border:1px solid var(--border);
+  box-shadow:var(--shadow);
+  display:grid; place-items:center;
+  cursor:pointer;
+  z-index:80;
+  user-select:none;
+}
+
+/* ================= MAIN ================= */
+.main{ padding:0 var(--main-pad) 22px; }
+
+.contentWrap{ padding-top:calc(86px + 14px); }
+@media(min-width:900px){
+  .contentWrap{padding-top:calc(120px + 14px);}
+}
+
+.pageHeader{
+  display:flex;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:18px;
+}
+
+.leftInfo{max-width:52vw}
+.meta{
+  font-size:18px;
+  color:rgba(15,23,42,.62);
+  font-weight:600;
+  line-height:1.28;
+}
+
+.rightCol{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:10px;
+}
+
+.searchInline,
+.balanceCard{
+  width:clamp(180px,42vw,300px);
+  border-radius:18px;
+  background:var(--glass);
+  border:1px solid var(--border);
+  box-shadow:var(--shadow);
+}
+
+.searchInline{padding:10px 14px}
+.searchInline input{
+  border:none;background:transparent;width:100%;
+  outline:none;font-size:14px;
+}
+
+/* stanje */
+.balanceCard{
+  padding:12px;
+  text-align:right;
+}
+.balanceCard .label{
+  font-size:12px;
+  font-weight:700;
+  display:block;
+  margin-bottom:6px;
+}
+.balanceAmount{ white-space:nowrap; }
+.balanceAmount .value{
+  font-size:20px;
+  font-weight:900;
+  letter-spacing:0.2px;
+}
+.balanceAmount .currency{
+  font-size:11px;
+  font-weight:700;
+  opacity:.55;
+  margin-left:4px;
+}
+@media(min-width:900px){
+  .meta{font-size:26px;}
+  .balanceAmount .value{font-size:32px;}
+  .balanceAmount .currency{font-size:13px;}
+  .balanceCard{padding:18px;}
+}
+
+/* cards */
+.card{
+  background:rgba(255,255,255,.86);
+  border-radius:26px;
+  padding:22px;
+  box-shadow:var(--shadow);
+}
+.card h3{
+  text-transform:uppercase;
+  letter-spacing:.16em;
+  font-size:22px;
+  font-weight:900;
+}
+@media(min-width:900px){
+  .card{padding:28px;}
+  .card h3{font-size:26px;}
+}
+
+.boardList{
+  margin-top:14px;
+  list-style:none;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.boardList li{
+  background:rgba(15,23,42,.06);
+  border:1px solid rgba(15,23,42,.10);
+  padding:12px 14px;
+  border-radius:16px;
+  font-weight:700;
+}
+
+.smallText{
+  margin-top:10px;
+  font-weight:700;
+  color:rgba(15,23,42,.65);
+  line-height:1.45;
+}
+
+/* pills (portal) */
+.topMini{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+.pill{
+  border-radius:999px;
+  padding:10px 12px;
+  background:rgba(255,255,255,.72);
+  border:1px solid rgba(15,23,42,.14);
+  box-shadow:var(--shadow);
+  font-weight:900;
+  font-size:13px;
+}
+.pillBtn{ cursor:pointer; user-select:none; }
+
+/* pages switch */
+.page{ display:none; }
+.page.active{ display:block; }
+
 /* mode switching */
 body.mode-login #portalScreen{display:none;}
 body.mode-portal #loginScreen{display:none;}
@@ -310,26 +519,192 @@ body.mode-portal #portalScreen{display:block;}
   </div>
 </section>
 
-<!-- PORTAL SCREEN (posle logina) -->
-<div id="portalScreen"></div>
+<!-- PORTAL SCREEN -->
+<div id="portalScreen">
+
+  <div class="edgeHotspot" id="edgeHotspot"></div>
+  <div class="overlay" id="overlay"></div>
+  <div class="hamburger" id="hamburger">☰</div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <h1>PORTAL</h1>
+      <p>Upravnik zgrade</p>
+    </div>
+
+    <nav class="nav" id="nav">
+      <a href="#" class="active" data-page="home">Home</a>
+      <a href="#" data-page="finansije">Finansije</a>
+      <a href="#" data-page="oglasna">Oglasna tabla</a>
+      <a href="#" data-page="forum">Forum</a>
+      <a href="#" data-page="regulative">Zakonske regulative</a>
+      <a href="#" data-page="kontakt">Kontakt sluzbe</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <div class="contentWrap">
+
+      <section class="pageHeader">
+        <div class="leftInfo">
+          <div class="meta">
+            Ulica Primer 1<br>
+            Zgrada 12<br>
+            48 jedinica
+          </div>
+        </div>
+
+        <div class="rightCol">
+          <div class="topMini">
+            <div class="pill" id="userPill">Korisnik</div>
+            <div class="pill pillBtn" id="logoutBtn">Odjava</div>
+          </div>
+
+          <div class="searchInline">
+            <input id="globalSearch" placeholder="Pretraga (finansije, dokumenti, forum)">
+          </div>
+
+          <div class="balanceCard">
+            <span class="label">Stanje racuna</span>
+            <div class="balanceAmount">
+              <span class="value">948.889,00</span>
+              <span class="currency">RSD</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page active" id="page-home">
+        <section class="card">
+          <h3>Home</h3>
+          <div class="smallText">
+            Ovde ide kratak pregled (stanje racuna, poslednje promene, istaknuta obavestenja).
+          </div>
+          <ul class="boardList" style="margin-top:12px;">
+            <li>Poslednja promena: Rashod - Tekuce odrzavanje (02.01.2026)</li>
+            <li>Istaknuto: Popravka krova - dokument na oglasnoj tabli</li>
+            <li>Forum: Otvorena anketa - Predlog za novu rasvetu</li>
+          </ul>
+
+          <!-- admin-only (samo prikaz/sakrivanje) -->
+          <div class="smallText" data-role="admin" style="margin-top:12px;">
+            Admin: placeholder (upravljanje korisnicima, regulativama i kontaktima).
+          </div>
+        </section>
+      </section>
+
+      <section class="page" id="page-finansije">
+        <section class="card">
+          <h3>Finansije</h3>
+          <div class="smallText">
+            Ovde ce biti lista finansijskih promena + dokumenti (izvodi, racuni) sa pregledom/zoomom i mogucnoscu stampanja izvestaja.
+          </div>
+
+          <!-- upravnik-only (samo prikaz/sakrivanje) -->
+          <div class="smallText" data-role="upravnik" style="margin-top:12px;">
+            Upravnik: placeholder (upload dokumenata i unos/edit finansijskih promena).
+          </div>
+
+          <ul class="boardList">
+            <li>02.01.2026 — Rashod — Tekuce odrzavanje — “Uplata servisu”</li>
+            <li>28.12.2025 — Prihod — Uplata stanara</li>
+            <li>15.12.2025 — Rashod — Hitna intervencija — “Vodoinstalater”</li>
+          </ul>
+        </section>
+      </section>
+
+      <section class="page" id="page-oglasna">
+        <section class="card">
+          <h3>Oglasna tabla</h3>
+
+          <!-- upravnik-only (samo prikaz/sakrivanje) -->
+          <div class="smallText" data-role="upravnik">
+            Upravnik: placeholder (postavljanje dokumenata/obavestenja).
+          </div>
+
+          <ul class="boardList">
+            <li>Akcija ciscenja</li>
+            <li>Popravka krova</li>
+            <li>Krecenje</li>
+          </ul>
+        </section>
+      </section>
+
+      <section class="page" id="page-forum">
+        <section class="card">
+          <h3>Forum</h3>
+          <div class="smallText">
+            Predlozi za skupstinu stanara (bez komentara). Ovde ce biti ankete sa vremenskim ogranicenjem.
+          </div>
+
+          <!-- stanar-only (samo prikaz/sakrivanje) -->
+          <div class="smallText" data-role="stanar">
+            Stanar: placeholder (forma za predlog + glasanje).
+          </div>
+
+          <ul class="boardList">
+            <li>Predlog: Nova rasveta u hodniku — (anketa: otvorena)</li>
+            <li>Predlog: Zamena interfona — (anketa: zatvorena)</li>
+          </ul>
+        </section>
+      </section>
+
+      <section class="page" id="page-regulative">
+        <section class="card">
+          <h3>Zakonske regulative</h3>
+          <div class="smallText">
+            Informativna stranica sa zakonima i propisima. Sadrzaj menja administrator.
+          </div>
+
+          <!-- admin-only (samo prikaz/sakrivanje) -->
+          <div class="smallText" data-role="admin">
+            Admin: placeholder (upload/izmena regulativa).
+          </div>
+
+          <ul class="boardList">
+            <li>Zakon o stanovanju i odrzavanju zgrada (PDF)</li>
+            <li>Pravilnik o upravljanju stambenim zajednicama (PDF)</li>
+          </ul>
+        </section>
+      </section>
+
+      <section class="page" id="page-kontakt">
+        <section class="card">
+          <h3>Kontakt sluzbe</h3>
+
+          <!-- admin-only (samo prikaz/sakrivanje) -->
+          <div class="smallText" data-role="admin">
+            Admin: placeholder (izmena kontakata i brojeva).
+          </div>
+
+          <ul class="boardList">
+            <li>Vatrogasci: 193</li>
+            <li>Hitna pomoc: 194</li>
+            <li>Policija: 192</li>
+            <li>EPS kvarovi: (placeholder)</li>
+          </ul>
+        </section>
+      </section>
+
+    </div>
+  </main>
+
+</div>
 
 <script>
 /* =========================
    DEMO LOGIN (isti za sve)
-   - razdvajanje nakon logina po ulozi:
-     admin / upravnik / stanar
+   - razdvajanje nakon logina po ulozi
    ========================= */
 
-/* Demo korisnici */
 const DEMO_USERS = [
   { email: "administrator@demo.rs", pass: "123456", role: "admin" },
   { email: "upravnik@demo.rs",      pass: "123456", role: "upravnik" },
   { email: "stanar@demo.rs",        pass: "123456", role: "stanar" }
 ];
 
-/* remember me: persistent (localStorage) + session-only (sessionStorage) */
-const KEY_PERSIST = "pu_session_persist_v3";
-const KEY_SESSION = "pu_session_session_v3";
+const KEY_PERSIST = "pu_session_persist_v4";
+const KEY_SESSION = "pu_session_session_v4";
 
 const emailEl = document.getElementById("email");
 const passEl = document.getElementById("pass");
@@ -337,6 +712,7 @@ const loginBtn = document.getElementById("loginBtn");
 const errEl = document.getElementById("loginError");
 const togglePass = document.getElementById("togglePass");
 const remember = document.getElementById("remember");
+const userPill = document.getElementById("userPill");
 
 function setMode(mode){
   document.body.classList.toggle("mode-login", mode === "login");
@@ -370,28 +746,11 @@ togglePass.addEventListener("click", () => {
   togglePass.textContent = isPass ? "🙈" : "👁";
 });
 
-function renderPortalShell(session){
-  const root = document.getElementById("portalScreen");
-  const roleLabel =
-    session.role === "admin" ? "Administrator" :
-    session.role === "upravnik" ? "Upravnik" : "Stanar";
-
-  /* BEZ estetskih izmena: samo najosnovniji prikaz da potvrdi role routing.
-     Kasnije ubacujemo ceo portal UI koji vec imate. */
-  root.innerHTML = `
-    <div style="padding:40px">
-      <div style="font-weight:900;font-size:20px;margin-bottom:8px;">Ulogovani ste</div>
-      <div style="font-weight:800;margin-bottom:8px;">${session.email}</div>
-      <div style="font-weight:800;margin-bottom:18px;">Uloga: ${roleLabel}</div>
-      <button id="logoutBtn" style="padding:12px 14px;border-radius:12px;border:1px solid rgba(15,23,42,.14);font-weight:900;cursor:pointer;">
-        Odjava
-      </button>
-    </div>
-  `;
-
-  document.getElementById("logoutBtn").addEventListener("click", () => {
-    clearSessions();
-    setMode("login");
+function applyRoleUI(role){
+  const roleEls = document.querySelectorAll("[data-role]");
+  roleEls.forEach(el => {
+    const need = el.getAttribute("data-role");
+    el.style.display = (need === role) ? "" : "none";
   });
 }
 
@@ -403,18 +762,15 @@ function attemptLogin(email, pass){
   }
 
   errEl.style.display = "none";
-
-  const session = {
-    email: u.email,
-    role: u.role
-    // kasnije: community_id (stanar), community_ids[] (upravnik)
-  };
-
+  const session = { email: u.email, role: u.role };
   saveSession(session);
-  renderPortalShell(session);
+
+  userPill.textContent = session.email;
+  applyRoleUI(session.role);
   setMode("portal");
 }
 
+/* login actions */
 loginBtn.addEventListener("click", () => {
   attemptLogin((emailEl.value||"").trim(), (passEl.value||"").trim());
 });
@@ -425,13 +781,79 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
+/* logout */
+document.getElementById("logoutBtn").addEventListener("click", () => {
+  clearSessions();
+  closeS();
+  setMode("login");
+});
+
+/* ===== SIDEBAR behavior ===== */
+const sidebar = document.getElementById("sidebar");
+const overlay = document.getElementById("overlay");
+const edge = document.getElementById("edgeHotspot");
+const burger = document.getElementById("hamburger");
+
+function openS(){
+  sidebar.classList.add("open");
+  overlay.classList.add("show");
+  document.body.classList.add("sidebar-open");
+}
+function closeS(){
+  sidebar.classList.remove("open");
+  overlay.classList.remove("show");
+  document.body.classList.remove("sidebar-open");
+}
+
+edge.addEventListener("mouseenter", openS);
+burger.addEventListener("click", () => {
+  sidebar.classList.contains("open") ? closeS() : openS();
+});
+overlay.addEventListener("click", closeS);
+document.addEventListener("keydown", (e) => {
+  if(e.key === "Escape") closeS();
+});
+
+/* ===== SPA NAV (pages) ===== */
+const nav = document.getElementById("nav");
+const pages = {
+  home: document.getElementById("page-home"),
+  finansije: document.getElementById("page-finansije"),
+  oglasna: document.getElementById("page-oglasna"),
+  forum: document.getElementById("page-forum"),
+  regulative: document.getElementById("page-regulative"),
+  kontakt: document.getElementById("page-kontakt")
+};
+
+function showPage(name){
+  Object.values(pages).forEach(p => p.classList.remove("active"));
+  (pages[name] || pages.home).classList.add("active");
+
+  [...nav.querySelectorAll("a[data-page]")].forEach(a => {
+    a.classList.toggle("active", a.dataset.page === name);
+  });
+
+  closeS();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+nav.addEventListener("click", (e) => {
+  const a = e.target.closest("a[data-page]");
+  if(!a) return;
+  e.preventDefault();
+  showPage(a.dataset.page);
+});
+
 /* INIT */
 (function init(){
   const session = getSession();
   if(session && session.email && session.role){
-    renderPortalShell(session);
+    userPill.textContent = session.email;
+    applyRoleUI(session.role);
     setMode("portal");
   }else{
+    // default: sakrij sve role-specific blokove dok nije ulogovan
+    applyRoleUI("stanar");
     setMode("login");
   }
 })();
