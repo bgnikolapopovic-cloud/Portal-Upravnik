@@ -12,18 +12,14 @@
 <style>
 :root{
   --bg-url: url("bg.png");
-
   --sidebar-w: 340px;
   --edge-w: 16px;
-
   --main-pad: 18px;
-
   --ink:#0f172a;
   --muted:rgba(15,23,42,.65);
   --glass:rgba(255,255,255,.88);
   --border:rgba(15,23,42,.14);
   --shadow:0 18px 40px rgba(2,6,23,.10);
-
   --side1:rgba(10,35,56,.92);
   --side2:rgba(6,24,40,.92);
 }
@@ -51,7 +47,6 @@ body::before{
   z-index:-2;
 }
 
-/* ambient blobovi (login) */
 .ambient{
   position:fixed;
   inset:-20%;
@@ -64,7 +59,7 @@ body::before{
   filter: blur(2px);
 }
 
-/* TOP RIGHT */
+/* TOP RIGHT BRAND */
 .topRightBar{
   position:fixed;
   top:calc(10px + env(safe-area-inset-top));
@@ -77,7 +72,6 @@ body::before{
 }
 
 .topRightTitle{
-  text-align:left;
   font-weight:900;
   line-height:1.05;
 }
@@ -95,8 +89,6 @@ body::before{
 }
 .topRightLogo img{
   height:56px;
-  width:auto;
-  display:block;
   border-radius:16px;
 }
 
@@ -105,7 +97,7 @@ body::before{
   .topRightLogo img{height:92px;}
 }
 
-/* ================= LOGIN SCREEN ================= */
+/* LOGIN */
 .loginWrap{
   min-height:100vh;
   display:grid;
@@ -114,61 +106,29 @@ body::before{
 }
 
 .loginCard{
-  width:min(560px, 100%);
+  width:min(560px,100%);
   border-radius:30px;
   background:rgba(255,255,255,.90);
   border:1px solid rgba(15,23,42,.14);
   box-shadow:var(--shadow);
   padding:22px;
-  position:relative;
-  overflow:hidden;
 }
-
-.loginCard::before{
-  content:"";
-  position:absolute;
-  inset:-2px;
-  background:
-    radial-gradient(520px 320px at 22% 18%, rgba(59,130,246,.14), transparent 60%),
-    radial-gradient(520px 320px at 86% 18%, rgba(14,165,233,.10), transparent 60%);
-  pointer-events:none;
-}
-.loginInner{position:relative; z-index:1;}
 
 .loginHead{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
   padding-bottom:12px;
   border-bottom:1px solid rgba(15,23,42,.10);
 }
 
-.loginHead .miniLogo{
-  padding:8px;
-  border-radius:22px;
-  background:rgba(255,255,255,.72);
-  border:1px solid rgba(15,23,42,.12);
-}
-.loginHead .miniLogo img{
-  height:54px;
-  width:auto;
-  border-radius:16px;
-  display:block;
+.formTitle{
+  font-size:26px;
+  font-weight:900;
 }
 
-.formTitle{
-  margin-top:16px;
-  font-weight:900;
-  font-size:22px;
-  letter-spacing:.02em;
-}
 .formSub{
-  margin-top:6px;
-  color:var(--muted);
-  font-weight:700;
+  margin-top:12px;
   font-size:13px;
-  line-height:1.4;
+  font-weight:700;
+  color:var(--muted);
 }
 
 .field{ margin-top:12px; }
@@ -177,24 +137,18 @@ body::before{
   font-size:12px;
   font-weight:900;
   letter-spacing:.12em;
-  text-transform:uppercase;
   opacity:.7;
   margin-bottom:6px;
 }
+
 .inputWrap{ position:relative; }
+
 .field input{
   width:100%;
+  padding:14px;
   border-radius:18px;
   border:1px solid rgba(15,23,42,.14);
-  background:rgba(255,255,255,.94);
-  padding:14px 14px;
   font-size:15px;
-  outline:none;
-  transition:.15s;
-}
-.field input:focus{
-  border-color:rgba(15,23,42,.28);
-  box-shadow:0 0 0 5px rgba(15,23,42,.06);
 }
 
 .eyeBtn{
@@ -204,270 +158,32 @@ body::before{
   transform:translateY(-50%);
   border:none;
   background:rgba(15,23,42,.06);
-  border:1px solid rgba(15,23,42,.14);
   border-radius:14px;
   padding:8px 10px;
   cursor:pointer;
-  font-weight:900;
-  user-select:none;
 }
 
-.row{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  margin-top:12px;
-  flex-wrap:wrap;
-}
+.btnRow{ margin-top:16px; }
 
-.check{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  font-weight:800;
-  color:rgba(15,23,42,.75);
-  font-size:13px;
-}
-.check input{width:18px;height:18px}
-
-.btnRow{
-  display:flex;
-  gap:10px;
-  margin-top:14px;
-}
 .btn{
-  flex:1;
-  border:none;
-  cursor:pointer;
+  width:100%;
+  padding:14px;
   border-radius:18px;
-  padding:14px 16px;
-  font-weight:900;
-  letter-spacing:.02em;
-  transition:.15s;
-}
-.btnPrimary{
+  border:none;
   background:rgba(15,23,42,.92);
   color:white;
-  box-shadow:0 18px 36px rgba(2,6,23,.18);
+  font-weight:900;
+  cursor:pointer;
 }
-.btnPrimary:hover{ transform:translateY(-1px); }
 
 .error{
   margin-top:10px;
-  font-weight:900;
   color:#9f1239;
+  font-weight:900;
   display:none;
 }
 
-.smallHint{
-  margin-top:12px;
-  padding-top:12px;
-  border-top:1px solid rgba(15,23,42,.10);
-  font-size:12px;
-  font-weight:800;
-  opacity:.72;
-}
-
-/* ================= PORTAL (tvoj UI) ================= */
-.overlay{
-  position:fixed; inset:0;
-  background:rgba(2,6,23,.25);
-  opacity:0; pointer-events:none;
-  transition:.2s;
-  z-index:40;
-}
-.overlay.show{opacity:1;pointer-events:auto}
-
-.edgeHotspot{
-  position:fixed; left:0; top:0;
-  width:var(--edge-w); height:100vh;
-  z-index:60;
-}
-
-/* sidebar */
-.sidebar{
-  position:fixed; left:0; top:0;
-  width:var(--sidebar-w); height:100vh;
-  padding:30px 22px;
-  background:linear-gradient(180deg,var(--side1),var(--side2)),var(--bg-url);
-  background-size:cover;
-  color:#fff;
-  box-shadow:18px 0 40px rgba(0,0,0,.28);
-  transform:translateX(calc(-1 * (var(--sidebar-w) - var(--edge-w))));
-  transition:.2s;
-  z-index:70;
-}
-.sidebar.open{transform:translateX(0)}
-body:not(.sidebar-open) .sidebar{ filter: brightness(1.20); }
-body.sidebar-open .sidebar{ filter:none; }
-
-.sidebar::before{
-  content:"";
-  position:absolute; inset:0;
-  background:rgba(0,0,0,.22);
-  backdrop-filter:blur(8px);
-}
-.sidebar>*{position:relative;z-index:1}
-
-.brand{height:92px}
-.brand h1{font-size:24px;font-weight:900;letter-spacing:.16em}
-.brand p{font-size:13px;opacity:.78;margin-top:8px}
-
-.nav{margin-top:26px;display:flex;flex-direction:column;gap:12px}
-.nav a{
-  padding:16px 18px;
-  border-radius:18px;
-  color:#fff;
-  text-decoration:none;
-  background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.14);
-  font-size:19px;
-  font-weight:700;
-  display:block;
-}
-.nav a.active{background:rgba(255,255,255,.14)}
-
-/* hamburger */
-.hamburger{
-  position:fixed;
-  left:18px; top:18px;
-  width:44px; height:44px;
-  border-radius:14px;
-  background:var(--glass);
-  border:1px solid var(--border);
-  box-shadow:var(--shadow);
-  display:grid; place-items:center;
-  cursor:pointer;
-  z-index:80;
-  user-select:none;
-}
-
-/* MAIN */
-.main{ padding:0 var(--main-pad) 22px; }
-
-.contentWrap{ padding-top:calc(86px + 14px); }
-@media(min-width:900px){
-  .contentWrap{padding-top:calc(120px + 14px);}
-}
-
-.pageHeader{
-  display:flex;
-  justify-content:space-between;
-  gap:14px;
-  margin-bottom:18px;
-}
-
-.leftInfo{max-width:52vw}
-.meta{
-  font-size:18px;
-  color:rgba(15,23,42,.62);
-  font-weight:600;
-  line-height:1.28;
-}
-
-.rightCol{
-  display:flex;
-  flex-direction:column;
-  align-items:flex-end;
-  gap:10px;
-}
-
-.searchInline,
-.balanceCard{
-  width:clamp(180px,42vw,300px);
-  border-radius:18px;
-  background:var(--glass);
-  border:1px solid var(--border);
-  box-shadow:var(--shadow);
-}
-
-.searchInline{padding:10px 14px}
-.searchInline input{
-  border:none;background:transparent;width:100%;
-  outline:none;font-size:14px;
-}
-
-/* stanje */
-.balanceCard{
-  padding:12px;
-  text-align:right;
-}
-.balanceCard .label{
-  font-size:12px;
-  font-weight:700;
-  display:block;
-  margin-bottom:6px;
-}
-.balanceAmount{ white-space:nowrap; }
-.balanceAmount .value{
-  font-size:20px;
-  font-weight:900;
-  letter-spacing:0.2px;
-}
-.balanceAmount .currency{
-  font-size:11px;
-  font-weight:700;
-  opacity:.55;
-  margin-left:4px;
-}
-@media(min-width:900px){
-  .meta{font-size:26px;}
-  .balanceAmount .value{font-size:32px;}
-  .balanceAmount .currency{font-size:13px;}
-  .balanceCard{padding:18px;}
-}
-
-/* cards */
-.card{
-  background:rgba(255,255,255,.86);
-  border-radius:26px;
-  padding:22px;
-  box-shadow:var(--shadow);
-}
-.card h3{
-  text-transform:uppercase;
-  letter-spacing:.16em;
-  font-size:22px;
-  font-weight:900;
-}
-.boardList{
-  margin-top:14px;
-  list-style:none;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-.boardList li{
-  background:rgba(15,23,42,.06);
-  border:1px solid rgba(15,23,42,.10);
-  padding:12px 14px;
-  border-radius:16px;
-  font-weight:700;
-}
-@media(min-width:900px){
-  .card{padding:28px;}
-  .card h3{font-size:26px;}
-}
-
-/* top pills */
-.topMini{
-  display:flex;
-  gap:10px;
-  align-items:center;
-}
-.pill{
-  border-radius:999px;
-  padding:10px 12px;
-  background:rgba(255,255,255,.72);
-  border:1px solid rgba(15,23,42,.14);
-  box-shadow:var(--shadow);
-  font-weight:900;
-  font-size:13px;
-}
-.pillBtn{ cursor:pointer; user-select:none; }
-
-/* mode switching */
+/* MODE SWITCH */
 body.mode-login #portalScreen{display:none;}
 body.mode-portal #loginScreen{display:none;}
 body.mode-portal #portalScreen{display:block;}
@@ -475,238 +191,81 @@ body.mode-portal #portalScreen{display:block;}
 </head>
 
 <body class="mode-login">
-
 <div class="ambient"></div>
 
-<!-- TOP RIGHT -->
-<div class="topRightBar">
-  <div class="topRightTitle">
-    <span>Portal</span>
-    <span>Upravnik</span>
-  </div>
-  <div class="topRightLogo">
-    <img src="logo.png" alt="Portal Upravnik logo">
-  </div>
-</div>
-
-<!-- LOGIN SCREEN -->
+<!-- LOGIN -->
 <section class="loginWrap" id="loginScreen">
   <div class="loginCard">
-    <div class="loginInner">
 
-      <!-- ✅ IZMENJENO: umesto "PORTAL / Upravnik zgrade" odmah pise "Prijava" -->
-      <div class="loginHead">
-        <div class="formTitle" style="margin:0;font-size:26px;">Prijava</div>
-        <div class="miniLogo">
-          <img src="logo.png" alt="Portal Upravnik logo">
-        </div>
-      </div>
-
-      <div class="formSub" style="margin-top:12px;">
-        Unesite pristupne podatke. Registracija nije dostupna.
-      </div>
-
-      <div class="field">
-        <label for="email">Email</label>
-        <input id="email" type="email" placeholder="npr. upravnik@zgrada.rs" autocomplete="username">
-      </div>
-
-      <div class="field">
-        <label for="pass">Lozinka</label>
-        <div class="inputWrap">
-          <input id="pass" type="password" placeholder="Unesi lozinku" autocomplete="current-password">
-          <button class="eyeBtn" id="togglePass" type="button">👁</button>
-        </div>
-      </div>
-
-      <div class="row">
-        <label class="check">
-          <input id="remember" type="checkbox" checked>
-          Zapamti me
-        </label>
-      </div>
-
-      <div class="btnRow">
-        <button class="btn btnPrimary" id="loginBtn">Uloguj se</button>
-      </div>
-
-      <div class="error" id="loginError">Pogresan email ili lozinka.</div>
-
-      <div class="smallHint">
-        Demo nalog: <b>upravnik@demo.rs</b> / <b>123456</b>
-      </div>
-
+    <div class="loginHead">
+      <div class="formTitle">Prijava</div>
     </div>
+
+    <div class="formSub">
+      Unesite pristupne podatke. Registracija nije dostupna.
+    </div>
+
+    <div class="field">
+      <label>Email</label>
+      <input id="email" type="email">
+    </div>
+
+    <div class="field">
+      <label>Lozinka</label>
+      <div class="inputWrap">
+        <input id="pass" type="password">
+        <button class="eyeBtn" id="togglePass">👁</button>
+      </div>
+    </div>
+
+    <div class="btnRow">
+      <button class="btn" id="loginBtn">Uloguj se</button>
+    </div>
+
+    <div class="error" id="loginError">Pogrešan email ili lozinka.</div>
+
   </div>
 </section>
 
-<!-- PORTAL SCREEN (tvoj pravi UI) -->
+<!-- PORTAL PLACEHOLDER -->
 <div id="portalScreen">
-
-  <div class="edgeHotspot" id="edgeHotspot"></div>
-  <div class="overlay" id="overlay"></div>
-  <div class="hamburger" id="hamburger">☰</div>
-
-  <aside class="sidebar" id="sidebar">
-    <div class="brand">
-      <h1>PORTAL</h1>
-      <p>Upravnik zgrade</p>
-    </div>
-    <nav class="nav">
-      <a class="active">Finansije</a>
-      <a>Oglasna tabla</a>
-      <a>Forum</a>
-      <a>Zakonske regulative</a>
-      <a>Kontakt sluzbe</a>
-    </nav>
-  </aside>
-
-  <main class="main">
-    <div class="contentWrap">
-
-      <section class="pageHeader">
-        <div class="leftInfo">
-          <div class="meta">
-            Ulica Primer 1<br>
-            Zgrada 12<br>
-            48 jedinica
-          </div>
-        </div>
-
-        <div class="rightCol">
-
-          <div class="topMini">
-            <div class="pill" id="userPill">Korisnik</div>
-            <div class="pill pillBtn" id="logoutBtn">Odjava</div>
-          </div>
-
-          <div class="searchInline">
-            <input placeholder="Pretraga (finansije, dokumenti, forum)">
-          </div>
-
-          <div class="balanceCard">
-            <span class="label">Stanje racuna</span>
-            <div class="balanceAmount">
-              <span class="value">948.889,00</span>
-              <span class="currency">RSD</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="card">
-        <h3>Oglasna tabla</h3>
-        <ul class="boardList">
-          <li>Akcija ciscenja</li>
-          <li>Popravka krova</li>
-          <li>Krecenje</li>
-        </ul>
-      </section>
-
-    </div>
-  </main>
-
+  <h1 style="padding:40px">Dobrodošli u Portal ✅</h1>
+  <button id="logoutBtn" style="margin:40px">Odjava</button>
 </div>
 
 <script>
-/* ===== DEMO AUTH (frontend) ===== */
 const DEMO_EMAIL = "upravnik@demo.rs";
 const DEMO_PASS  = "123456";
-const KEY = "pu_session_demo_v1";
+const KEY = "pu_session";
 
 const emailEl = document.getElementById("email");
-const passEl = document.getElementById("pass");
-const loginBtn = document.getElementById("loginBtn");
-const errEl = document.getElementById("loginError");
-const togglePass = document.getElementById("togglePass");
-const remember = document.getElementById("remember");
-const userPill = document.getElementById("userPill");
+const passEl  = document.getElementById("pass");
+const errEl   = document.getElementById("loginError");
 
 function setMode(mode){
-  document.body.classList.toggle("mode-login", mode === "login");
-  document.body.classList.toggle("mode-portal", mode === "portal");
+  document.body.classList.toggle("mode-login", mode==="login");
+  document.body.classList.toggle("mode-portal", mode==="portal");
 }
 
-function saveSession(email){
-  if(remember.checked){
-    localStorage.setItem(KEY, email);
-  }else{
-    localStorage.removeItem(KEY);
-  }
-}
-
-function getSession(){
-  return localStorage.getItem(KEY);
-}
-
-togglePass.addEventListener("click", () => {
-  const isPass = passEl.type === "password";
-  passEl.type = isPass ? "text" : "password";
-  togglePass.textContent = isPass ? "🙈" : "👁";
-});
-
-function attemptLogin(email, pass){
-  const ok = (email === DEMO_EMAIL && pass === DEMO_PASS);
-  if(!ok){
-    errEl.style.display = "block";
-    return;
-  }
-  errEl.style.display = "none";
-  saveSession(email);
-  userPill.textContent = email;
-  setMode("portal");
-}
-
-loginBtn.addEventListener("click", () => {
-  attemptLogin((emailEl.value||"").trim(), (passEl.value||"").trim());
-});
-
-document.addEventListener("keydown", (e) => {
-  if(document.body.classList.contains("mode-login") && e.key === "Enter"){
-    attemptLogin((emailEl.value||"").trim(), (passEl.value||"").trim());
-  }
-});
-
-document.getElementById("logoutBtn").addEventListener("click", () => {
-  localStorage.removeItem(KEY);
-  setMode("login");
-});
-
-/* ===== SIDEBAR behavior (tvoj kod) ===== */
-const sidebar = document.getElementById("sidebar");
-const overlay = document.getElementById("overlay");
-const edge = document.getElementById("edgeHotspot");
-const burger = document.getElementById("hamburger");
-
-function openS(){
-  sidebar.classList.add("open");
-  overlay.classList.add("show");
-  document.body.classList.add("sidebar-open");
-}
-function closeS(){
-  sidebar.classList.remove("open");
-  overlay.classList.remove("show");
-  document.body.classList.remove("sidebar-open");
-}
-edge.addEventListener("mouseenter", openS);
-burger.addEventListener("click", () => {
-  sidebar.classList.contains("open") ? closeS() : openS();
-});
-overlay.addEventListener("click", closeS);
-document.addEventListener("keydown", (e) => {
-  if(e.key === "Escape") closeS();
-});
-
-/* INIT */
-(function init(){
-  const email = getSession();
-  if(email){
-    userPill.textContent = email;
+document.getElementById("loginBtn").onclick = () => {
+  if(emailEl.value===DEMO_EMAIL && passEl.value===DEMO_PASS){
+    localStorage.setItem(KEY, emailEl.value);
     setMode("portal");
   }else{
-    setMode("login");
+    errEl.style.display="block";
   }
-})();
+};
+
+document.getElementById("logoutBtn").onclick = () => {
+  localStorage.removeItem(KEY);
+  setMode("login");
+};
+
+document.getElementById("togglePass").onclick = () => {
+  passEl.type = passEl.type==="password" ? "text" : "password";
+};
+
+if(localStorage.getItem(KEY)) setMode("portal");
 </script>
 
 </body>
