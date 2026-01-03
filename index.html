@@ -1437,6 +1437,9 @@ function renderForum(){
 
       const yes = (p.poll.votesYes||[]).length;
       const no = (p.poll.votesNo||[]).length;
+      const total = yes + no;
+      const yesPct = total ? Math.round((yes / total) * 100) : 0;
+      const noPct  = total ? Math.round((no / total) * 100) : 0;
 
       const ends = document.createElement("div");
       ends.textContent = "Istice: " + new Date(p.poll.endsAt).toLocaleString("sr-RS");
@@ -1444,7 +1447,12 @@ function renderForum(){
 
       const count = document.createElement("div");
       count.style.marginTop = "6px";
-      count.innerHTML = `<span class="badge">Da: ${yes}</span> <span class="badge" style="margin-left:8px;">Ne: ${no}</span>`;
+      count.innerHTML = `
+  <span class="badge">Da: ${yes} (${yesPct}%)</span>
+  <span class="badge" style="margin-left:8px;">Ne: ${no} (${noPct}%)</span>
+  <span class="badge" style="margin-left:8px;">Ukupno: ${total}</span>
+`;
+
       pollBox.appendChild(count);
 
       // Stanar moze da glasa samo dok je otvoreno i jednom
@@ -1602,4 +1610,5 @@ if(clearProposalBtn){
 
 </body>
 </html>
+
 
