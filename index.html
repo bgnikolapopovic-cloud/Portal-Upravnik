@@ -51,6 +51,7 @@ body::before{
   z-index:-2;
 }
 
+/* ambient blobovi (login) */
 .ambient{
   position:fixed;
   inset:-20%;
@@ -63,9 +64,9 @@ body::before{
   filter: blur(2px);
 }
 
-/* TOP RIGHT BRAND */
+/* ================= TOP RIGHT (brand) ================= */
 .topRightBar{
-  position:absolute;
+  position:absolute; /* umesto fixed */
   top:calc(10px + env(safe-area-inset-top));
   right:calc(var(--main-pad) + env(safe-area-inset-right));
   display:flex;
@@ -74,9 +75,18 @@ body::before{
   z-index:95;
   pointer-events:none;
 }
-.topRightTitle{ text-align:left; font-weight:900; line-height:1.05; }
-.topRightTitle span{ display:block; font-size:18px; }
 
+.topRightTitle{
+  text-align:left;
+  font-weight:900;
+  line-height:1.05;
+}
+.topRightTitle span{
+  display:block;
+  font-size:18px; /* mobile */
+}
+
+/* LOGO – ovalno */
 .topRightLogo{
   padding:6px;
   background:rgba(255,255,255,.72);
@@ -85,7 +95,7 @@ body::before{
   box-shadow:var(--shadow);
 }
 .topRightLogo img{
-  height:56px;
+  height:56px; /* mobile */
   width:auto;
   display:block;
   border-radius:16px;
@@ -96,13 +106,14 @@ body::before{
   .topRightLogo img{height:92px;}
 }
 
-/* LOGIN */
+/* ================= LOGIN SCREEN ================= */
 .loginWrap{
   min-height:100vh;
   display:grid;
   place-items:center;
   padding:24px var(--main-pad);
 }
+
 .loginCard{
   width:min(560px, 100%);
   border-radius:30px;
@@ -113,6 +124,7 @@ body::before{
   position:relative;
   overflow:hidden;
 }
+
 .loginCard::before{
   content:"";
   position:absolute;
@@ -123,9 +135,26 @@ body::before{
   pointer-events:none;
 }
 .loginInner{position:relative; z-index:1;}
-.loginHead{ padding-bottom:12px; border-bottom:1px solid rgba(15,23,42,.10); }
-.formTitle{ margin:0; font-weight:900; font-size:26px; letter-spacing:.02em; }
-.formSub{ margin-top:12px; color:var(--muted); font-weight:700; font-size:13px; line-height:1.4; }
+
+.loginHead{
+  padding-bottom:12px;
+  border-bottom:1px solid rgba(15,23,42,.10);
+}
+
+.formTitle{
+  margin:0;
+  font-weight:900;
+  font-size:26px;
+  letter-spacing:.02em;
+}
+
+.formSub{
+  margin-top:12px;
+  color:var(--muted);
+  font-weight:700;
+  font-size:13px;
+  line-height:1.4;
+}
 
 .field{ margin-top:12px; }
 .field label{
@@ -153,6 +182,7 @@ body::before{
   border-color:rgba(15,23,42,.28);
   box-shadow:0 0 0 5px rgba(15,23,42,.06);
 }
+
 .eyeBtn{
   position:absolute;
   right:10px;
@@ -176,6 +206,7 @@ body::before{
   margin-top:12px;
   flex-wrap:wrap;
 }
+
 .check{
   display:flex;
   align-items:center;
@@ -186,7 +217,11 @@ body::before{
 }
 .check input{width:18px;height:18px}
 
-.btnRow{ display:flex; gap:10px; margin-top:14px; }
+.btnRow{
+  display:flex;
+  gap:10px;
+  margin-top:14px;
+}
 .btn{
   flex:1;
   border:none;
@@ -203,15 +238,22 @@ body::before{
   box-shadow:0 18px 36px rgba(2,6,23,.18);
 }
 .btnPrimary:hover{ transform:translateY(-1px); }
+
 .btnGhost{
   background:rgba(255,255,255,.72);
   border:1px solid rgba(15,23,42,.14);
   box-shadow:var(--shadow);
   color:rgba(15,23,42,.92);
 }
-.error{ margin-top:10px; font-weight:900; color:#9f1239; display:none; }
 
-/* overlay + hover zona */
+.error{
+  margin-top:10px;
+  font-weight:900;
+  color:#9f1239;
+  display:none;
+}
+
+/* ================= overlay + hover zona (PORTAL) ================= */
 .overlay{
   position:fixed; inset:0;
   background:rgba(2,6,23,.25);
@@ -220,9 +262,14 @@ body::before{
   z-index:40;
 }
 .overlay.show{opacity:1;pointer-events:auto}
-.edgeHotspot{ position:fixed; left:0; top:0; width:var(--edge-w); height:100vh; z-index:60; }
 
-/* sidebar */
+.edgeHotspot{
+  position:fixed; left:0; top:0;
+  width:var(--edge-w); height:100vh;
+  z-index:60;
+}
+
+/* ================= SIDEBAR ================= */
 .sidebar{
   position:fixed; left:0; top:0;
   width:var(--sidebar-w); height:100vh;
@@ -238,6 +285,7 @@ body::before{
 .sidebar.open{transform:translateX(0)}
 body:not(.sidebar-open) .sidebar{ filter: brightness(1.20); }
 body.sidebar-open .sidebar{ filter:none; }
+
 .sidebar::before{
   content:"";
   position:absolute; inset:0;
@@ -245,9 +293,11 @@ body.sidebar-open .sidebar{ filter:none; }
   backdrop-filter:blur(8px);
 }
 .sidebar>*{position:relative;z-index:1}
+
 .brand{height:92px}
 .brand h1{font-size:24px;font-weight:900;letter-spacing:.16em}
 .brand p{font-size:13px;opacity:.78;margin-top:8px}
+
 .nav{margin-top:26px;display:flex;flex-direction:column;gap:12px}
 .nav a{
   padding:16px 18px;
@@ -277,8 +327,9 @@ body.sidebar-open .sidebar{ filter:none; }
   user-select:none;
 }
 
-/* main */
+/* ================= MAIN ================= */
 .main{ padding:0 var(--main-pad) 22px; }
+
 .contentWrap{ padding-top:calc(86px + 14px); }
 @media(min-width:900px){
   .contentWrap{padding-top:calc(120px + 14px);}
@@ -290,6 +341,7 @@ body.sidebar-open .sidebar{ filter:none; }
   gap:14px;
   margin-bottom:18px;
 }
+
 .leftInfo{max-width:52vw}
 .meta{
   font-size:18px;
@@ -297,12 +349,14 @@ body.sidebar-open .sidebar{ filter:none; }
   font-weight:600;
   line-height:1.28;
 }
+
 .rightCol{
   display:flex;
   flex-direction:column;
   align-items:flex-end;
   gap:10px;
 }
+
 .searchInline,
 .balanceCard{
   width:clamp(180px,42vw,300px);
@@ -311,14 +365,36 @@ body.sidebar-open .sidebar{ filter:none; }
   border:1px solid var(--border);
   box-shadow:var(--shadow);
 }
-.searchInline{padding:10px 14px}
-.searchInline input{ border:none;background:transparent;width:100%; outline:none;font-size:14px; }
 
-.balanceCard{ padding:12px; text-align:right; }
-.balanceCard .label{ font-size:12px; font-weight:700; display:block; margin-bottom:6px; }
+.searchInline{padding:10px 14px}
+.searchInline input{
+  border:none;background:transparent;width:100%;
+  outline:none;font-size:14px;
+}
+
+/* stanje */
+.balanceCard{
+  padding:12px;
+  text-align:right;
+}
+.balanceCard .label{
+  font-size:12px;
+  font-weight:700;
+  display:block;
+  margin-bottom:6px;
+}
 .balanceAmount{ white-space:nowrap; }
-.balanceAmount .value{ font-size:20px; font-weight:900; letter-spacing:0.2px; }
-.balanceAmount .currency{ font-size:11px; font-weight:700; opacity:.55; margin-left:4px; }
+.balanceAmount .value{
+  font-size:20px;
+  font-weight:900;
+  letter-spacing:0.2px;
+}
+.balanceAmount .currency{
+  font-size:11px;
+  font-weight:700;
+  opacity:.55;
+  margin-left:4px;
+}
 @media(min-width:900px){
   .meta{font-size:26px;}
   .balanceAmount .value{font-size:32px;}
@@ -326,6 +402,7 @@ body.sidebar-open .sidebar{ filter:none; }
   .balanceCard{padding:18px;}
 }
 
+/* cards */
 .card{
   background:rgba(255,255,255,.86);
   border-radius:26px;
@@ -365,7 +442,12 @@ body.sidebar-open .sidebar{ filter:none; }
   line-height:1.45;
 }
 
-.topMini{ display:flex; gap:10px; align-items:center; }
+/* pills (portal) */
+.topMini{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
 .pill{
   border-radius:999px;
   padding:10px 12px;
@@ -377,9 +459,11 @@ body.sidebar-open .sidebar{ filter:none; }
 }
 .pillBtn{ cursor:pointer; user-select:none; }
 
+/* pages switch */
 .page{ display:none; }
 .page.active{ display:block; }
 
+/* mali badge */
 .badge{
   display:inline-block;
   padding:6px 10px;
@@ -391,6 +475,7 @@ body.sidebar-open .sidebar{ filter:none; }
   box-shadow:var(--shadow);
 }
 
+/* simple row */
 .fRow{
   display:flex;
   flex-wrap:wrap;
@@ -400,6 +485,7 @@ body.sidebar-open .sidebar{ filter:none; }
 .fRow .grow{flex:1; min-width:220px;}
 .fRow .half{flex:1; min-width:220px;}
 
+/* files list */
 .fileList{
   margin-top:10px;
   list-style:none;
@@ -419,15 +505,95 @@ body.sidebar-open .sidebar{ filter:none; }
 }
 .fileList small{opacity:.7; font-weight:900;}
 
+/* mode switching */
 body.mode-login #portalScreen{display:none;}
 body.mode-portal #loginScreen{display:none;}
 body.mode-portal #portalScreen{display:block;}
+
+/* ===== Global search dropdown ===== */
+.searchResults{
+  position:absolute;
+  left:10px;
+  right:10px;
+  top:calc(100% + 10px);
+  z-index:999;
+  border-radius:18px;
+  background:rgba(255,255,255,.92);
+  border:1px solid rgba(15,23,42,.14);
+  box-shadow:0 18px 40px rgba(2,6,23,.12);
+  overflow:hidden;
+  backdrop-filter: blur(6px);
+}
+
+.searchResults .srHead{
+  padding:10px 12px;
+  font-weight:900;
+  font-size:12px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:rgba(15,23,42,.70);
+  background:rgba(15,23,42,.04);
+  border-bottom:1px solid rgba(15,23,42,.10);
+}
+
+.searchResults .srItem{
+  padding:10px 12px;
+  cursor:pointer;
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  border-bottom:1px solid rgba(15,23,42,.08);
+}
+.searchResults .srItem:last-child{ border-bottom:none; }
+
+.searchResults .srItem:hover{
+  background:rgba(15,23,42,.05);
+}
+
+.searchResults .srTag{
+  flex:0 0 auto;
+  font-weight:900;
+  font-size:11px;
+  padding:6px 10px;
+  border-radius:999px;
+  border:1px solid rgba(15,23,42,.14);
+  background:rgba(255,255,255,.72);
+  color:rgba(15,23,42,.85);
+  white-space:nowrap;
+}
+
+.searchResults .srText{
+  flex:1;
+  font-weight:800;
+  color:rgba(15,23,42,.88);
+  line-height:1.25;
+  font-size:13px;
+}
+.searchResults .srSub{
+  margin-top:4px;
+  font-weight:700;
+  color:rgba(15,23,42,.60);
+  font-size:12px;
+}
+
+.searchHitFlash{
+  outline:3px solid rgba(59,130,246,.55);
+  box-shadow:0 0 0 6px rgba(59,130,246,.14);
+  transition:.2s;
+  animation: srFlash .9s ease-in-out 1;
+}
+@keyframes srFlash{
+  0%{ transform:scale(1); }
+  50%{ transform:scale(1.01); }
+  100%{ transform:scale(1); }
+}
 </style>
 </head>
 
 <body class="mode-login">
 <div class="ambient"></div>
 
+<!-- TOP RIGHT BRAND -->
 <div class="topRightBar">
   <div class="topRightTitle">
     <span>Portal</span>
@@ -438,6 +604,7 @@ body.mode-portal #portalScreen{display:block;}
   </div>
 </div>
 
+<!-- LOGIN SCREEN -->
 <section class="loginWrap" id="loginScreen">
   <div class="loginCard">
     <div class="loginInner">
@@ -480,6 +647,7 @@ body.mode-portal #portalScreen{display:block;}
   </div>
 </section>
 
+<!-- PORTAL SCREEN -->
 <div id="portalScreen">
 
   <div class="edgeHotspot" id="edgeHotspot"></div>
@@ -520,8 +688,9 @@ body.mode-portal #portalScreen{display:block;}
             <div class="pill pillBtn" id="logoutBtn">Odjava</div>
           </div>
 
-          <div class="searchInline">
+          <div class="searchInline" style="position:relative;">
             <input id="globalSearch" placeholder="Pretraga (finansije, dokumenti, forum)">
+            <div class="searchResults" id="searchResults" style="display:none;"></div>
           </div>
 
           <div class="balanceCard">
@@ -537,9 +706,11 @@ body.mode-portal #portalScreen{display:block;}
       <section class="page active" id="page-home">
         <section class="card">
           <h3>Početna</h3>
+
           <div class="smallText">
             Ovde ide kratak pregled (stanje računa, poslednje promene, istaknuta obaveštenja).
           </div>
+
           <ul class="boardList" style="margin-top:12px;">
             <li>Poslednja promena: Rashod - Tekuće održavanje (02.01.2026)</li>
             <li>Istaknuto: Popravka krova - dokument na oglasnoj tabli</li>
@@ -552,7 +723,7 @@ body.mode-portal #portalScreen{display:block;}
         </section>
       </section>
 
-      <!-- FINANSIJE -->
+      <!-- ===================== FINANSIJE (MODUL) ===================== -->
       <section class="page" id="page-finansije">
         <section class="card">
           <h3>Finansije</h3>
@@ -561,6 +732,7 @@ body.mode-portal #portalScreen{display:block;}
             Pregled finansijskih promena i dokumenata. Stanar ima uvid (read-only). Upravnik ima unos i upload.
           </div>
 
+          <!-- UPRAVNIK TOOLBAR -->
           <div class="smallText" data-role="upravnik" style="margin-top:12px;">
             <div class="fRow">
               <div class="grow">
@@ -573,6 +745,7 @@ body.mode-portal #portalScreen{display:block;}
             </div>
           </div>
 
+          <!-- ADD/EDIT FORM (upravnik-only) -->
           <div id="financeFormWrap" data-role="upravnik" style="display:none; margin-top:12px;">
             <div class="fRow">
               <div class="half field">
@@ -636,6 +809,7 @@ body.mode-portal #portalScreen{display:block;}
             </div>
           </div>
 
+          <!-- LISTA PROMENA -->
           <ul class="boardList" id="financeList"></ul>
 
           <div class="smallText" style="margin-top:10px;">
@@ -644,7 +818,7 @@ body.mode-portal #portalScreen{display:block;}
         </section>
       </section>
 
-      <!-- OGLASNA -->
+      <!-- ===================== OGLASNA TABLA (MODUL) ===================== -->
       <section class="page" id="page-oglasna">
         <section class="card">
           <h3>Oglasna tabla</h3>
@@ -654,6 +828,7 @@ body.mode-portal #portalScreen{display:block;}
             Klik na fajl = otvori PDF.
           </div>
 
+          <!-- UPRAVNIK: toolbar -->
           <div class="smallText" data-role="upravnik" style="margin-top:12px;">
             <div class="fRow">
               <div class="grow">
@@ -666,6 +841,7 @@ body.mode-portal #portalScreen{display:block;}
             </div>
           </div>
 
+          <!-- Forma (upravnik-only) -->
           <div id="boardFormWrap" data-role="upravnik" style="display:none; margin-top:12px;">
             <div class="fRow">
               <div class="grow field">
@@ -700,6 +876,7 @@ body.mode-portal #portalScreen{display:block;}
             </div>
           </div>
 
+          <!-- Lista objava -->
           <ul class="boardList" id="boardList"></ul>
 
           <div class="smallText" style="margin-top:10px;">
@@ -708,7 +885,7 @@ body.mode-portal #portalScreen{display:block;}
         </section>
       </section>
 
-      <!-- FORUM -->
+      <!-- ===================== FORUM (MODUL) ===================== -->
       <section class="page" id="page-forum">
         <section class="card">
           <h3>Forum</h3>
@@ -717,6 +894,7 @@ body.mode-portal #portalScreen{display:block;}
             Jednosmerna komunikacija: stanar predlaze, bez komentara. Opcionalno anketa sa vremenom trajanja.
           </div>
 
+          <!-- STANAR: KREIRANJE PREDLOGA -->
           <div data-role="stanar" id="forumCreateWrap" style="margin-top:12px;">
             <div class="fRow">
               <div class="grow field">
@@ -757,11 +935,11 @@ body.mode-portal #portalScreen{display:block;}
             Administrator: za sada samo uvid (kasnije moderacija/izvestaji).
           </div>
 
+          <!-- LISTA PREDLOGA -->
           <ul class="boardList" id="forumList"></ul>
         </section>
       </section>
 
-      <!-- ✅ REGULATIVE -->
       <section class="page" id="page-regulative">
         <section class="card">
           <h3>Zakonske regulative</h3>
@@ -773,7 +951,6 @@ body.mode-portal #portalScreen{display:block;}
             Admin: placeholder (upload/izmena regulativa).
           </div>
 
-          <!-- ✅ dodato id -->
           <ul class="boardList" id="regList">
             <li>Zakon o stanovanju i odrzavanju zgrada (PDF)</li>
             <li>Pravilnik o upravljanju stambenim zajednicama (PDF)</li>
@@ -781,7 +958,6 @@ body.mode-portal #portalScreen{display:block;}
         </section>
       </section>
 
-      <!-- ✅ KONTAKT -->
       <section class="page" id="page-kontakt">
         <section class="card">
           <h3>Kontakt sluzbe</h3>
@@ -790,7 +966,6 @@ body.mode-portal #portalScreen{display:block;}
             Admin: placeholder (izmena kontakata i brojeva).
           </div>
 
-          <!-- ✅ dodato id -->
           <ul class="boardList" id="kontaktList">
             <li>Vatrogasci: 193</li>
             <li>Hitna pomoc: 194</li>
@@ -806,6 +981,9 @@ body.mode-portal #portalScreen{display:block;}
 </div>
 
 <script>
+/* =========================
+   DEMO LOGIN (isti za sve)
+   ========================= */
 const DEMO_USERS = [
   { email: "administrator@demo.rs", pass: "123456", role: "admin" },
   { email: "upravnik@demo.rs",      pass: "123456", role: "upravnik" },
@@ -826,8 +1004,9 @@ const DEMO_USERS = [
 const KEY_PERSIST = "pu_session_persist_v7";
 const KEY_SESSION = "pu_session_session_v7";
 
-const FIN_KEY   = "pu_finance_items_v2";
-const FIRM_KEY  = "pu_finance_firms_v2";
+/* ===== demo storage (local) ===== */
+const FIN_KEY = "pu_finance_items_v2";
+const FIRM_KEY = "pu_finance_firms_v2";
 const FORUM_KEY = "pu_forum_proposals_v1";
 const BOARD_KEY = "pu_board_posts_v1";
 
@@ -838,10 +1017,11 @@ const errEl = document.getElementById("loginError");
 const togglePass = document.getElementById("togglePass");
 const remember = document.getElementById("remember");
 const userPill = document.getElementById("userPill");
+
 const globalSearch = document.getElementById("globalSearch");
+const searchResults = document.getElementById("searchResults");
 
 let CURRENT_SESSION = null;
-let CURRENT_PAGE = "home";
 let CURRENT_QUERY = "";
 
 /* finance elements */
@@ -884,19 +1064,21 @@ const bDate = document.getElementById("bDate");
 const bDesc = document.getElementById("bDesc");
 const bDocs = document.getElementById("bDocs");
 
-/* ✅ regulative + kontakt list */
+/* static lists */
 const regList = document.getElementById("regList");
 const kontaktList = document.getElementById("kontaktList");
 
-/* helpers */
+/* ---------- helpers ---------- */
 function setMode(mode){
   document.body.classList.toggle("mode-login", mode === "login");
   document.body.classList.toggle("mode-portal", mode === "portal");
 }
+
 function clearSessions(){
   localStorage.removeItem(KEY_PERSIST);
   sessionStorage.removeItem(KEY_SESSION);
 }
+
 function saveSession(sessionObj){
   const payload = JSON.stringify(sessionObj);
   if(remember && remember.checked){
@@ -907,16 +1089,11 @@ function saveSession(sessionObj){
     localStorage.removeItem(KEY_PERSIST);
   }
 }
+
 function getSession(){
   const raw = localStorage.getItem(KEY_PERSIST) || sessionStorage.getItem(KEY_SESSION);
   if(!raw) return null;
   try { return JSON.parse(raw); } catch { return null; }
-}
-function norm(s){ return String(s || "").toLowerCase().trim(); }
-function includesQuery(text, q){
-  const qq = norm(q);
-  if(!qq) return true;
-  return norm(text).includes(qq);
 }
 
 togglePass.addEventListener("click", () => {
@@ -933,7 +1110,19 @@ function applyRoleUI(role){
   });
 }
 
-/* login */
+function cryptoRandom(){
+  return "id_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
+}
+
+function norm(s){
+  return String(s||"").toLowerCase().trim();
+}
+function includesQuery(text, q){
+  if(!q) return true;
+  return norm(text).includes(norm(q));
+}
+
+/* ---------- login ---------- */
 function attemptLogin(email, pass){
   const u = DEMO_USERS.find(x => x.email === email && x.pass === pass);
   if(!u){
@@ -951,8 +1140,6 @@ function attemptLogin(email, pass){
   financeInit();
   forumInit();
   boardInit();
-  renderRegulative(CURRENT_QUERY);
-  renderKontakt(CURRENT_QUERY);
 
   setMode("portal");
 }
@@ -960,23 +1147,22 @@ function attemptLogin(email, pass){
 loginBtn.addEventListener("click", () => {
   attemptLogin((emailEl.value||"").trim(), (passEl.value||"").trim());
 });
+
 document.addEventListener("keydown", (e) => {
   if(document.body.classList.contains("mode-login") && e.key === "Enter"){
     attemptLogin((emailEl.value||"").trim(), (passEl.value||"").trim());
   }
 });
 
-/* logout */
+/* ---------- logout ---------- */
 document.getElementById("logoutBtn").addEventListener("click", () => {
   clearSessions();
   CURRENT_SESSION = null;
-  CURRENT_QUERY = "";
-  if(globalSearch) globalSearch.value = "";
   closeS();
   setMode("login");
 });
 
-/* sidebar */
+/* ================= SIDEBAR behavior ================= */
 const sidebar = document.getElementById("sidebar");
 const overlay = document.getElementById("overlay");
 const edge = document.getElementById("edgeHotspot");
@@ -992,14 +1178,17 @@ function closeS(){
   overlay.classList.remove("show");
   document.body.classList.remove("sidebar-open");
 }
+
 edge.addEventListener("mouseenter", openS);
 burger.addEventListener("click", () => {
   sidebar.classList.contains("open") ? closeS() : openS();
 });
 overlay.addEventListener("click", closeS);
-document.addEventListener("keydown", (e) => { if(e.key === "Escape") closeS(); });
+document.addEventListener("keydown", (e) => {
+  if(e.key === "Escape") closeS();
+});
 
-/* spa nav */
+/* ================= SPA NAV (pages) ================= */
 const nav = document.getElementById("nav");
 const pages = {
   home: document.getElementById("page-home"),
@@ -1011,16 +1200,13 @@ const pages = {
 };
 
 function showPage(name){
-  CURRENT_PAGE = name || "home";
-
   Object.values(pages).forEach(p => p.classList.remove("active"));
-  (pages[CURRENT_PAGE] || pages.home).classList.add("active");
+  (pages[name] || pages.home).classList.add("active");
 
   [...nav.querySelectorAll("a[data-page]")].forEach(a => {
-    a.classList.toggle("active", a.dataset.page === CURRENT_PAGE);
+    a.classList.toggle("active", a.dataset.page === name);
   });
 
-  applySearchFilter();
   closeS();
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -1032,21 +1218,21 @@ nav.addEventListener("click", (e) => {
   showPage(a.dataset.page);
 });
 
-/* finance */
-function cryptoRandom(){
-  return "id_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
-}
+/* ================= FINANSIJE MODULE (demo) ================= */
 function formatRSD(n){
   const x = Number(n||0);
   return x.toLocaleString("sr-RS", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
+
 function daysBetween(aMs, bMs){
   const day = 1000*60*60*24;
   return Math.floor(Math.abs(aMs - bMs) / day);
 }
+
 function canEdit(item){
   return daysBetween(Date.now(), item.createdAt) <= 30;
 }
+
 function loadItems(){
   const raw = localStorage.getItem(FIN_KEY);
   if(!raw){
@@ -1060,9 +1246,11 @@ function loadItems(){
   }
   try { return JSON.parse(raw) || []; } catch { return []; }
 }
+
 function saveItems(items){
   localStorage.setItem(FIN_KEY, JSON.stringify(items));
 }
+
 function loadFirms(){
   const raw = localStorage.getItem(FIRM_KEY);
   if(!raw){
@@ -1072,9 +1260,11 @@ function loadFirms(){
   }
   try { return JSON.parse(raw) || []; } catch { return []; }
 }
+
 function saveFirms(firms){
   localStorage.setItem(FIRM_KEY, JSON.stringify(firms));
 }
+
 function renderFirmSelect(){
   const firms = loadFirms();
   fFirm.innerHTML = "";
@@ -1090,6 +1280,7 @@ function renderFirmSelect(){
     fFirm.appendChild(o);
   });
 }
+
 function fileToDataURL(file){
   return new Promise((resolve, reject) => {
     const r = new FileReader();
@@ -1098,27 +1289,29 @@ function fileToDataURL(file){
     r.readAsDataURL(file);
   });
 }
+
 function totalFilesSizeBytes(fileList){
   let sum = 0;
   for(const f of fileList) sum += (f.size || 0);
   return sum;
 }
+
 function financeMatches(item, q){
-  if(!norm(q)) return true;
-  const docs = (item.docs||[]).map(d => d.name).join(" ");
-  const blob = `${item.date} ${item.type} ${item.category} ${item.firm||""} ${item.desc||""} ${docs} ${item.amount||""}`;
-  return includesQuery(blob, q);
+  const docsNames = (item.docs||[]).map(d => d.name).join(" ");
+  const hay =
+    `${item.date} ${item.type} ${item.category} ${item.firm||""} ${item.desc||""} ${item.amount||""} ${docsNames}`;
+  return includesQuery(hay, q);
 }
+
 function renderFinanceList(q){
-  const items = loadItems()
-    .slice()
-    .sort((a,b) => (b.date||"").localeCompare(a.date||""))
-    .filter(x => financeMatches(x, q));
+  const itemsAll = loadItems().slice().sort((a,b) => (b.date||"").localeCompare(a.date||""));
+  const items = q ? itemsAll.filter(it => financeMatches(it, q)) : itemsAll;
 
   financeList.innerHTML = "";
 
   items.forEach(item => {
     const li = document.createElement("li");
+    li.dataset.sid = "fin:" + item.id;
 
     const firmPart = item.firm ? (" — " + item.firm) : "";
     const editTag = (CURRENT_SESSION && CURRENT_SESSION.role === "upravnik")
@@ -1186,6 +1379,7 @@ function renderFinanceList(q){
     financeList.appendChild(li);
   });
 }
+
 function resetFinanceForm(){
   financeError.style.display = "none";
   const today = new Date();
@@ -1201,6 +1395,7 @@ function resetFinanceForm(){
   fAmount.value = "";
   if(fDocs) fDocs.value = "";
 }
+
 function financeInit(){
   if(!financeList) return;
   renderFirmSelect();
@@ -1208,6 +1403,7 @@ function financeInit(){
   resetFinanceForm();
   if(financeFormWrap) financeFormWrap.style.display = "none";
 }
+
 if(addFinanceBtn){
   addFinanceBtn.addEventListener("click", () => {
     financeFormWrap.style.display = (financeFormWrap.style.display === "none" || financeFormWrap.style.display === "") ? "block" : "none";
@@ -1220,6 +1416,7 @@ if(cancelFinanceBtn){
     resetFinanceForm();
   });
 }
+
 if(saveFinanceBtn){
   saveFinanceBtn.addEventListener("click", async () => {
     financeError.style.display = "none";
@@ -1306,52 +1503,74 @@ if(saveFinanceBtn){
     financeFormWrap.style.display = "none";
     resetFinanceForm();
     renderFinanceList(CURRENT_QUERY);
+    renderSearchDropdown(CURRENT_QUERY);
   });
 }
 
-/* oglasna */
+/* ================= OGLASNA TABLA MODULE (demo) ================= */
 function loadBoardPosts(){
   const raw = localStorage.getItem(BOARD_KEY);
   if(!raw){
     const seed = [
-      { id: cryptoRandom(), createdAt: Date.now()-1000*60*60*24*3, date:"2026-01-01", title:"Akcija čišćenja", desc:"Obaveštenje o terminu akcije čišćenja", docs:[] },
-      { id: cryptoRandom(), createdAt: Date.now()-1000*60*60*24*7, date:"2025-12-28", title:"Popravka krova", desc:"Plan radova i obaveštenje", docs:[] }
+      {
+        id: cryptoRandom(),
+        createdAt: Date.now() - 1000*60*60*24*3,
+        date: "2026-01-01",
+        title: "Akcija čišćenja",
+        desc: "Obaveštenje o terminu akcije čišćenja",
+        docs: []
+      },
+      {
+        id: cryptoRandom(),
+        createdAt: Date.now() - 1000*60*60*24*7,
+        date: "2025-12-28",
+        title: "Popravka krova",
+        desc: "Plan radova i obaveštenje",
+        docs: []
+      }
     ];
     localStorage.setItem(BOARD_KEY, JSON.stringify(seed));
     return seed;
   }
   try { return JSON.parse(raw) || []; } catch { return []; }
 }
-function saveBoardPosts(items){ localStorage.setItem(BOARD_KEY, JSON.stringify(items)); }
+
+function saveBoardPosts(items){
+  localStorage.setItem(BOARD_KEY, JSON.stringify(items));
+}
+
 function resetBoardForm(){
   if(boardError) boardError.style.display = "none";
+
   const today = new Date();
   const yyyy = today.getFullYear();
   const mm = String(today.getMonth()+1).padStart(2,"0");
   const dd = String(today.getDate()).padStart(2,"0");
   if(bDate) bDate.value = `${yyyy}-${mm}-${dd}`;
+
   if(bTitle) bTitle.value = "";
   if(bDesc) bDesc.value = "";
   if(bDocs) bDocs.value = "";
 }
+
 function boardMatches(post, q){
-  if(!norm(q)) return true;
-  const docs = (post.docs||[]).map(d => d.name).join(" ");
-  const blob = `${post.date} ${post.title} ${post.desc||""} ${docs}`;
-  return includesQuery(blob, q);
+  const docsNames = (post.docs||[]).map(d => d.name).join(" ");
+  const hay = `${post.date} ${post.title} ${post.desc||""} ${docsNames}`;
+  return includesQuery(hay, q);
 }
+
 function renderBoard(q){
   if(!boardList) return;
 
-  const items = loadBoardPosts()
-    .slice()
-    .sort((a,b) => (b.date||"").localeCompare(a.date||""))
-    .filter(x => boardMatches(x, q));
+  const all = loadBoardPosts().slice().sort((a,b) => (b.date||"").localeCompare(a.date||""));
+  const items = q ? all.filter(p => boardMatches(p, q)) : all;
 
   boardList.innerHTML = "";
 
   items.forEach(post => {
     const li = document.createElement("li");
+    li.dataset.sid = "brd:" + post.id;
+
     li.textContent = `${post.date} — ${post.title}${post.desc ? " — " + post.desc : ""}`;
 
     if(post.docs && post.docs.length){
@@ -1402,6 +1621,7 @@ function renderBoard(q){
         const next = loadBoardPosts().filter(x => x.id !== post.id);
         saveBoardPosts(next);
         renderBoard(CURRENT_QUERY);
+        renderSearchDropdown(CURRENT_QUERY);
       });
 
       actions.appendChild(del);
@@ -1411,11 +1631,13 @@ function renderBoard(q){
     boardList.appendChild(li);
   });
 }
+
 function boardInit(){
   renderBoard(CURRENT_QUERY);
   resetBoardForm();
   if(boardFormWrap) boardFormWrap.style.display = "none";
 }
+
 if(addBoardBtn){
   addBoardBtn.addEventListener("click", () => {
     if(!boardFormWrap) return;
@@ -1424,12 +1646,14 @@ if(addBoardBtn){
     if(boardFormWrap.style.display === "block") resetBoardForm();
   });
 }
+
 if(cancelBoardBtn){
   cancelBoardBtn.addEventListener("click", () => {
     if(boardFormWrap) boardFormWrap.style.display = "none";
     resetBoardForm();
   });
 }
+
 if(saveBoardBtn){
   saveBoardBtn.addEventListener("click", async () => {
     if(!CURRENT_SESSION || CURRENT_SESSION.role !== "upravnik"){
@@ -1484,7 +1708,14 @@ if(saveBoardBtn){
       return;
     }
 
-    const post = { id: cryptoRandom(), createdAt: Date.now(), date, title, desc, docs };
+    const post = {
+      id: cryptoRandom(),
+      createdAt: Date.now(),
+      date,
+      title,
+      desc,
+      docs
+    };
 
     try{
       const items = loadBoardPosts();
@@ -1501,102 +1732,129 @@ if(saveBoardBtn){
     if(boardFormWrap) boardFormWrap.style.display = "none";
     resetBoardForm();
     renderBoard(CURRENT_QUERY);
+    renderSearchDropdown(CURRENT_QUERY);
   });
 }
 
-/* forum */
+/* ================= FORUM MODULE (demo) ================= */
 function loadProposals(){
   const raw = localStorage.getItem(FORUM_KEY);
   if(!raw){
     const seed = [
-      { id: cryptoRandom(), createdAt: Date.now()-1000*60*60*24*3, title:"Nova rasveta u hodniku", body:"Predlog da se zamene sijalice LED rasvetom zbog ustede.", createdBy:"stanar",
-        poll:{ enabled:true, endsAt: Date.now()+1000*60*60*24*4, votesYes:[], votesNo:[] } },
-      { id: cryptoRandom(), createdAt: Date.now()-1000*60*60*24*10, title:"Zamena interfona", body:"Predlog da se proveri ponuda za zamenu interfona u zgradi.", createdBy:"stanar",
-        poll:{ enabled:true, endsAt: Date.now()-1000*60*60*24*1, votesYes:["demo@x"], votesNo:[] } }
+      {
+        id: cryptoRandom(),
+        createdAt: Date.now() - 1000*60*60*24*3,
+        title: "Nova rasveta u hodniku",
+        body: "Predlog da se zamene sijalice LED rasvetom zbog ustede.",
+        createdBy: "stanar",
+        poll: { enabled: true, endsAt: Date.now() + 1000*60*60*24*4, votesYes: [], votesNo: [] }
+      },
+      {
+        id: cryptoRandom(),
+        createdAt: Date.now() - 1000*60*60*24*10,
+        title: "Zamena interfona",
+        body: "Predlog da se proveri ponuda za zamenu interfona u zgradi.",
+        createdBy: "stanar",
+        poll: { enabled: true, endsAt: Date.now() - 1000*60*60*24*1, votesYes: ["demo@x"], votesNo: [] }
+      }
     ];
     localStorage.setItem(FORUM_KEY, JSON.stringify(seed));
     return seed;
   }
   try { return JSON.parse(raw) || []; } catch { return []; }
 }
-function saveProposals(items){ localStorage.setItem(FORUM_KEY, JSON.stringify(items)); }
-function fmtDateTime(ms){ return new Date(ms).toLocaleString("sr-RS"); }
+
+function saveProposals(items){
+  localStorage.setItem(FORUM_KEY, JSON.stringify(items));
+}
+
+function fmtDateTime(ms){
+  const d = new Date(ms);
+  return d.toLocaleString("sr-RS");
+}
+
 function pollStatus(poll){
-  if(!poll || !poll.enabled) return { txt:"Bez ankete", open:false };
+  if(!poll || !poll.enabled) return { txt: "Bez ankete", open: false };
   const open = Date.now() < poll.endsAt;
   return { txt: open ? "Anketa otvorena" : "Anketa zatvorena", open };
 }
+
 function hasVoted(poll, email){
   if(!poll || !poll.enabled) return false;
   return (poll.votesYes||[]).includes(email) || (poll.votesNo||[]).includes(email);
 }
+
 function forumMatches(p, q){
-  if(!norm(q)) return true;
-  const blob = `${p.title} ${p.body} ${fmtDateTime(p.createdAt)} ${p.createdBy||""}`;
-  return includesQuery(blob, q);
+  const hay = `${p.title} ${p.body}`;
+  return includesQuery(hay, q);
 }
+
 function renderForum(q){
   if(!forumList) return;
-  const items = loadProposals().slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).filter(x=>forumMatches(x,q));
+  const all = loadProposals().slice().sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+  const items = q ? all.filter(p => forumMatches(p, q)) : all;
+
   forumList.innerHTML = "";
 
   items.forEach(p => {
     const li = document.createElement("li");
+    li.dataset.sid = "frm:" + p.id;
 
     const top = document.createElement("div");
-    top.style.display="flex";
-    top.style.justifyContent="space-between";
-    top.style.gap="10px";
-    top.style.flexWrap="wrap";
+    top.style.display = "flex";
+    top.style.justifyContent = "space-between";
+    top.style.gap = "10px";
+    top.style.flexWrap = "wrap";
 
     const left = document.createElement("div");
-    left.style.fontWeight="900";
-    left.textContent=p.title;
+    left.style.fontWeight = "900";
+    left.textContent = p.title;
 
     const right = document.createElement("div");
-    right.style.display="flex";
-    right.style.gap="8px";
-    right.style.alignItems="center";
+    right.style.display = "flex";
+    right.style.gap = "8px";
+    right.style.alignItems = "center";
 
     const meta = document.createElement("span");
-    meta.className="badge";
-    meta.textContent=fmtDateTime(p.createdAt);
+    meta.className = "badge";
+    meta.textContent = fmtDateTime(p.createdAt);
 
     const pol = document.createElement("span");
-    pol.className="badge";
+    pol.className = "badge";
     const st = pollStatus(p.poll);
-    pol.textContent=st.txt;
+    pol.textContent = st.txt;
 
     right.appendChild(meta);
     right.appendChild(pol);
+
     top.appendChild(left);
     top.appendChild(right);
 
     const body = document.createElement("div");
-    body.className="smallText";
-    body.style.marginTop="8px";
-    body.textContent=p.body;
+    body.className = "smallText";
+    body.style.marginTop = "8px";
+    body.textContent = p.body;
 
     li.appendChild(top);
     li.appendChild(body);
 
     if(p.poll && p.poll.enabled){
       const pollBox = document.createElement("div");
-      pollBox.className="smallText";
-      pollBox.style.marginTop="10px";
+      pollBox.className = "smallText";
+      pollBox.style.marginTop = "10px";
 
       const yes = (p.poll.votesYes||[]).length;
-      const no  = (p.poll.votesNo||[]).length;
-      const total = yes+no;
-      const yesPct = total ? Math.round((yes/total)*100) : 0;
-      const noPct  = total ? Math.round((no/total)*100) : 0;
+      const no = (p.poll.votesNo||[]).length;
+      const total = yes + no;
+      const yesPct = total ? Math.round((yes / total) * 100) : 0;
+      const noPct  = total ? Math.round((no / total) * 100) : 0;
 
       const ends = document.createElement("div");
       ends.textContent = "Istice: " + new Date(p.poll.endsAt).toLocaleString("sr-RS");
       pollBox.appendChild(ends);
 
       const count = document.createElement("div");
-      count.style.marginTop="6px";
+      count.style.marginTop = "6px";
       count.innerHTML = `
         <span class="badge">Da: ${yes} (${yesPct}%)</span>
         <span class="badge" style="margin-left:8px;">Ne: ${no} (${noPct}%)</span>
@@ -1604,44 +1862,46 @@ function renderForum(q){
       `;
       pollBox.appendChild(count);
 
+      // Stanar moze da glasa samo dok je otvoreno i jednom
       if(CURRENT_SESSION && CURRENT_SESSION.role === "stanar"){
         const already = hasVoted(p.poll, CURRENT_SESSION.email);
         if(st.open && !already){
           const row = document.createElement("div");
-          row.style.display="flex";
-          row.style.gap="10px";
-          row.style.marginTop="8px";
-          row.style.flexWrap="wrap";
+          row.style.display = "flex";
+          row.style.gap = "10px";
+          row.style.marginTop = "8px";
+          row.style.flexWrap = "wrap";
 
           const btnYes = document.createElement("button");
-          btnYes.className="btn btnPrimary";
-          btnYes.type="button";
-          btnYes.style.flex="unset";
-          btnYes.style.padding="12px 16px";
-          btnYes.textContent="Glasaj: DA";
+          btnYes.className = "btn btnPrimary";
+          btnYes.type = "button";
+          btnYes.style.flex = "unset";
+          btnYes.style.padding = "12px 16px";
+          btnYes.textContent = "Glasaj: DA";
 
           const btnNo = document.createElement("button");
-          btnNo.className="btn btnGhost";
-          btnNo.type="button";
-          btnNo.style.flex="unset";
-          btnNo.style.padding="12px 16px";
-          btnNo.textContent="Glasaj: NE";
+          btnNo.className = "btn btnGhost";
+          btnNo.type = "button";
+          btnNo.style.flex = "unset";
+          btnNo.style.padding = "12px 16px";
+          btnNo.textContent = "Glasaj: NE";
 
-          btnYes.addEventListener("click", ()=>vote(p.id,"yes"));
-          btnNo.addEventListener("click", ()=>vote(p.id,"no"));
+          btnYes.addEventListener("click", () => vote(p.id, "yes"));
+          btnNo.addEventListener("click", () => vote(p.id, "no"));
 
           row.appendChild(btnYes);
           row.appendChild(btnNo);
           pollBox.appendChild(row);
         }else{
           const note = document.createElement("div");
-          note.style.marginTop="8px";
+          note.style.marginTop = "8px";
           note.innerHTML = `<span class="badge">${already ? "Vec ste glasali" : "Anketa je zatvorena"}</span>`;
           pollBox.appendChild(note);
         }
       }else{
+        // upravnik/admin: samo pregled
         const note = document.createElement("div");
-        note.style.marginTop="8px";
+        note.style.marginTop = "8px";
         note.innerHTML = `<span class="badge">Pregled (bez glasanja)</span>`;
         pollBox.appendChild(note);
       }
@@ -1652,18 +1912,26 @@ function renderForum(q){
     forumList.appendChild(li);
   });
 }
+
 function resetProposalForm(){
-  forumError.style.display="none";
-  pTitle.value=""; pBody.value=""; pPoll.value="ne"; pDays.value=7;
+  if(!pTitle) return;
+  forumError.style.display = "none";
+  pTitle.value = "";
+  pBody.value = "";
+  pPoll.value = "ne";
+  pDays.value = 7;
 }
+
 function forumInit(){
+  if(!forumList) return;
   renderForum(CURRENT_QUERY);
   resetProposalForm();
 }
+
 function vote(proposalId, dir){
   const items = loadProposals();
-  const idx = items.findIndex(x=>x.id===proposalId);
-  if(idx===-1) return;
+  const idx = items.findIndex(x => x.id === proposalId);
+  if(idx === -1) return;
 
   const p = items[idx];
   if(!p.poll || !p.poll.enabled) return;
@@ -1671,161 +1939,304 @@ function vote(proposalId, dir){
   const st = pollStatus(p.poll);
   if(!st.open) return;
 
-  if(!CURRENT_SESSION || CURRENT_SESSION.role!=="stanar") return;
+  if(!CURRENT_SESSION || CURRENT_SESSION.role !== "stanar") return;
   if(hasVoted(p.poll, CURRENT_SESSION.email)) return;
 
   p.poll.votesYes = p.poll.votesYes || [];
-  p.poll.votesNo  = p.poll.votesNo  || [];
+  p.poll.votesNo = p.poll.votesNo || [];
 
-  if(dir==="yes") p.poll.votesYes.push(CURRENT_SESSION.email);
+  if(dir === "yes") p.poll.votesYes.push(CURRENT_SESSION.email);
   else p.poll.votesNo.push(CURRENT_SESSION.email);
 
-  items[idx]=p;
+  items[idx] = p;
   saveProposals(items);
   renderForum(CURRENT_QUERY);
+  renderSearchDropdown(CURRENT_QUERY);
 }
+
+/* stanar kreira predlog */
 if(createProposalBtn){
-  createProposalBtn.addEventListener("click", ()=>{
-    forumError.style.display="none";
-    if(!CURRENT_SESSION || CURRENT_SESSION.role!=="stanar"){
-      forumError.textContent="Nemate dozvolu.";
-      forumError.style.display="block";
+  createProposalBtn.addEventListener("click", () => {
+    forumError.style.display = "none";
+
+    if(!CURRENT_SESSION || CURRENT_SESSION.role !== "stanar"){
+      forumError.textContent = "Nemate dozvolu.";
+      forumError.style.display = "block";
       return;
     }
-    const title=(pTitle.value||"").trim();
-    const body=(pBody.value||"").trim();
-    const pollOn=(pPoll.value==="da");
-    const days=Math.max(1, Math.min(30, Number(pDays.value||7)));
+
+    const title = (pTitle.value||"").trim();
+    const body = (pBody.value||"").trim();
+    const pollOn = (pPoll.value === "da");
+    const days = Math.max(1, Math.min(30, Number(pDays.value||7)));
 
     if(!title || !body){
-      forumError.textContent="Greska: popuni naslov i opis.";
-      forumError.style.display="block";
+      forumError.textContent = "Greska: popuni naslov i opis.";
+      forumError.style.display = "block";
       return;
     }
-    const proposal={
+
+    const proposal = {
       id: cryptoRandom(),
       createdAt: Date.now(),
-      title, body,
-      createdBy:"stanar",
-      poll: pollOn ? { enabled:true, endsAt: Date.now()+1000*60*60*24*days, votesYes:[], votesNo:[] } : { enabled:false }
+      title,
+      body,
+      createdBy: "stanar",
+      poll: pollOn ? { enabled: true, endsAt: Date.now() + 1000*60*60*24*days, votesYes: [], votesNo: [] } : { enabled:false }
     };
-    const items=loadProposals();
+
+    const items = loadProposals();
     items.push(proposal);
     saveProposals(items);
+
     resetProposalForm();
     renderForum(CURRENT_QUERY);
+    renderSearchDropdown(CURRENT_QUERY);
   });
 }
+
 if(clearProposalBtn){
   clearProposalBtn.addEventListener("click", resetProposalForm);
 }
 
-/* ✅ REGULATIVE FILTER (static list) */
-function renderRegulative(q){
-  if(!regList) return;
-  const li = [...regList.querySelectorAll("li")];
-  li.forEach(x => {
-    const hit = includesQuery(x.textContent, q);
-    x.style.display = hit ? "" : "none";
-  });
+/* ================= GLOBAL SEARCH DROPDOWN ================= */
+function tagForPage(page){
+  if(page === "finansije") return "Finansije";
+  if(page === "oglasna") return "Oglasna";
+  if(page === "forum") return "Forum";
+  if(page === "regulative") return "Regulative";
+  if(page === "kontakt") return "Kontakt";
+  return "Rezultat";
 }
 
-/* ✅ KONTAKT FILTER (static list) */
-function renderKontakt(q){
-  if(!kontaktList) return;
-  const li = [...kontaktList.querySelectorAll("li")];
-  li.forEach(x => {
-    const hit = includesQuery(x.textContent, q);
-    x.style.display = hit ? "" : "none";
-  });
+function ensureStaticSids(){
+  if(regList){
+    [...regList.querySelectorAll("li")].forEach((li, idx) => {
+      if(!li.dataset.sid) li.dataset.sid = "reg:" + idx;
+    });
+  }
+  if(kontaktList){
+    [...kontaktList.querySelectorAll("li")].forEach((li, idx) => {
+      if(!li.dataset.sid) li.dataset.sid = "kon:" + idx;
+    });
+  }
 }
 
-/* GLOBAL SEARCH */
-function applySearchFilter(){
-  if(CURRENT_PAGE === "finansije") renderFinanceList(CURRENT_QUERY);
-  if(CURRENT_PAGE === "forum") renderForum(CURRENT_QUERY);
-  if(CURRENT_PAGE === "oglasna") renderBoard(CURRENT_QUERY);
-  if(CURRENT_PAGE === "regulative") renderRegulative(CURRENT_QUERY);
-  if(CURRENT_PAGE === "kontakt") renderKontakt(CURRENT_QUERY);
-}
-
-function scoreStaticList(listEl, q){
-  if(!listEl) return 0;
+function buildSearchHits(q){
   const qq = norm(q);
-  if(!qq) return 0;
-  let cnt = 0;
-  [...listEl.querySelectorAll("li")].forEach(li => {
-    if(includesQuery(li.textContent, qq)) cnt++;
-  });
-  return cnt;
+  if(!qq) return [];
+
+  const hits = [];
+
+  // finansije
+  try{
+    const items = loadItems().slice().sort((a,b) => (b.date||"").localeCompare(a.date||""));
+    for(const it of items){
+      if(financeMatches(it, qq)){
+        const firmPart = it.firm ? (" — " + it.firm) : "";
+        hits.push({
+          page: "finansije",
+          sid: "fin:" + it.id,
+          text: `${it.date} — ${it.type === "rashod" ? "Rashod" : "Prihod"} — ${it.category}${firmPart}`,
+          sub: `"${it.desc}" — ${formatRSD(it.amount)} RSD`
+        });
+      }
+    }
+  }catch{}
+
+  // oglasna
+  try{
+    const posts = loadBoardPosts().slice().sort((a,b) => (b.date||"").localeCompare(a.date||""));
+    for(const p of posts){
+      if(boardMatches(p, qq)){
+        hits.push({
+          page: "oglasna",
+          sid: "brd:" + p.id,
+          text: `${p.date} — ${p.title}`,
+          sub: p.desc || ""
+        });
+      }
+    }
+  }catch{}
+
+  // forum
+  try{
+    const props = loadProposals().slice().sort((a,b) => (b.createdAt||0)-(a.createdAt||0));
+    for(const p of props){
+      if(forumMatches(p, qq)){
+        hits.push({
+          page: "forum",
+          sid: "frm:" + p.id,
+          text: p.title,
+          sub: p.body
+        });
+      }
+    }
+  }catch{}
+
+  // regulative (static)
+  if(regList){
+    [...regList.querySelectorAll("li")].forEach(li => {
+      if(includesQuery(li.textContent, qq)){
+        hits.push({
+          page: "regulative",
+          sid: li.dataset.sid || "",
+          text: li.textContent,
+          sub: ""
+        });
+      }
+    });
+  }
+
+  // kontakt (static)
+  if(kontaktList){
+    [...kontaktList.querySelectorAll("li")].forEach(li => {
+      if(includesQuery(li.textContent, qq)){
+        hits.push({
+          page: "kontakt",
+          sid: li.dataset.sid || "",
+          text: li.textContent,
+          sub: ""
+        });
+      }
+    });
+  }
+
+  return hits.slice(0, 12);
 }
 
-function scoreSearch(q){
+function renderSearchDropdown(q){
+  if(!searchResults) return;
+
   const qq = norm(q);
-  if(!qq) return { finansije:0, oglasna:0, forum:0, regulative:0, kontakt:0 };
+  if(!qq){
+    searchResults.style.display = "none";
+    searchResults.innerHTML = "";
+    return;
+  }
 
-  const fin = loadItems().filter(x => financeMatches(x, qq)).length;
-  const brd = loadBoardPosts().filter(x => boardMatches(x, qq)).length;
-  const frm = loadProposals().filter(x => forumMatches(x, qq)).length;
-  const reg = scoreStaticList(regList, qq);
-  const kon = scoreStaticList(kontaktList, qq);
+  const hits = buildSearchHits(qq);
 
-  return { finansije: fin, oglasna: brd, forum: frm, regulative: reg, kontakt: kon };
-}
+  if(!hits.length){
+    searchResults.innerHTML = `
+      <div class="srHead">Rezultati</div>
+      <div class="srItem" style="cursor:default;">
+        <div class="srText">Nema rezultata za “${q}”.<div class="srSub">Probaj drugi pojam (npr. “krov”, “lift”, “193”).</div></div>
+      </div>
+    `;
+    searchResults.style.display = "block";
+    return;
+  }
 
-function bestPageForQuery(q){
-  const s = scoreSearch(q);
-  const qq = norm(q);
+  const grouped = new Map();
+  for(const h of hits){
+    const key = h.page;
+    if(!grouped.has(key)) grouped.set(key, []);
+    grouped.get(key).push(h);
+  }
 
-  // eksplicitni hint
-  if(qq.includes("finans")) return "finansije";
-  if(qq.includes("oglas")) return "oglasna";
-  if(qq.includes("forum")) return "forum";
-  if(qq.includes("regul")) return "regulative";
-  if(qq.includes("kontakt") || qq.includes("sluzb")) return "kontakt";
+  let html = `<div class="srHead">Rezultati za “${q}”</div>`;
+  const order = ["finansije","oglasna","forum","regulative","kontakt"];
 
-  // najveći skor
-  let best = CURRENT_PAGE;
-  let bestScore = 0;
-  for(const k of ["finansije","oglasna","forum","regulative","kontakt"]){
-    if(s[k] > bestScore){
-      bestScore = s[k];
-      best = k;
+  for(const page of order){
+    const arr = grouped.get(page);
+    if(!arr || !arr.length) continue;
+
+    const slice = arr.slice(0, 3);
+    for(const item of slice){
+      html += `
+        <div class="srItem" data-page="${item.page}" data-sid="${item.sid}">
+          <div class="srTag">${tagForPage(item.page)}</div>
+          <div class="srText">
+            ${item.text}
+            ${item.sub ? `<div class="srSub">${item.sub}</div>` : ``}
+          </div>
+        </div>
+      `;
     }
   }
-  if(bestScore === 0) return CURRENT_PAGE;
-  return best;
+
+  searchResults.innerHTML = html;
+  searchResults.style.display = "block";
+}
+
+function applySearchFilter(){
+  // re-render module liste sa query
+  renderFinanceList(CURRENT_QUERY);
+  renderBoard(CURRENT_QUERY);
+  renderForum(CURRENT_QUERY);
+}
+
+function scrollToSid(sid){
+  if(!sid) return;
+  const el = document.querySelector(`[data-sid="${sid}"]`);
+  if(!el) return;
+
+  el.scrollIntoView({ behavior:"smooth", block:"center" });
+  el.classList.add("searchHitFlash");
+  setTimeout(() => el.classList.remove("searchHitFlash"), 1200);
+}
+
+function goToHit(page, sid){
+  showPage(page);
+
+  setTimeout(() => {
+    applySearchFilter();
+    setTimeout(() => scrollToSid(sid), 60);
+  }, 60);
+
+  if(searchResults) searchResults.style.display = "none";
 }
 
 if(globalSearch){
   globalSearch.addEventListener("input", () => {
     CURRENT_QUERY = (globalSearch.value || "").trim();
     applySearchFilter();
+    renderSearchDropdown(CURRENT_QUERY);
+  });
+
+  globalSearch.addEventListener("focus", () => {
+    renderSearchDropdown((globalSearch.value || "").trim());
   });
 
   globalSearch.addEventListener("keydown", (e) => {
-    if(e.key === "Enter"){
-      e.preventDefault();
-      const q = (globalSearch.value || "").trim();
-      CURRENT_QUERY = q;
-      const target = bestPageForQuery(q);
-      showPage(target);
+    if(e.key === "Escape"){
+      if(searchResults) searchResults.style.display = "none";
     }
   });
 }
 
+if(searchResults){
+  searchResults.addEventListener("click", (e) => {
+    const row = e.target.closest(".srItem");
+    if(!row) return;
+    const page = row.getAttribute("data-page");
+    const sid  = row.getAttribute("data-sid");
+    if(page) goToHit(page, sid);
+  });
+}
+
+document.addEventListener("click", (e) => {
+  if(!searchResults || !globalSearch) return;
+  const wrap = globalSearch.closest(".searchInline");
+  if(wrap && wrap.contains(e.target)) return;
+  searchResults.style.display = "none";
+});
+
 /* INIT */
 (function init(){
+  ensureStaticSids();
+
   const session = getSession();
   if(session && session.email && session.role){
     CURRENT_SESSION = session;
     userPill.textContent = session.email;
     applyRoleUI(session.role);
+
     financeInit();
     forumInit();
     boardInit();
-    renderRegulative(CURRENT_QUERY);
-    renderKontakt(CURRENT_QUERY);
+
     setMode("portal");
   }else{
     CURRENT_SESSION = null;
