@@ -1538,7 +1538,7 @@ function renderFinanceList(bid, q){
       const del = document.createElement("button");
       del.className = "btn btnGhost";
       del.type = "button";
-      del.textContent = "Obrisi (demo)";
+      del.textContent = "Obriši (demo)";
       del.disabled = !canEdit(item);
       del.addEventListener("click", () => {
         const next = loadItems(bid).filter(x => x.id !== item.id);
@@ -1801,7 +1801,7 @@ function renderBoard(bid, q){
       const del = document.createElement("button");
       del.className = "btn btnGhost";
       del.type = "button";
-      del.textContent = "Obrisi (demo)";
+      del.textContent = "Obriši (demo)";
       del.addEventListener("click", () => {
         const next = loadBoardPosts(bid).filter(x => x.id !== post.id);
         saveBoardPosts(bid, next);
@@ -2481,6 +2481,7 @@ function updateHomeSummary(){
 
 </body>
 </html>
+
 
 
 
