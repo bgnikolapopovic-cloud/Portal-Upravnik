@@ -2554,5 +2554,25 @@ function updateHomeSummary(){
 })();
 </script>
 
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- Supabase init -->
+<script>
+  const SUPABASE_URL = "https://bkzczqnbeomvshqplrho.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_mPQn0h5Ixgyg5WQFsJk38A_qqE2kPb7";
+
+  const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+  // samo za proveru
+  console.log("Supabase connected:", supabaseClient);
+</script>
+
 </body>
 </html>
+
+
+
