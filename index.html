@@ -693,7 +693,7 @@ body.mode-portal #portalScreen{display:block;}
     </div>
 
     <nav class="nav" id="nav">
-      <a href="#" class="active" data-page="home">Pocetna</a>
+      <a href="#" class="active" data-page="home">Početna</a>
       <a href="#" data-page="finansije">Finansije</a>
       <a href="#" data-page="oglasna">Oglasna tabla</a>
       <a href="#" data-page="forum">Forum</a>
@@ -726,7 +726,7 @@ body.mode-portal #portalScreen{display:block;}
           </div>
 
           <div class="balanceCard">
-            <span class="label">Stanje racuna</span>
+            <span class="label">Stanje računa</span>
             <div class="balanceAmount">
               <span class="value" id="balanceValue">0,00</span>
               <span class="currency">RSD</span>
@@ -737,10 +737,10 @@ body.mode-portal #portalScreen{display:block;}
 
       <section class="page active" id="page-home">
         <section class="card">
-          <h3>Pocetna</h3>
+          <h3>Početna</h3>
 
           <div class="smallText">
-            Ovde ide kratak pregled (stanje racuna, poslednje promene, istaknuta obavestenja).
+            Ovde ide kratak pregled (stanje računa, poslednje promene, istaknuta obavestenja).
           </div>
 
           <ul class="boardList" style="margin-top:12px;">
@@ -1017,8 +1017,8 @@ body.mode-portal #portalScreen{display:block;}
 const BUILDINGS = [
   {
     id: "b_bm25",
-    title: "Bore Markovica 25",
-    street: "Bore Markovica",
+    title: "Bore Markovića 25",
+    street: "Bore Markovića",
     number: "25",
     units: 25
   },
@@ -1044,7 +1044,7 @@ const USERS = [
   { username: "ADMIN-001", pass: "123456", role: "admin", buildings: ["b_bm25","b_bp10"] },
   { username: "UPR-001",   pass: "123456", role: "upravnik", buildings: ["b_bm25","b_bp10"] },
 
-  // Bore Markovica 25 (25 stanova) - primer nekoliko stanara
+  // Bore Markovića 25 (25 stanova) - primer nekoliko stanara
   { username: "BM25-001", pass: "2B3H1", role: "stanar", buildings: ["b_bm25"] },
   { username: "BM25-002", pass: "8K1Q9", role: "stanar", buildings: ["b_bm25"] },
   { username: "BM25-003", pass: "4Z7M2", role: "stanar", buildings: ["b_bm25"] },
@@ -1575,7 +1575,7 @@ function resetFinanceForm(){
 
 function recalcBalanceFromFinance(bid){
   // jednostavan model: balance = seedBalance + (prihodi - rashodi) iz unosa
-  // za sada samo: pocetna vrednost ostaje, ali azuriramo na osnovu trenutno sacuvanih stavki
+  // za sada samo: početna vrednost ostaje, ali azuriramo na osnovu trenutno sacuvanih stavki
   const base = (bid === "b_bm25") ? 948889 : 312450;
   const items = loadItems(bid);
   let delta = 0;
@@ -2481,5 +2481,6 @@ function updateHomeSummary(){
 
 </body>
 </html>
+
 
 
