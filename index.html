@@ -27,7 +27,6 @@
   --side1:rgba(10,35,56,.92);
   --side2:rgba(6,24,40,.92);
 }
-
 @media(min-width:900px){
   :root{ --main-pad: 52px; }
 }
@@ -51,7 +50,7 @@ body::before{
   z-index:-2;
 }
 
-/* ambient blobovi (login) */
+/* ambient blobs */
 .ambient{
   position:fixed;
   inset:-20%;
@@ -64,9 +63,9 @@ body::before{
   filter: blur(2px);
 }
 
-/* ================= TOP RIGHT (brand) ================= */
+/* TOP RIGHT */
 .topRightBar{
-  position:absolute; /* umesto fixed */
+  position:absolute;
   top:calc(10px + env(safe-area-inset-top));
   right:calc(var(--main-pad) + env(safe-area-inset-right));
   display:flex;
@@ -75,7 +74,6 @@ body::before{
   z-index:95;
   pointer-events:none;
 }
-
 .topRightTitle{
   text-align:left;
   font-weight:900;
@@ -83,10 +81,8 @@ body::before{
 }
 .topRightTitle span{
   display:block;
-  font-size:18px; /* mobile */
+  font-size:18px;
 }
-
-/* LOGO – ovalno */
 .topRightLogo{
   padding:6px;
   background:rgba(255,255,255,.72);
@@ -95,18 +91,17 @@ body::before{
   box-shadow:var(--shadow);
 }
 .topRightLogo img{
-  height:56px; /* mobile */
+  height:56px;
   width:auto;
   display:block;
   border-radius:16px;
 }
-
 @media(min-width:900px){
   .topRightTitle span{font-size:22px;}
   .topRightLogo img{height:92px;}
 }
 
-/* ================= LOGIN SCREEN ================= */
+/* SCREENS */
 .loginWrap{
   min-height:100vh;
   display:grid;
@@ -124,7 +119,6 @@ body::before{
   position:relative;
   overflow:hidden;
 }
-
 .loginCard::before{
   content:"";
   position:absolute;
@@ -140,14 +134,12 @@ body::before{
   padding-bottom:12px;
   border-bottom:1px solid rgba(15,23,42,.10);
 }
-
 .formTitle{
   margin:0;
   font-weight:900;
   font-size:26px;
   letter-spacing:.02em;
 }
-
 .formSub{
   margin-top:12px;
   color:var(--muted);
@@ -206,7 +198,6 @@ body::before{
   margin-top:12px;
   flex-wrap:wrap;
 }
-
 .check{
   display:flex;
   align-items:center;
@@ -217,11 +208,7 @@ body::before{
 }
 .check input{width:18px;height:18px}
 
-.btnRow{
-  display:flex;
-  gap:10px;
-  margin-top:14px;
-}
+.btnRow{ display:flex; gap:10px; margin-top:14px; }
 .btn{
   flex:1;
   border:none;
@@ -238,22 +225,27 @@ body::before{
   box-shadow:0 18px 36px rgba(2,6,23,.18);
 }
 .btnPrimary:hover{ transform:translateY(-1px); }
-
 .btnGhost{
   background:rgba(255,255,255,.72);
   border:1px solid rgba(15,23,42,.14);
   box-shadow:var(--shadow);
   color:rgba(15,23,42,.92);
 }
-
 .error{
   margin-top:10px;
   font-weight:900;
   color:#9f1239;
   display:none;
 }
+.miniHint{
+  margin-top:10px;
+  font-weight:800;
+  color:rgba(15,23,42,.62);
+  font-size:12px;
+  line-height:1.4;
+}
 
-/* ================= overlay + hover zona (PORTAL) ================= */
+/* overlay + hover zona (PORTAL) */
 .overlay{
   position:fixed; inset:0;
   background:rgba(2,6,23,.25);
@@ -262,14 +254,13 @@ body::before{
   z-index:40;
 }
 .overlay.show{opacity:1;pointer-events:auto}
-
 .edgeHotspot{
   position:fixed; left:0; top:0;
   width:var(--edge-w); height:100vh;
   z-index:60;
 }
 
-/* ================= SIDEBAR ================= */
+/* SIDEBAR */
 .sidebar{
   position:fixed; left:0; top:0;
   width:var(--sidebar-w); height:100vh;
@@ -285,7 +276,6 @@ body::before{
 .sidebar.open{transform:translateX(0)}
 body:not(.sidebar-open) .sidebar{ filter: brightness(1.20); }
 body.sidebar-open .sidebar{ filter:none; }
-
 .sidebar::before{
   content:"";
   position:absolute; inset:0;
@@ -327,21 +317,18 @@ body.sidebar-open .sidebar{ filter:none; }
   user-select:none;
 }
 
-/* ================= MAIN ================= */
+/* MAIN */
 .main{ padding:0 var(--main-pad) 22px; }
-
 .contentWrap{ padding-top:calc(86px + 14px); }
 @media(min-width:900px){
   .contentWrap{padding-top:calc(120px + 14px);}
 }
-
 .pageHeader{
   display:flex;
   justify-content:space-between;
   gap:14px;
   margin-bottom:18px;
 }
-
 .leftInfo{max-width:52vw}
 .meta{
   font-size:18px;
@@ -349,14 +336,12 @@ body.sidebar-open .sidebar{ filter:none; }
   font-weight:600;
   line-height:1.28;
 }
-
 .rightCol{
   display:flex;
   flex-direction:column;
   align-items:flex-end;
   gap:10px;
 }
-
 .searchInline,
 .balanceCard{
   width:clamp(180px,42vw,300px);
@@ -365,7 +350,6 @@ body.sidebar-open .sidebar{ filter:none; }
   border:1px solid var(--border);
   box-shadow:var(--shadow);
 }
-
 .searchInline{padding:10px 14px}
 .searchInline input{
   border:none;background:transparent;width:100%;
@@ -442,11 +426,13 @@ body.sidebar-open .sidebar{ filter:none; }
   line-height:1.45;
 }
 
-/* pills (portal) */
+/* pills */
 .topMini{
   display:flex;
   gap:10px;
   align-items:center;
+  flex-wrap:wrap;
+  justify-content:flex-end;
 }
 .pill{
   border-radius:999px;
@@ -456,14 +442,15 @@ body.sidebar-open .sidebar{ filter:none; }
   box-shadow:var(--shadow);
   font-weight:900;
   font-size:13px;
+  user-select:none;
 }
-.pillBtn{ cursor:pointer; user-select:none; }
+.pillBtn{ cursor:pointer; }
 
 /* pages switch */
 .page{ display:none; }
 .page.active{ display:block; }
 
-/* mali badge */
+/* badge */
 .badge{
   display:inline-block;
   padding:6px 10px;
@@ -506,11 +493,15 @@ body.sidebar-open .sidebar{ filter:none; }
 .fileList small{opacity:.7; font-weight:900;}
 
 /* mode switching */
-body.mode-login #portalScreen{display:none;}
-body.mode-portal #loginScreen{display:none;}
+body.mode-login #portalScreen,
+body.mode-login #buildingSelectScreen{display:none;}
+body.mode-buildingSelect #loginScreen,
+body.mode-buildingSelect #portalScreen{display:none;}
+body.mode-portal #loginScreen,
+body.mode-portal #buildingSelectScreen{display:none;}
 body.mode-portal #portalScreen{display:block;}
 
-/* ===== Global search dropdown ===== */
+/* Global search dropdown */
 .searchResults{
   position:absolute;
   left:10px;
@@ -524,7 +515,6 @@ body.mode-portal #portalScreen{display:block;}
   overflow:hidden;
   backdrop-filter: blur(6px);
 }
-
 .searchResults .srHead{
   padding:10px 12px;
   font-weight:900;
@@ -535,7 +525,6 @@ body.mode-portal #portalScreen{display:block;}
   background:rgba(15,23,42,.04);
   border-bottom:1px solid rgba(15,23,42,.10);
 }
-
 .searchResults .srItem{
   padding:10px 12px;
   cursor:pointer;
@@ -545,11 +534,7 @@ body.mode-portal #portalScreen{display:block;}
   border-bottom:1px solid rgba(15,23,42,.08);
 }
 .searchResults .srItem:last-child{ border-bottom:none; }
-
-.searchResults .srItem:hover{
-  background:rgba(15,23,42,.05);
-}
-
+.searchResults .srItem:hover{ background:rgba(15,23,42,.05); }
 .searchResults .srTag{
   flex:0 0 auto;
   font-weight:900;
@@ -561,7 +546,6 @@ body.mode-portal #portalScreen{display:block;}
   color:rgba(15,23,42,.85);
   white-space:nowrap;
 }
-
 .searchResults .srText{
   flex:1;
   font-weight:800;
@@ -587,6 +571,27 @@ body.mode-portal #portalScreen{display:block;}
   50%{ transform:scale(1.01); }
   100%{ transform:scale(1); }
 }
+
+/* building select list */
+.pickList{
+  margin-top:14px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.pickBtn{
+  width:100%;
+  text-align:left;
+  border:none;
+  cursor:pointer;
+  border-radius:18px;
+  padding:14px 14px;
+  background:rgba(255,255,255,.92);
+  border:1px solid rgba(15,23,42,.14);
+  box-shadow:var(--shadow);
+}
+.pickBtn .t{font-weight:900;}
+.pickBtn .s{margin-top:4px; font-weight:800; color:rgba(15,23,42,.62); font-size:12px; line-height:1.3;}
 </style>
 </head>
 
@@ -614,12 +619,12 @@ body.mode-portal #portalScreen{display:block;}
       </div>
 
       <div class="formSub">
-        Unesite pristupne podatke. Registracija nije dostupna.
+        Unesite korisničko ime i lozinku sa kartice.
       </div>
 
       <div class="field">
-        <label for="email">Email</label>
-        <input id="email" type="email" placeholder="npr. upravnik@zgrada.rs" autocomplete="username">
+        <label for="username">Korisničko ime</label>
+        <input id="username" type="text" placeholder="npr. PU7X9-001" autocomplete="username">
       </div>
 
       <div class="field">
@@ -641,7 +646,34 @@ body.mode-portal #portalScreen{display:block;}
         <button class="btn btnPrimary" id="loginBtn">Uloguj se</button>
       </div>
 
-      <div class="error" id="loginError">Pogresan email ili lozinka.</div>
+      <div class="error" id="loginError">Pogresno korisničko ime ili lozinka.</div>
+
+      <div class="miniHint">
+        U slučaju zaboravljenog naloga ili lozinke kontaktirajte upravnika.
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- BUILDING SELECT SCREEN -->
+<section class="loginWrap" id="buildingSelectScreen">
+  <div class="loginCard">
+    <div class="loginInner">
+
+      <div class="loginHead">
+        <div class="formTitle">Izaberi stambenu zajednicu</div>
+      </div>
+
+      <div class="formSub" id="bsSub">
+        Izaberite zgradu koju zelite da otvorite.
+      </div>
+
+      <div class="pickList" id="buildingPickList"></div>
+
+      <div class="btnRow" style="margin-top:16px;">
+        <button class="btn btnGhost" id="bsLogoutBtn" type="button">Odjava</button>
+      </div>
 
     </div>
   </div>
@@ -675,16 +707,16 @@ body.mode-portal #portalScreen{display:block;}
 
       <section class="pageHeader">
         <div class="leftInfo">
-          <div class="meta">
-            Ulica Primer 1<br>
-            Zgrada 12<br>
-            48 jedinica
+          <div class="meta" id="buildingMeta">
+            <!-- popunjava JS -->
           </div>
         </div>
 
         <div class="rightCol">
           <div class="topMini">
             <div class="pill" id="userPill">Korisnik</div>
+            <div class="pill" id="buildingPill">Zgrada</div>
+            <div class="pill pillBtn" id="switchBuildingBtn" style="display:none;">Promeni zgradu</div>
             <div class="pill pillBtn" id="logoutBtn">Odjava</div>
           </div>
 
@@ -708,13 +740,13 @@ body.mode-portal #portalScreen{display:block;}
           <h3>Početna</h3>
 
           <div class="smallText">
-            Ovde ide kratak pregled (stanje računa, poslednje promene, istaknuta obaveštenja).
+            Ovde ide kratak pregled (stanje računa, poslednje promene, istaknuta obavestenja).
           </div>
 
           <ul class="boardList" style="margin-top:12px;">
-            <li>Poslednja promena: Rashod - Tekuće održavanje (02.01.2026)</li>
-            <li>Istaknuto: Popravka krova - dokument na oglasnoj tabli</li>
-            <li>Forum: Otvorena anketa - Predlog za novu rasvetu</li>
+            <li id="homeLastChange">Poslednja promena: (nema)</li>
+            <li id="homePinned">Istaknuto: (nema)</li>
+            <li id="homeForum">Forum: (nema)</li>
           </ul>
 
           <div class="smallText" data-role="admin" style="margin-top:12px;">
@@ -723,65 +755,51 @@ body.mode-portal #portalScreen{display:block;}
         </section>
       </section>
 
-      <!-- ===================== FINANSIJE (MODUL) ===================== -->
+      <!-- FINANSIJE -->
       <section class="page" id="page-finansije">
         <section class="card">
           <h3>Finansije</h3>
 
           <div class="smallText">
-            Pregled finansijskih promena i dokumenata. Stanar ima uvid (read-only). Upravnik i admin imaju unos i upload.
+            Pregled finansijskih promena i dokumenata. Stanar ima uvid (read-only). Upravnik ima unos i upload.
           </div>
 
-          <!-- PODESAVANJE POCETNOG STANJA (upravnik/admin) -->
+          <!-- ✅ DODATO: POCETNO STANJE (samo admin/upravnik) -->
           <div class="smallText" data-role="upravnik" style="margin-top:12px;">
             <div class="fRow">
               <div class="grow">
-                <span class="badge">Upravnik</span>
-                <span class="badge" style="margin-left:8px;">Balans = Početno stanje + (Prihodi - Rashodi)</span>
+                <span class="badge">Početno stanje (RSD)</span>
               </div>
+              <div class="half field" style="margin-top:0; min-width:220px;">
+                <input id="openingBalanceInput" type="number" step="0.01" placeholder="npr. 948889">
+              </div>
+              <div>
+                <button class="btn btnGhost" id="saveOpeningBalanceBtn" type="button" style="flex:unset;">Sačuvaj početno stanje</button>
+              </div>
+            </div>
+            <div class="smallText" style="margin-top:8px;">
+              Napomena: Stanje računa = početno stanje + (prihodi − rashodi).
             </div>
           </div>
 
           <div class="smallText" data-role="admin" style="margin-top:12px;">
             <div class="fRow">
               <div class="grow">
-                <span class="badge">Administrator</span>
-                <span class="badge" style="margin-left:8px;">Balans = Početno stanje + (Prihodi - Rashodi)</span>
+                <span class="badge">Početno stanje (RSD)</span>
               </div>
-            </div>
-          </div>
-
-          <div id="openingBalanceWrap" data-role="upravnik" style="margin-top:10px;">
-            <div class="fRow">
-              <div class="grow field" style="margin-top:0;">
-                <label for="openingBalanceInput">Početno stanje (RSD)</label>
-                <input id="openingBalanceInput" type="number" step="0.01" placeholder="npr. 100000">
+              <div class="half field" style="margin-top:0; min-width:220px;">
+                <input id="openingBalanceInputAdmin" type="number" step="0.01" placeholder="npr. 948889">
               </div>
-              <div style="display:flex; gap:10px; align-items:flex-end;">
-                <button class="btn btnGhost" id="saveOpeningBalanceBtn" type="button" style="flex:unset;">Sačuvaj početno stanje</button>
-              </div>
-            </div>
-            <div class="smallText" style="margin-top:6px;">
-              Ovo početno stanje se čuva u localStorage (demo). Nakon toga se automatski dodaju/oduzimaju stavke iz finansija.
-            </div>
-          </div>
-
-          <div id="openingBalanceWrapAdmin" data-role="admin" style="margin-top:10px;">
-            <div class="fRow">
-              <div class="grow field" style="margin-top:0;">
-                <label for="openingBalanceInputAdmin">Početno stanje (RSD)</label>
-                <input id="openingBalanceInputAdmin" type="number" step="0.01" placeholder="npr. 100000">
-              </div>
-              <div style="display:flex; gap:10px; align-items:flex-end;">
+              <div>
                 <button class="btn btnGhost" id="saveOpeningBalanceBtnAdmin" type="button" style="flex:unset;">Sačuvaj početno stanje</button>
               </div>
             </div>
-            <div class="smallText" style="margin-top:6px;">
-              Ovo početno stanje se čuva u localStorage (demo). Nakon toga se automatski dodaju/oduzimaju stavke iz finansija.
+            <div class="smallText" style="margin-top:8px;">
+              Napomena: Stanje računa = početno stanje + (prihodi − rashodi).
             </div>
           </div>
+          <!-- ✅ /DODATO -->
 
-          <!-- UPRAVNIK TOOLBAR -->
           <div class="smallText" data-role="upravnik" style="margin-top:12px;">
             <div class="fRow">
               <div class="grow">
@@ -794,20 +812,6 @@ body.mode-portal #portalScreen{display:block;}
             </div>
           </div>
 
-          <!-- ADMIN TOOLBAR -->
-          <div class="smallText" data-role="admin" style="margin-top:12px;">
-            <div class="fRow">
-              <div class="grow">
-                <span class="badge">Administrator</span>
-                <span class="badge" style="margin-left:8px;">Upload limit: 10MB po unosu</span>
-              </div>
-              <div>
-                <button class="btn btnGhost" id="addFinanceBtnAdmin" type="button">Dodaj finansijsku stavku</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- ADD/EDIT FORM (upravnik/admin) -->
           <div id="financeFormWrap" data-role="upravnik" style="display:none; margin-top:12px;">
             <div class="fRow">
               <div class="half field">
@@ -827,7 +831,7 @@ body.mode-portal #portalScreen{display:block;}
                 <label for="fCategory">Kategorija</label>
                 <select id="fCategory">
                   <option value="hitna intervencija">Hitna intervencija</option>
-                  <option value="tekuće odrzavanje">Tekuće održavanje</option>
+                  <option value="tekuće odrzavanje">Tekuće odrzavanje</option>
                   <option value="lift">Lift</option>
                   <option value="ostalo">Ostalo</option>
                   <option value="drugo">Drugo</option>
@@ -864,36 +868,31 @@ body.mode-portal #portalScreen{display:block;}
 
               <div class="grow" style="display:flex; gap:10px; margin-top:6px;">
                 <button class="btn btnPrimary" id="saveFinanceBtn" type="button">Sacuvaj</button>
-                <button class="btn btnGhost" id="cancelFinanceBtn" type="button">Otkaži</button>
+                <button class="btn btnGhost" id="cancelFinanceBtn" type="button">Otkazi</button>
               </div>
 
               <div class="error" id="financeError" style="display:none;">Greska: proveri polja i limit fajlova (10MB).</div>
             </div>
           </div>
 
-          <!-- admin koristi ISTI form, samo dugme koje ga otvara -->
-          <div class="smallText" style="display:none;" data-role="admin"></div>
-
-          <!-- LISTA PROMENA -->
           <ul class="boardList" id="financeList"></ul>
 
           <div class="smallText" style="margin-top:10px;">
-            Napomena: Ovo je demo. PDF se cuva u localStorage kao dataURL (razlicito po uredjaju/browseru).
+            Napomena: Ovo je front-only priprema. Trenutno se cuva u localStorage po zgradi (kasnije Supabase).
           </div>
         </section>
       </section>
 
-      <!-- ===================== OGLASNA TABLA (MODUL) ===================== -->
+      <!-- OGLASNA -->
       <section class="page" id="page-oglasna">
         <section class="card">
           <h3>Oglasna tabla</h3>
 
           <div class="smallText">
-            Dokumenta i obaveštenja za stanare (odluke, izveštaji, rešenja, obaveštenja).
+            Dokumenta i obavestenja za stanare (odluke, izvestaji, resenja, obavestenja).
             Klik na fajl = otvori PDF.
           </div>
 
-          <!-- UPRAVNIK: toolbar -->
           <div class="smallText" data-role="upravnik" style="margin-top:12px;">
             <div class="fRow">
               <div class="grow">
@@ -906,12 +905,11 @@ body.mode-portal #portalScreen{display:block;}
             </div>
           </div>
 
-          <!-- Forma (upravnik-only) -->
           <div id="boardFormWrap" data-role="upravnik" style="display:none; margin-top:12px;">
             <div class="fRow">
               <div class="grow field">
                 <label for="bTitle">Naslov objave</label>
-                <input id="bTitle" type="text" placeholder="npr. Odluka skupštine stanara">
+                <input id="bTitle" type="text" placeholder="npr. Odluka skupstine stanara">
               </div>
 
               <div class="half field">
@@ -921,45 +919,43 @@ body.mode-portal #portalScreen{display:block;}
 
               <div class="grow field">
                 <label for="bDesc">Kratak opis</label>
-                <input id="bDesc" type="text" placeholder="npr. Odluka o tekućem održavanju">
+                <input id="bDesc" type="text" placeholder="npr. Odluka o tekuće odrzavanje">
               </div>
 
               <div class="grow field">
-                <label for="bDocs">PDF dokumenta (više fajlova)</label>
+                <label for="bDocs">PDF dokumenta (vise fajlova)</label>
                 <input id="bDocs" type="file" multiple accept="application/pdf">
                 <div class="smallText" style="margin-top:6px;">
-                  Ukupna veličina fajlova po objavi max 10MB.
+                  Ukupna velicina fajlova po objavi max 10MB.
                 </div>
               </div>
 
               <div class="grow" style="display:flex; gap:10px; margin-top:6px;">
                 <button class="btn btnPrimary" id="saveBoardBtn" type="button">Objavi</button>
-                <button class="btn btnGhost" id="cancelBoardBtn" type="button">Otkaži</button>
+                <button class="btn btnGhost" id="cancelBoardBtn" type="button">Otkazi</button>
               </div>
 
-              <div class="error" id="boardError" style="display:none;">Greška: proveri polja i limit fajlova (10MB).</div>
+              <div class="error" id="boardError" style="display:none;">Greska: proveri polja i limit fajlova (10MB).</div>
             </div>
           </div>
 
-          <!-- Lista objava -->
           <ul class="boardList" id="boardList"></ul>
 
           <div class="smallText" style="margin-top:10px;">
-            Napomena: demo čuva PDF u localStorage (različito po uređaju/browseru).
+            Napomena: front-only. Podaci su u localStorage po zgradi (kasnije Supabase).
           </div>
         </section>
       </section>
 
-      <!-- ===================== FORUM (MODUL) ===================== -->
+      <!-- FORUM -->
       <section class="page" id="page-forum">
         <section class="card">
           <h3>Forum</h3>
 
           <div class="smallText">
-            Jednosmerna komunikacija: stanar predlaze, bez komentara. Opcionalno anketa sa vremenom trajanja.
+            Jednosmerna komunikacija: stanar predlaze. Opcionalno anketa sa vremenom trajanja.
           </div>
 
-          <!-- STANAR: KREIRANJE PREDLOGA -->
           <div data-role="stanar" id="forumCreateWrap" style="margin-top:12px;">
             <div class="fRow">
               <div class="grow field">
@@ -1000,7 +996,6 @@ body.mode-portal #portalScreen{display:block;}
             Administrator: za sada samo uvid (kasnije moderacija/izvestaji).
           </div>
 
-          <!-- LISTA PREDLOGA -->
           <ul class="boardList" id="forumList"></ul>
         </section>
       </section>
@@ -1025,7 +1020,7 @@ body.mode-portal #portalScreen{display:block;}
 
       <section class="page" id="page-kontakt">
         <section class="card">
-          <h3>Kontakt sluzbe</h3>
+          <h3>Kontakt službe</h3>
 
           <div class="smallText" data-role="admin">
             Admin: placeholder (izmena kontakata i brojeva).
@@ -1046,60 +1041,88 @@ body.mode-portal #portalScreen{display:block;}
 </div>
 
 <script>
-/* =========================
-   DEMO LOGIN (isti za sve)
-   ========================= */
-const DEMO_USERS = [
-  { email: "administrator@demo.rs", pass: "123456", role: "admin" },
-  { email: "upravnik@demo.rs",      pass: "123456", role: "upravnik" },
+/* =========================================================
+   PRINCIP RADA (front-only priprema)
+   - svaka zgrada je "tenant" (nezavisna stambena zajednica)
+   - stanari dobijaju kartice: username + lozinka (po stanu)
+   - upravnik moze voditi vise zgrada -> posle logina bira zgradu
+   - sve se cuva u localStorage po zgradi (kasnije Supabase)
+   ========================================================= */
 
-  { email: "stanar@demo.rs",        pass: "123456", role: "stanar" },
-  { email: "stanar1@demo.rs",       pass: "123456", role: "stanar" },
-  { email: "stanar2@demo.rs",       pass: "123456", role: "stanar" },
-  { email: "stanar3@demo.rs",       pass: "123456", role: "stanar" },
-  { email: "stanar4@demo.rs",       pass: "123456", role: "stanar" },
-  { email: "stanar5@demo.rs",       pass: "123456", role: "stanar" },
-  { email: "stanar6@demo.rs",       pass: "123456", role: "stanar" },
-  { email: "stanar7@demo.rs",       pass: "123456", role: "stanar" },
-  { email: "stanar8@demo.rs",       pass: "123456", role: "stanar" },
-  { email: "stanar9@demo.rs",       pass: "123456", role: "stanar" },
-  { email: "stanar10@demo.rs",      pass: "123456", role: "stanar" }
+/* ====== Buildings (stambene zajednice) ====== */
+const BUILDINGS = [
+  {
+    id: "b_bm25",
+    title: "Bore Markovića 25",
+    street: "Bore Markovića",
+    number: "25",
+    units: 25
+  },
+  {
+    id: "b_bp10",
+    title: "Bulevar Primer 10",
+    street: "Bulevar Primer",
+    number: "10",
+    units: 48
+  }
 ];
 
-const KEY_PERSIST = "pu_session_persist_v7";
-const KEY_SESSION = "pu_session_session_v7";
+function getBuildingById(id){
+  return BUILDINGS.find(b => b.id === id) || null;
+}
 
-/* ===== demo storage (local) ===== */
-const FIN_KEY = "pu_finance_items_v2";
-const FIRM_KEY = "pu_finance_firms_v2";
-const FORUM_KEY = "pu_forum_proposals_v1";
-const BOARD_KEY = "pu_board_posts_v1";
+/* ====== Users (demo) ====== */
+const USERS = [
+  { username: "ADMIN-001", pass: "123456", role: "admin", buildings: ["b_bm25","b_bp10"] },
+  { username: "UPR-001",   pass: "123456", role: "upravnik", buildings: ["b_bm25","b_bp10"] },
 
-/* ===== NOVO: balans ===== */
-const BAL_KEY = "pu_opening_balance_v1"; // cuva pocetno stanje (opening balance)
+  { username: "BM25-001", pass: "2B3H1", role: "stanar", buildings: ["b_bm25"] },
+  { username: "BM25-002", pass: "8K1Q9", role: "stanar", buildings: ["b_bm25"] },
+  { username: "BM25-003", pass: "4Z7M2", role: "stanar", buildings: ["b_bm25"] },
 
-const emailEl = document.getElementById("email");
+  { username: "BP10-001", pass: "7A2D5", role: "stanar", buildings: ["b_bp10"] },
+  { username: "BP10-002", pass: "9P3R1", role: "stanar", buildings: ["b_bp10"] }
+];
+
+/* ===== session keys ===== */
+const KEY_PERSIST = "pu_session_persist_v8";
+const KEY_SESSION = "pu_session_session_v8";
+
+/* ===== storage keys (po zgradi) ===== */
+function kFin(bid){ return "pu_finance_items_v3__" + bid; }
+function kFirm(bid){ return "pu_finance_firms_v3__" + bid; }
+function kForum(bid){ return "pu_forum_proposals_v2__" + bid; }
+function kBoard(bid){ return "pu_board_posts_v2__" + bid; }
+
+/* ✅ IZMENJENO: umesto jednog balansa, cuvamo POCETNO STANJE po zgradi */
+function kOpeningBalance(bid){ return "pu_opening_balance_v1__" + bid; }
+
+/* ===== DOM refs ===== */
+const usernameEl = document.getElementById("username");
 const passEl = document.getElementById("pass");
 const loginBtn = document.getElementById("loginBtn");
 const errEl = document.getElementById("loginError");
 const togglePass = document.getElementById("togglePass");
 const remember = document.getElementById("remember");
+
+const buildingPickList = document.getElementById("buildingPickList");
+const bsLogoutBtn = document.getElementById("bsLogoutBtn");
+
 const userPill = document.getElementById("userPill");
+const buildingPill = document.getElementById("buildingPill");
+const switchBuildingBtn = document.getElementById("switchBuildingBtn");
+
+const buildingMeta = document.getElementById("buildingMeta");
+const balanceValue = document.getElementById("balanceValue");
 
 const globalSearch = document.getElementById("globalSearch");
 const searchResults = document.getElementById("searchResults");
 
-/* NOVO: UI za balans */
-const balanceValueEl = document.getElementById("balanceValue");
-
-/* opening balance upravnik/admin UI */
+/* ✅ DODATO: inputs za pocetno stanje */
 const openingBalanceInput = document.getElementById("openingBalanceInput");
 const saveOpeningBalanceBtn = document.getElementById("saveOpeningBalanceBtn");
 const openingBalanceInputAdmin = document.getElementById("openingBalanceInputAdmin");
 const saveOpeningBalanceBtnAdmin = document.getElementById("saveOpeningBalanceBtnAdmin");
-
-let CURRENT_SESSION = null;
-let CURRENT_QUERY = "";
 
 /* finance elements */
 const financeList = document.getElementById("financeList");
@@ -1117,9 +1140,6 @@ const fFirmNew = document.getElementById("fFirmNew");
 const fDesc = document.getElementById("fDesc");
 const fAmount = document.getElementById("fAmount");
 const fDocs = document.getElementById("fDocs");
-
-/* admin "add" button (otvara isti form) */
-const addFinanceBtnAdmin = document.getElementById("addFinanceBtnAdmin");
 
 /* forum elements */
 const forumList = document.getElementById("forumList");
@@ -1148,17 +1168,24 @@ const bDocs = document.getElementById("bDocs");
 const regList = document.getElementById("regList");
 const kontaktList = document.getElementById("kontaktList");
 
+/* home */
+const homeLastChange = document.getElementById("homeLastChange");
+const homePinned = document.getElementById("homePinned");
+const homeForum = document.getElementById("homeForum");
+
+let CURRENT_SESSION = null;
+let CURRENT_QUERY = "";
+
 /* ---------- helpers ---------- */
 function setMode(mode){
   document.body.classList.toggle("mode-login", mode === "login");
+  document.body.classList.toggle("mode-buildingSelect", mode === "buildingSelect");
   document.body.classList.toggle("mode-portal", mode === "portal");
 }
-
 function clearSessions(){
   localStorage.removeItem(KEY_PERSIST);
   sessionStorage.removeItem(KEY_SESSION);
 }
-
 function saveSession(sessionObj){
   const payload = JSON.stringify(sessionObj);
   if(remember && remember.checked){
@@ -1169,13 +1196,21 @@ function saveSession(sessionObj){
     localStorage.removeItem(KEY_PERSIST);
   }
 }
-
 function getSession(){
   const raw = localStorage.getItem(KEY_PERSIST) || sessionStorage.getItem(KEY_SESSION);
   if(!raw) return null;
   try { return JSON.parse(raw); } catch { return null; }
 }
+function norm(s){ return String(s||"").toLowerCase().trim(); }
+function includesQuery(text, q){
+  if(!q) return true;
+  return norm(text).includes(norm(q));
+}
+function cryptoRandom(){
+  return "id_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
+}
 
+/* password eye */
 togglePass.addEventListener("click", () => {
   const isPass = passEl.type === "password";
   passEl.type = isPass ? "text" : "password";
@@ -1190,94 +1225,140 @@ function applyRoleUI(role){
   });
 }
 
-function cryptoRandom(){
-  return "id_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
+/* ===== building context UI ===== */
+function setActiveBuilding(bid){
+  if(!CURRENT_SESSION) return;
+  CURRENT_SESSION.activeBuildingId = bid;
+  saveSession(CURRENT_SESSION);
+  renderBuildingUI();
+  refreshAllModules();
 }
 
-function norm(s){
-  return String(s||"").toLowerCase().trim();
-}
-function includesQuery(text, q){
-  if(!q) return true;
-  return norm(text).includes(norm(q));
-}
-
-/* =========================
-   NOVO: BALANS LOGIKA
-   ========================= */
-function loadOpeningBalance(){
-  const raw = localStorage.getItem(BAL_KEY);
-  if(raw == null || raw === ""){
-    // default: 0
-    localStorage.setItem(BAL_KEY, String(0));
-    return 0;
+function renderBuildingUI(){
+  const bid = CURRENT_SESSION?.activeBuildingId;
+  const b = getBuildingById(bid);
+  if(!b){
+    buildingPill.textContent = "Zgrada: -";
+    buildingMeta.textContent = "";
+    return;
   }
-  const n = Number(raw);
-  return Number.isFinite(n) ? n : 0;
-}
-function saveOpeningBalance(n){
-  const val = Number(n);
-  localStorage.setItem(BAL_KEY, String(Number.isFinite(val) ? val : 0));
-}
 
-function computeBalanceFromFinance(){
-  const opening = loadOpeningBalance();
-  let delta = 0;
+  buildingPill.textContent = b.title;
 
-  const items = loadItems();
-  for(const it of items){
-    const amt = Number(it.amount || 0);
-    if(!Number.isFinite(amt)) continue;
-    if(it.type === "prihod") delta += amt;
-    else if(it.type === "rashod") delta -= amt;
-  }
-  return opening + delta;
-}
+  buildingMeta.innerHTML = `
+    ${b.street} ${b.number}<br>
+    Stambena zajednica: ${b.title}<br>
+    Broj jedinica: ${b.units}
+  `;
 
-function updateBalanceUI(){
-  if(!balanceValueEl) return;
-  const bal = computeBalanceFromFinance();
-  balanceValueEl.textContent = formatRSD(bal);
+  /* ✅ IZMENJENO: balans se racuna iz pocetnog stanja + finansije */
+  const bal = computeBalanceFromFinance(bid);
+  balanceValue.textContent = formatRSD(bal);
 
-  // sinhronizuj inpute (upravnik/admin)
-  if(openingBalanceInput) openingBalanceInput.value = String(loadOpeningBalance());
-  if(openingBalanceInputAdmin) openingBalanceInputAdmin.value = String(loadOpeningBalance());
+  /* ✅ DODATO: popuni input za pocetno stanje ako postoji */
+  const opening = getOpeningBalance(bid);
+  if(openingBalanceInput) openingBalanceInput.value = String(opening);
+  if(openingBalanceInputAdmin) openingBalanceInputAdmin.value = String(opening);
+
+  // "Promeni zgradu" samo ako ima vise zgrada
+  const multi = (CURRENT_SESSION?.buildings || []).length > 1 && (CURRENT_SESSION.role !== "stanar");
+  switchBuildingBtn.style.display = multi ? "" : "none";
 }
 
-/* ---------- login ---------- */
-function attemptLogin(email, pass){
-  const u = DEMO_USERS.find(x => x.email === email && x.pass === pass);
+/* ===== login flow ===== */
+function attemptLogin(username, pass){
+  const u = USERS.find(x => x.username === username && x.pass === pass);
   if(!u){
     errEl.style.display = "block";
     return;
   }
   errEl.style.display = "none";
 
-  CURRENT_SESSION = { email: u.email, role: u.role };
-  saveSession(CURRENT_SESSION);
+  CURRENT_SESSION = {
+    username: u.username,
+    role: u.role,
+    buildings: (u.buildings || []).slice(),
+    activeBuildingId: null
+  };
 
-  userPill.textContent = CURRENT_SESSION.email;
-  applyRoleUI(CURRENT_SESSION.role);
+  // stanar ide odmah u svoju zgradu
+  if(CURRENT_SESSION.role === "stanar"){
+    CURRENT_SESSION.activeBuildingId = CURRENT_SESSION.buildings[0] || null;
+    saveSession(CURRENT_SESSION);
+    enterPortal();
+    return;
+  }
 
-  financeInit();
-  forumInit();
-  boardInit();
-  updateBalanceUI(); // NOVO
-
-  setMode("portal");
+  // upravnik/admin: ako vise zgrada -> izbor, ako jedna -> direktno
+  if((CURRENT_SESSION.buildings || []).length > 1){
+    saveSession(CURRENT_SESSION);
+    showBuildingSelect();
+  }else{
+    CURRENT_SESSION.activeBuildingId = CURRENT_SESSION.buildings[0] || null;
+    saveSession(CURRENT_SESSION);
+    enterPortal();
+  }
 }
 
 loginBtn.addEventListener("click", () => {
-  attemptLogin((emailEl.value||"").trim(), (passEl.value||"").trim());
+  attemptLogin((usernameEl.value||"").trim(), (passEl.value||"").trim());
 });
-
 document.addEventListener("keydown", (e) => {
   if(document.body.classList.contains("mode-login") && e.key === "Enter"){
-    attemptLogin((emailEl.value||"").trim(), (passEl.value||"").trim());
+    attemptLogin((usernameEl.value||"").trim(), (passEl.value||"").trim());
   }
 });
 
-/* ---------- logout ---------- */
+/* ===== building select screen ===== */
+function showBuildingSelect(){
+  setMode("buildingSelect");
+
+  const list = (CURRENT_SESSION?.buildings || [])
+    .map(id => getBuildingById(id))
+    .filter(Boolean);
+
+  buildingPickList.innerHTML = "";
+  list.forEach(b => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "pickBtn";
+    btn.innerHTML = `
+      <div class="t">${b.title}</div>
+      <div class="s">${b.street} ${b.number} • ${b.units} jedinica</div>
+    `;
+    btn.addEventListener("click", () => {
+      setActiveBuilding(b.id);
+      enterPortal();
+    });
+    buildingPickList.appendChild(btn);
+  });
+}
+
+bsLogoutBtn.addEventListener("click", () => {
+  clearSessions();
+  CURRENT_SESSION = null;
+  setMode("login");
+});
+
+/* ===== enter portal ===== */
+function enterPortal(){
+  userPill.textContent = CURRENT_SESSION?.username || "Korisnik";
+  applyRoleUI(CURRENT_SESSION?.role || "stanar");
+  setMode("portal");
+
+  // set active building if missing
+  if(!CURRENT_SESSION.activeBuildingId){
+    CURRENT_SESSION.activeBuildingId = CURRENT_SESSION.buildings[0] || null;
+    saveSession(CURRENT_SESSION);
+  }
+
+  renderBuildingUI();
+  refreshAllModules();
+  ensureStaticSids();
+  updateHomeSummary();
+}
+
+/* logout (portal) */
 document.getElementById("logoutBtn").addEventListener("click", () => {
   clearSessions();
   CURRENT_SESSION = null;
@@ -1285,7 +1366,13 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
   setMode("login");
 });
 
-/* ================= SIDEBAR behavior ================= */
+/* switch building (portal) */
+switchBuildingBtn.addEventListener("click", () => {
+  if(!CURRENT_SESSION) return;
+  showBuildingSelect();
+});
+
+/* ===== SIDEBAR behavior ===== */
 const sidebar = document.getElementById("sidebar");
 const overlay = document.getElementById("overlay");
 const edge = document.getElementById("edgeHotspot");
@@ -1301,7 +1388,6 @@ function closeS(){
   overlay.classList.remove("show");
   document.body.classList.remove("sidebar-open");
 }
-
 edge.addEventListener("mouseenter", openS);
 burger.addEventListener("click", () => {
   sidebar.classList.contains("open") ? closeS() : openS();
@@ -1311,7 +1397,7 @@ document.addEventListener("keydown", (e) => {
   if(e.key === "Escape") closeS();
 });
 
-/* ================= SPA NAV (pages) ================= */
+/* ===== SPA NAV ===== */
 const nav = document.getElementById("nav");
 const pages = {
   home: document.getElementById("page-home"),
@@ -1321,7 +1407,6 @@ const pages = {
   regulative: document.getElementById("page-regulative"),
   kontakt: document.getElementById("page-kontakt")
 };
-
 function showPage(name){
   Object.values(pages).forEach(p => p.classList.remove("active"));
   (pages[name] || pages.home).classList.add("active");
@@ -1333,7 +1418,6 @@ function showPage(name){
   closeS();
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
-
 nav.addEventListener("click", (e) => {
   const a = e.target.closest("a[data-page]");
   if(!a) return;
@@ -1341,55 +1425,72 @@ nav.addEventListener("click", (e) => {
   showPage(a.dataset.page);
 });
 
-/* ================= FINANSIJE MODULE (demo) ================= */
+/* =========================================================
+   STORAGE PER BUILDING
+   ========================================================= */
+function activeBid(){
+  return CURRENT_SESSION?.activeBuildingId || null;
+}
+
+/* ✅ NOVO: Pocetno stanje (seed + edit) */
+function getOpeningBalance(bid){
+  const raw = localStorage.getItem(kOpeningBalance(bid));
+  if(raw == null || raw === ""){
+    // seed (kao sto si imao pre)
+    const seed = (bid === "b_bm25") ? 948889 : 312450;
+    localStorage.setItem(kOpeningBalance(bid), String(seed));
+    return seed;
+  }
+  const n = Number(raw);
+  return Number.isFinite(n) ? n : 0;
+}
+function setOpeningBalance(bid, val){
+  localStorage.setItem(kOpeningBalance(bid), String(Number(val||0)));
+}
+
+/* finance */
 function formatRSD(n){
   const x = Number(n||0);
   return x.toLocaleString("sr-RS", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
-
 function daysBetween(aMs, bMs){
   const day = 1000*60*60*24;
   return Math.floor(Math.abs(aMs - bMs) / day);
 }
-
 function canEdit(item){
   return daysBetween(Date.now(), item.createdAt) <= 30;
 }
-
-function loadItems(){
-  const raw = localStorage.getItem(FIN_KEY);
+function loadItems(bid){
+  const raw = localStorage.getItem("pu_finance_items_v3__" + bid);
   if(!raw){
     const seed = [
-      { id: cryptoRandom(), createdAt: Date.now()-1000*60*60*24*2, date: "2026-01-02", type:"rashod", category:"tekuće održavanje", firm:"Servis DOO", desc:"Uplata servisu", amount: 24000, docs: [] },
+      { id: cryptoRandom(), createdAt: Date.now()-1000*60*60*24*2, date: "2026-01-02", type:"rashod", category:"tekuće odrzavanje", firm:"Servis DOO", desc:"Uplata servisu", amount: 24000, docs: [] },
       { id: cryptoRandom(), createdAt: Date.now()-1000*60*60*24*6, date: "2025-12-28", type:"prihod", category:"ostalo", firm:"", desc:"Uplata stanara", amount: 120000, docs: [] },
       { id: cryptoRandom(), createdAt: Date.now()-1000*60*60*24*20, date: "2025-12-15", type:"rashod", category:"hitna intervencija", firm:"Vodoinstalater", desc:"Hitna intervencija", amount: 18000, docs: [] }
     ];
-    localStorage.setItem(FIN_KEY, JSON.stringify(seed));
+    localStorage.setItem("pu_finance_items_v3__" + bid, JSON.stringify(seed));
     return seed;
   }
   try { return JSON.parse(raw) || []; } catch { return []; }
 }
-
-function saveItems(items){
-  localStorage.setItem(FIN_KEY, JSON.stringify(items));
+function saveItems(bid, items){
+  localStorage.setItem("pu_finance_items_v3__" + bid, JSON.stringify(items));
 }
 
-function loadFirms(){
-  const raw = localStorage.getItem(FIRM_KEY);
+function loadFirms(bid){
+  const raw = localStorage.getItem("pu_finance_firms_v3__" + bid);
   if(!raw){
     const seed = ["Servis DOO","Vodoinstalater","Lift Servis"];
-    localStorage.setItem(FIRM_KEY, JSON.stringify(seed));
+    localStorage.setItem("pu_finance_firms_v3__" + bid, JSON.stringify(seed));
     return seed;
   }
   try { return JSON.parse(raw) || []; } catch { return []; }
 }
-
-function saveFirms(firms){
-  localStorage.setItem(FIRM_KEY, JSON.stringify(firms));
+function saveFirms(bid, firms){
+  localStorage.setItem("pu_finance_firms_v3__" + bid, JSON.stringify(firms));
 }
-
-function renderFirmSelect(){
-  const firms = loadFirms();
+function renderFirmSelect(bid){
+  const firms = loadFirms(bid);
   fFirm.innerHTML = "";
   const opt0 = document.createElement("option");
   opt0.value = "";
@@ -1403,7 +1504,6 @@ function renderFirmSelect(){
     fFirm.appendChild(o);
   });
 }
-
 function fileToDataURL(file){
   return new Promise((resolve, reject) => {
     const r = new FileReader();
@@ -1412,22 +1512,69 @@ function fileToDataURL(file){
     r.readAsDataURL(file);
   });
 }
-
 function totalFilesSizeBytes(fileList){
   let sum = 0;
   for(const f of fileList) sum += (f.size || 0);
   return sum;
 }
 
-function financeMatches(item, q){
-  const docsNames = (item.docs||[]).map(d => d.name).join(" ");
-  const hay =
-    `${item.date} ${item.type} ${item.category} ${item.firm||""} ${item.desc||""} ${item.amount||""} ${docsNames}`;
-  return includesQuery(hay, q);
+/* ✅ NOVO: racunanje stanja iz finansija */
+function computeBalanceFromFinance(bid){
+  const opening = getOpeningBalance(bid);
+  const items = loadItems(bid);
+  let delta = 0;
+  for(const it of (items||[])){
+    const amt = Number(it.amount||0);
+    if(!Number.isFinite(amt)) continue;
+    if(it.type === "prihod") delta += amt;
+    else delta -= amt;
+  }
+  const next = Math.max(0, opening + delta);
+  return next;
+}
+function refreshBalanceUI(bid){
+  const next = computeBalanceFromFinance(bid);
+  balanceValue.textContent = formatRSD(next);
 }
 
-function renderFinanceList(q){
-  const itemsAll = loadItems().slice().sort((a,b) => (b.date||"").localeCompare(a.date||""));
+/* ✅ NOVO: snimi pocetno stanje (admin/upravnik) */
+function saveOpeningBalanceFromUI(){
+  const bid = activeBid();
+  if(!bid) return;
+
+  if(!CURRENT_SESSION || (CURRENT_SESSION.role !== "upravnik" && CURRENT_SESSION.role !== "admin")){
+    alert("Nemate dozvolu.");
+    return;
+  }
+
+  const src = (CURRENT_SESSION.role === "admin" ? openingBalanceInputAdmin : openingBalanceInput);
+  if(!src) return;
+
+  const n = Number((src.value||"").trim());
+  if(!Number.isFinite(n)){
+    alert("Unesite ispravan broj.");
+    return;
+  }
+
+  setOpeningBalance(bid, n);
+  refreshBalanceUI(bid);
+  updateHomeSummary();
+}
+
+if(saveOpeningBalanceBtn){
+  saveOpeningBalanceBtn.addEventListener("click", saveOpeningBalanceFromUI);
+}
+if(saveOpeningBalanceBtnAdmin){
+  saveOpeningBalanceBtnAdmin.addEventListener("click", saveOpeningBalanceFromUI);
+}
+
+function financeMatches(item, q){
+  const docsNames = (item.docs||[]).map(d => d.name).join(" ");
+  const hay = `${item.date} ${item.type} ${item.category} ${item.firm||""} ${item.desc||""} ${item.amount||""} ${docsNames}`;
+  return includesQuery(hay, q);
+}
+function renderFinanceList(bid, q){
+  const itemsAll = loadItems(bid).slice().sort((a,b) => (b.date||"").localeCompare(a.date||""));
   const items = q ? itemsAll.filter(it => financeMatches(it, q)) : itemsAll;
 
   financeList.innerHTML = "";
@@ -1437,7 +1584,7 @@ function renderFinanceList(q){
     li.dataset.sid = "fin:" + item.id;
 
     const firmPart = item.firm ? (" — " + item.firm) : "";
-    const editTag = (CURRENT_SESSION && (CURRENT_SESSION.role === "upravnik" || CURRENT_SESSION.role === "admin"))
+    const editTag = (CURRENT_SESSION && CURRENT_SESSION.role === "upravnik")
       ? (canEdit(item) ? " (edit 30 dana)" : " (zakljucano)")
       : "";
 
@@ -1456,7 +1603,7 @@ function renderFinanceList(q){
 
         fli.addEventListener("click", () => {
           if(!d.dataURL){
-            alert("Ovaj fajl je sacuvan u starom demo formatu (bez sadrzaja). Uploaduj ponovo.");
+            alert("Fajl je sacuvan bez sadrzaja. Uploaduj ponovo.");
             return;
           }
           const w = window.open();
@@ -1477,7 +1624,7 @@ function renderFinanceList(q){
       li.appendChild(ul);
     }
 
-    if(CURRENT_SESSION && (CURRENT_SESSION.role === "upravnik" || CURRENT_SESSION.role === "admin")){
+    if(CURRENT_SESSION && CURRENT_SESSION.role === "upravnik"){
       const actions = document.createElement("div");
       actions.style.marginTop = "10px";
       actions.style.display = "flex";
@@ -1487,14 +1634,15 @@ function renderFinanceList(q){
       const del = document.createElement("button");
       del.className = "btn btnGhost";
       del.type = "button";
-      del.textContent = "Obrisi (demo)";
+      del.textContent = "Obriši (demo)";
       del.disabled = !canEdit(item);
       del.addEventListener("click", () => {
-        const next = loadItems().filter(x => x.id !== item.id);
-        saveItems(next);
-        renderFinanceList(CURRENT_QUERY);
-        updateBalanceUI(); // NOVO: odmah osvezi balans
+        const next = loadItems(bid).filter(x => x.id !== item.id);
+        saveItems(bid, next);
+        renderFinanceList(bid, CURRENT_QUERY);
         renderSearchDropdown(CURRENT_QUERY);
+        updateHomeSummary();
+        refreshBalanceUI(bid); /* ✅ IZMENJENO */
       });
 
       actions.appendChild(del);
@@ -1513,7 +1661,7 @@ function resetFinanceForm(){
   const dd = String(today.getDate()).padStart(2,"0");
   fDate.value = `${yyyy}-${mm}-${dd}`;
   fType.value = "rashod";
-  fCategory.value = "tekuće održavanje";
+  fCategory.value = "tekuće odrzavanje";
   fFirm.value = "";
   fFirmNew.value = "";
   fDesc.value = "";
@@ -1521,85 +1669,40 @@ function resetFinanceForm(){
   if(fDocs) fDocs.value = "";
 }
 
-function financeInit(){
+function financeInit(bid){
   if(!financeList) return;
-  renderFirmSelect();
-  renderFinanceList(CURRENT_QUERY);
+  renderFirmSelect(bid);
+  renderFinanceList(bid, CURRENT_QUERY);
   resetFinanceForm();
   if(financeFormWrap) financeFormWrap.style.display = "none";
-  updateBalanceUI(); // NOVO: prikazi balans na osnovu finansija
+  refreshBalanceUI(bid); /* ✅ IZMENJENO */
 }
 
-/* Upravnik: toggle forma */
 if(addFinanceBtn){
   addFinanceBtn.addEventListener("click", () => {
-    financeFormWrap.style.display = (financeFormWrap.style.display === "none" || financeFormWrap.style.display === "") ? "block" : "none";
+    financeFormWrap.style.display =
+      (financeFormWrap.style.display === "none" || financeFormWrap.style.display === "") ? "block" : "none";
     if(financeFormWrap.style.display === "block") resetFinanceForm();
   });
 }
-
-/* Admin: otvara isti form (nema dupliranja UI) */
-if(addFinanceBtnAdmin){
-  addFinanceBtnAdmin.addEventListener("click", () => {
-    // admin vidi form preko data-role="upravnik", ali UI filtrira po role
-    // zato ovde samo "na silu" prikazemo form:
-    if(!financeFormWrap) return;
-    financeFormWrap.style.display = (financeFormWrap.style.display === "none" || financeFormWrap.style.display === "") ? "block" : "none";
-    if(financeFormWrap.style.display === "block") resetFinanceForm();
-  });
-}
-
 if(cancelFinanceBtn){
   cancelFinanceBtn.addEventListener("click", () => {
     financeFormWrap.style.display = "none";
     resetFinanceForm();
   });
 }
-
-/* NOVO: snimanje pocetnog stanja */
-function canManageBalance(){
-  return CURRENT_SESSION && (CURRENT_SESSION.role === "upravnik" || CURRENT_SESSION.role === "admin");
-}
-
-if(saveOpeningBalanceBtn){
-  saveOpeningBalanceBtn.addEventListener("click", () => {
-    if(!canManageBalance()){
-      alert("Nemate dozvolu.");
-      return;
-    }
-    const v = Number(openingBalanceInput?.value || 0);
-    if(!Number.isFinite(v)){
-      alert("Neispravan iznos.");
-      return;
-    }
-    saveOpeningBalance(v);
-    updateBalanceUI();
-    alert("Početno stanje je sačuvano.");
-  });
-}
-
-if(saveOpeningBalanceBtnAdmin){
-  saveOpeningBalanceBtnAdmin.addEventListener("click", () => {
-    if(!canManageBalance()){
-      alert("Nemate dozvolu.");
-      return;
-    }
-    const v = Number(openingBalanceInputAdmin?.value || 0);
-    if(!Number.isFinite(v)){
-      alert("Neispravan iznos.");
-      return;
-    }
-    saveOpeningBalance(v);
-    updateBalanceUI();
-    alert("Početno stanje je sačuvano.");
-  });
-}
-
 if(saveFinanceBtn){
   saveFinanceBtn.addEventListener("click", async () => {
     financeError.style.display = "none";
 
-    if(!CURRENT_SESSION || (CURRENT_SESSION.role !== "upravnik" && CURRENT_SESSION.role !== "admin")){
+    const bid = activeBid();
+    if(!bid){
+      financeError.textContent = "Nije izabrana zgrada.";
+      financeError.style.display = "block";
+      return;
+    }
+
+    if(!CURRENT_SESSION || CURRENT_SESSION.role !== "upravnik"){
       financeError.textContent = "Nemate dozvolu.";
       financeError.style.display = "block";
       return;
@@ -1631,12 +1734,12 @@ if(saveFinanceBtn){
     }
 
     if(firmNew){
-      const firms = loadFirms();
+      const firms = loadFirms(bid);
       if(!firms.includes(firmNew)){
         firms.push(firmNew);
-        saveFirms(firms);
+        saveFirms(bid, firms);
       }
-      renderFirmSelect();
+      renderFirmSelect(bid);
     }
 
     const docs = [];
@@ -1669,56 +1772,40 @@ if(saveFinanceBtn){
     };
 
     try{
-      const items = loadItems();
+      const items = loadItems(bid);
       items.push(item);
-      saveItems(items);
+      saveItems(bid, items);
     }catch(e){
-      financeError.textContent = "Greska: localStorage limit (PDF je prevelik za demo). Probaj manji PDF.";
+      financeError.textContent = "Greska: localStorage limit (PDF je prevelik). Probaj manji PDF.";
       financeError.style.display = "block";
       return;
     }
 
     financeFormWrap.style.display = "none";
     resetFinanceForm();
-    renderFinanceList(CURRENT_QUERY);
-
-    updateBalanceUI(); // NOVO: automatski osvezi stanje racuna
+    renderFinanceList(bid, CURRENT_QUERY);
     renderSearchDropdown(CURRENT_QUERY);
+    updateHomeSummary();
+    refreshBalanceUI(bid); /* ✅ IZMENJENO */
   });
 }
 
-/* ================= OGLASNA TABLA MODULE (demo) ================= */
-function loadBoardPosts(){
-  const raw = localStorage.getItem(BOARD_KEY);
+/* ================= OGLASNA ================= */
+function loadBoardPosts(bid){
+  const raw = localStorage.getItem(kBoard(bid));
   if(!raw){
     const seed = [
-      {
-        id: cryptoRandom(),
-        createdAt: Date.now() - 1000*60*60*24*3,
-        date: "2026-01-01",
-        title: "Akcija čišćenja",
-        desc: "Obaveštenje o terminu akcije čišćenja",
-        docs: []
-      },
-      {
-        id: cryptoRandom(),
-        createdAt: Date.now() - 1000*60*60*24*7,
-        date: "2025-12-28",
-        title: "Popravka krova",
-        desc: "Plan radova i obaveštenje",
-        docs: []
-      }
+      { id: cryptoRandom(), createdAt: Date.now()-1000*60*60*24*3, date: "2026-01-01", title: "Akcija čiscenja", desc: "Obavestenje o terminu akcije čiscenja", docs: [] },
+      { id: cryptoRandom(), createdAt: Date.now()-1000*60*60*24*7, date: "2025-12-28", title: "Popravka krova", desc: "Plan radova i obavestenje", docs: [] }
     ];
-    localStorage.setItem(BOARD_KEY, JSON.stringify(seed));
+    localStorage.setItem(kBoard(bid), JSON.stringify(seed));
     return seed;
   }
   try { return JSON.parse(raw) || []; } catch { return []; }
 }
-
-function saveBoardPosts(items){
-  localStorage.setItem(BOARD_KEY, JSON.stringify(items));
+function saveBoardPosts(bid, items){
+  localStorage.setItem(kBoard(bid), JSON.stringify(items));
 }
-
 function resetBoardForm(){
   if(boardError) boardError.style.display = "none";
 
@@ -1732,17 +1819,15 @@ function resetBoardForm(){
   if(bDesc) bDesc.value = "";
   if(bDocs) bDocs.value = "";
 }
-
 function boardMatches(post, q){
   const docsNames = (post.docs||[]).map(d => d.name).join(" ");
   const hay = `${post.date} ${post.title} ${post.desc||""} ${docsNames}`;
   return includesQuery(hay, q);
 }
-
-function renderBoard(q){
+function renderBoard(bid, q){
   if(!boardList) return;
 
-  const all = loadBoardPosts().slice().sort((a,b) => (b.date||"").localeCompare(a.date||""));
+  const all = loadBoardPosts(bid).slice().sort((a,b) => (b.date||"").localeCompare(a.date||""));
   const items = q ? all.filter(p => boardMatches(p, q)) : all;
 
   boardList.innerHTML = "";
@@ -1765,7 +1850,7 @@ function renderBoard(q){
 
         fli.addEventListener("click", () => {
           if(!d.dataURL){
-            alert("Ovaj fajl je sačuvan u starom demo formatu (bez sadržaja). Uploaduj ponovo.");
+            alert("Fajl je sacuvan bez sadrzaja. Uploaduj ponovo.");
             return;
           }
           const w = window.open();
@@ -1798,10 +1883,11 @@ function renderBoard(q){
       del.type = "button";
       del.textContent = "Obriši (demo)";
       del.addEventListener("click", () => {
-        const next = loadBoardPosts().filter(x => x.id !== post.id);
-        saveBoardPosts(next);
-        renderBoard(CURRENT_QUERY);
+        const next = loadBoardPosts(bid).filter(x => x.id !== post.id);
+        saveBoardPosts(bid, next);
+        renderBoard(bid, CURRENT_QUERY);
         renderSearchDropdown(CURRENT_QUERY);
+        updateHomeSummary();
       });
 
       actions.appendChild(del);
@@ -1811,13 +1897,11 @@ function renderBoard(q){
     boardList.appendChild(li);
   });
 }
-
-function boardInit(){
-  renderBoard(CURRENT_QUERY);
+function boardInit(bid){
+  renderBoard(bid, CURRENT_QUERY);
   resetBoardForm();
   if(boardFormWrap) boardFormWrap.style.display = "none";
 }
-
 if(addBoardBtn){
   addBoardBtn.addEventListener("click", () => {
     if(!boardFormWrap) return;
@@ -1826,16 +1910,23 @@ if(addBoardBtn){
     if(boardFormWrap.style.display === "block") resetBoardForm();
   });
 }
-
 if(cancelBoardBtn){
   cancelBoardBtn.addEventListener("click", () => {
     if(boardFormWrap) boardFormWrap.style.display = "none";
     resetBoardForm();
   });
 }
-
 if(saveBoardBtn){
   saveBoardBtn.addEventListener("click", async () => {
+    const bid = activeBid();
+    if(!bid){
+      if(boardError){
+        boardError.textContent = "Nije izabrana zgrada.";
+        boardError.style.display = "block";
+      }
+      return;
+    }
+
     if(!CURRENT_SESSION || CURRENT_SESSION.role !== "upravnik"){
       if(boardError){
         boardError.textContent = "Nemate dozvolu.";
@@ -1852,7 +1943,7 @@ if(saveBoardBtn){
 
     if(!title || !date){
       if(boardError){
-        boardError.textContent = "Greška: naslov i datum su obavezni.";
+        boardError.textContent = "Greska: naslov i datum su obavezni.";
         boardError.style.display = "block";
       }
       return;
@@ -1863,7 +1954,7 @@ if(saveBoardBtn){
     const LIMIT = 10 * 1024 * 1024;
     if(total > LIMIT){
       if(boardError){
-        boardError.textContent = "Greška: ukupna veličina fajlova prelazi 10MB.";
+        boardError.textContent = "Greska: ukupna velicina fajlova prelazi 10MB.";
         boardError.style.display = "block";
       }
       return;
@@ -1882,7 +1973,7 @@ if(saveBoardBtn){
       }
     }catch(e){
       if(boardError){
-        boardError.textContent = "Greška: ne mogu da pročitam fajl (FileReader).";
+        boardError.textContent = "Greska: ne mogu da procitam fajl (FileReader).";
         boardError.style.display = "block";
       }
       return;
@@ -1898,12 +1989,12 @@ if(saveBoardBtn){
     };
 
     try{
-      const items = loadBoardPosts();
+      const items = loadBoardPosts(bid);
       items.push(post);
-      saveBoardPosts(items);
+      saveBoardPosts(bid, items);
     }catch(e){
       if(boardError){
-        boardError.textContent = "Greška: localStorage limit (PDF je prevelik za demo). Probaj manji PDF.";
+        boardError.textContent = "Greska: localStorage limit (PDF je prevelik). Probaj manji PDF.";
         boardError.style.display = "block";
       }
       return;
@@ -1911,14 +2002,15 @@ if(saveBoardBtn){
 
     if(boardFormWrap) boardFormWrap.style.display = "none";
     resetBoardForm();
-    renderBoard(CURRENT_QUERY);
+    renderBoard(bid, CURRENT_QUERY);
     renderSearchDropdown(CURRENT_QUERY);
+    updateHomeSummary();
   });
 }
 
-/* ================= FORUM MODULE (demo) ================= */
-function loadProposals(){
-  const raw = localStorage.getItem(FORUM_KEY);
+/* ================= FORUM ================= */
+function loadProposals(bid){
+  const raw = localStorage.getItem(kForum(bid));
   if(!raw){
     const seed = [
       {
@@ -1926,7 +2018,7 @@ function loadProposals(){
         createdAt: Date.now() - 1000*60*60*24*3,
         title: "Nova rasveta u hodniku",
         body: "Predlog da se zamene sijalice LED rasvetom zbog ustede.",
-        createdBy: "stanar",
+        createdBy: "BM25-001",
         poll: { enabled: true, endsAt: Date.now() + 1000*60*60*24*4, votesYes: [], votesNo: [] }
       },
       {
@@ -1934,44 +2026,38 @@ function loadProposals(){
         createdAt: Date.now() - 1000*60*60*24*10,
         title: "Zamena interfona",
         body: "Predlog da se proveri ponuda za zamenu interfona u zgradi.",
-        createdBy: "stanar",
+        createdBy: "BM25-002",
         poll: { enabled: true, endsAt: Date.now() - 1000*60*60*24*1, votesYes: ["demo@x"], votesNo: [] }
       }
     ];
-    localStorage.setItem(FORUM_KEY, JSON.stringify(seed));
+    localStorage.setItem(kForum(bid), JSON.stringify(seed));
     return seed;
   }
   try { return JSON.parse(raw) || []; } catch { return []; }
 }
-
-function saveProposals(items){
-  localStorage.setItem(FORUM_KEY, JSON.stringify(items));
+function saveProposals(bid, items){
+  localStorage.setItem(kForum(bid), JSON.stringify(items));
 }
-
 function fmtDateTime(ms){
   const d = new Date(ms);
   return d.toLocaleString("sr-RS");
 }
-
 function pollStatus(poll){
   if(!poll || !poll.enabled) return { txt: "Bez ankete", open: false };
   const open = Date.now() < poll.endsAt;
   return { txt: open ? "Anketa otvorena" : "Anketa zatvorena", open };
 }
-
-function hasVoted(poll, email){
+function hasVoted(poll, username){
   if(!poll || !poll.enabled) return false;
-  return (poll.votesYes||[]).includes(email) || (poll.votesNo||[]).includes(email);
+  return (poll.votesYes||[]).includes(username) || (poll.votesNo||[]).includes(username);
 }
-
 function forumMatches(p, q){
   const hay = `${p.title} ${p.body}`;
   return includesQuery(hay, q);
 }
-
-function renderForum(q){
+function renderForum(bid, q){
   if(!forumList) return;
-  const all = loadProposals().slice().sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+  const all = loadProposals(bid).slice().sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
   const items = q ? all.filter(p => forumMatches(p, q)) : all;
 
   forumList.innerHTML = "";
@@ -2042,9 +2128,8 @@ function renderForum(q){
       `;
       pollBox.appendChild(count);
 
-      // Stanar moze da glasa samo dok je otvoreno i jednom
       if(CURRENT_SESSION && CURRENT_SESSION.role === "stanar"){
-        const already = hasVoted(p.poll, CURRENT_SESSION.email);
+        const already = hasVoted(p.poll, CURRENT_SESSION.username);
         if(st.open && !already){
           const row = document.createElement("div");
           row.style.display = "flex";
@@ -2066,8 +2151,8 @@ function renderForum(q){
           btnNo.style.padding = "12px 16px";
           btnNo.textContent = "Glasaj: NE";
 
-          btnYes.addEventListener("click", () => vote(p.id, "yes"));
-          btnNo.addEventListener("click", () => vote(p.id, "no"));
+          btnYes.addEventListener("click", () => vote(bid, p.id, "yes"));
+          btnNo.addEventListener("click", () => vote(bid, p.id, "no"));
 
           row.appendChild(btnYes);
           row.appendChild(btnNo);
@@ -2079,7 +2164,6 @@ function renderForum(q){
           pollBox.appendChild(note);
         }
       }else{
-        // upravnik/admin: samo pregled
         const note = document.createElement("div");
         note.style.marginTop = "8px";
         note.innerHTML = `<span class="badge">Pregled (bez glasanja)</span>`;
@@ -2092,7 +2176,6 @@ function renderForum(q){
     forumList.appendChild(li);
   });
 }
-
 function resetProposalForm(){
   if(!pTitle) return;
   forumError.style.display = "none";
@@ -2101,15 +2184,13 @@ function resetProposalForm(){
   pPoll.value = "ne";
   pDays.value = 7;
 }
-
-function forumInit(){
+function forumInit(bid){
   if(!forumList) return;
-  renderForum(CURRENT_QUERY);
+  renderForum(bid, CURRENT_QUERY);
   resetProposalForm();
 }
-
-function vote(proposalId, dir){
-  const items = loadProposals();
+function vote(bid, proposalId, dir){
+  const items = loadProposals(bid);
   const idx = items.findIndex(x => x.id === proposalId);
   if(idx === -1) return;
 
@@ -2120,24 +2201,30 @@ function vote(proposalId, dir){
   if(!st.open) return;
 
   if(!CURRENT_SESSION || CURRENT_SESSION.role !== "stanar") return;
-  if(hasVoted(p.poll, CURRENT_SESSION.email)) return;
+  if(hasVoted(p.poll, CURRENT_SESSION.username)) return;
 
   p.poll.votesYes = p.poll.votesYes || [];
   p.poll.votesNo = p.poll.votesNo || [];
 
-  if(dir === "yes") p.poll.votesYes.push(CURRENT_SESSION.email);
-  else p.poll.votesNo.push(CURRENT_SESSION.email);
+  if(dir === "yes") p.poll.votesYes.push(CURRENT_SESSION.username);
+  else p.poll.votesNo.push(CURRENT_SESSION.username);
 
   items[idx] = p;
-  saveProposals(items);
-  renderForum(CURRENT_QUERY);
+  saveProposals(bid, items);
+  renderForum(bid, CURRENT_QUERY);
   renderSearchDropdown(CURRENT_QUERY);
+  updateHomeSummary();
 }
-
-/* stanar kreira predlog */
 if(createProposalBtn){
   createProposalBtn.addEventListener("click", () => {
     forumError.style.display = "none";
+
+    const bid = activeBid();
+    if(!bid){
+      forumError.textContent = "Nije izabrana zgrada.";
+      forumError.style.display = "block";
+      return;
+    }
 
     if(!CURRENT_SESSION || CURRENT_SESSION.role !== "stanar"){
       forumError.textContent = "Nemate dozvolu.";
@@ -2161,25 +2248,25 @@ if(createProposalBtn){
       createdAt: Date.now(),
       title,
       body,
-      createdBy: "stanar",
+      createdBy: CURRENT_SESSION.username,
       poll: pollOn ? { enabled: true, endsAt: Date.now() + 1000*60*60*24*days, votesYes: [], votesNo: [] } : { enabled:false }
     };
 
-    const items = loadProposals();
+    const items = loadProposals(bid);
     items.push(proposal);
-    saveProposals(items);
+    saveProposals(bid, items);
 
     resetProposalForm();
-    renderForum(CURRENT_QUERY);
+    renderForum(bid, CURRENT_QUERY);
     renderSearchDropdown(CURRENT_QUERY);
+    updateHomeSummary();
   });
 }
-
 if(clearProposalBtn){
   clearProposalBtn.addEventListener("click", resetProposalForm);
 }
 
-/* ================= GLOBAL SEARCH DROPDOWN ================= */
+/* ================= GLOBAL SEARCH ================= */
 function tagForPage(page){
   if(page === "finansije") return "Finansije";
   if(page === "oglasna") return "Oglasna";
@@ -2188,7 +2275,6 @@ function tagForPage(page){
   if(page === "kontakt") return "Kontakt";
   return "Rezultat";
 }
-
 function ensureStaticSids(){
   if(regList){
     [...regList.querySelectorAll("li")].forEach((li, idx) => {
@@ -2201,16 +2287,16 @@ function ensureStaticSids(){
     });
   }
 }
-
 function buildSearchHits(q){
+  const bid = activeBid();
   const qq = norm(q);
-  if(!qq) return [];
+  if(!qq || !bid) return [];
 
   const hits = [];
 
-  // finansije
+  // finansije (samo aktivna zgrada)
   try{
-    const items = loadItems().slice().sort((a,b) => (b.date||"").localeCompare(a.date||""));
+    const items = loadItems(bid).slice().sort((a,b) => (b.date||"").localeCompare(a.date||""));
     for(const it of items){
       if(financeMatches(it, qq)){
         const firmPart = it.firm ? (" — " + it.firm) : "";
@@ -2226,7 +2312,7 @@ function buildSearchHits(q){
 
   // oglasna
   try{
-    const posts = loadBoardPosts().slice().sort((a,b) => (b.date||"").localeCompare(a.date||""));
+    const posts = loadBoardPosts(bid).slice().sort((a,b) => (b.date||"").localeCompare(a.date||""));
     for(const p of posts){
       if(boardMatches(p, qq)){
         hits.push({
@@ -2241,7 +2327,7 @@ function buildSearchHits(q){
 
   // forum
   try{
-    const props = loadProposals().slice().sort((a,b) => (b.createdAt||0)-(a.createdAt||0));
+    const props = loadProposals(bid).slice().sort((a,b) => (b.createdAt||0)-(a.createdAt||0));
     for(const p of props){
       if(forumMatches(p, qq)){
         hits.push({
@@ -2258,12 +2344,7 @@ function buildSearchHits(q){
   if(regList){
     [...regList.querySelectorAll("li")].forEach(li => {
       if(includesQuery(li.textContent, qq)){
-        hits.push({
-          page: "regulative",
-          sid: li.dataset.sid || "",
-          text: li.textContent,
-          sub: ""
-        });
+        hits.push({ page:"regulative", sid: li.dataset.sid || "", text: li.textContent, sub:"" });
       }
     });
   }
@@ -2272,19 +2353,13 @@ function buildSearchHits(q){
   if(kontaktList){
     [...kontaktList.querySelectorAll("li")].forEach(li => {
       if(includesQuery(li.textContent, qq)){
-        hits.push({
-          page: "kontakt",
-          sid: li.dataset.sid || "",
-          text: li.textContent,
-          sub: ""
-        });
+        hits.push({ page:"kontakt", sid: li.dataset.sid || "", text: li.textContent, sub:"" });
       }
     });
   }
 
   return hits.slice(0, 12);
 }
-
 function renderSearchDropdown(q){
   if(!searchResults) return;
 
@@ -2339,13 +2414,13 @@ function renderSearchDropdown(q){
   searchResults.innerHTML = html;
   searchResults.style.display = "block";
 }
-
 function applySearchFilter(){
-  renderFinanceList(CURRENT_QUERY);
-  renderBoard(CURRENT_QUERY);
-  renderForum(CURRENT_QUERY);
+  const bid = activeBid();
+  if(!bid) return;
+  renderFinanceList(bid, CURRENT_QUERY);
+  renderBoard(bid, CURRENT_QUERY);
+  renderForum(bid, CURRENT_QUERY);
 }
-
 function scrollToSid(sid){
   if(!sid) return;
   const el = document.querySelector(`[data-sid="${sid}"]`);
@@ -2355,7 +2430,6 @@ function scrollToSid(sid){
   el.classList.add("searchHitFlash");
   setTimeout(() => el.classList.remove("searchHitFlash"), 1200);
 }
-
 function goToHit(page, sid){
   showPage(page);
 
@@ -2384,7 +2458,6 @@ if(globalSearch){
     }
   });
 }
-
 if(searchResults){
   searchResults.addEventListener("click", (e) => {
     const row = e.target.closest(".srItem");
@@ -2394,7 +2467,6 @@ if(searchResults){
     if(page) goToHit(page, sid);
   });
 }
-
 document.addEventListener("click", (e) => {
   if(!searchResults || !globalSearch) return;
   const wrap = globalSearch.closest(".searchInline");
@@ -2402,22 +2474,78 @@ document.addEventListener("click", (e) => {
   searchResults.style.display = "none";
 });
 
+/* ===== refresh modules for active building ===== */
+function refreshAllModules(){
+  const bid = activeBid();
+  if(!bid) return;
+
+  financeInit(bid);
+  forumInit(bid);
+  boardInit(bid);
+
+  // refresh filtered view
+  applySearchFilter();
+  renderSearchDropdown(CURRENT_QUERY);
+  updateHomeSummary();
+  refreshBalanceUI(bid); /* ✅ IZMENJENO */
+}
+
+/* ===== home summary ===== */
+function updateHomeSummary(){
+  const bid = activeBid();
+  if(!bid) return;
+
+  const fin = loadItems(bid).slice().sort((a,b) => (b.date||"").localeCompare(a.date||""));
+  if(fin.length){
+    const it = fin[0];
+    homeLastChange.textContent = `Poslednja promena: ${it.type === "rashod" ? "Rashod" : "Prihod"} - ${it.category} (${it.date})`;
+  }else{
+    homeLastChange.textContent = "Poslednja promena: (nema)";
+  }
+
+  const brd = loadBoardPosts(bid).slice().sort((a,b) => (b.date||"").localeCompare(a.date||""));
+  if(brd.length){
+    homePinned.textContent = `Istaknuto: ${brd[0].title} (${brd[0].date})`;
+  }else{
+    homePinned.textContent = "Istaknuto: (nema)";
+  }
+
+  const frm = loadProposals(bid).slice().sort((a,b) => (b.createdAt||0)-(a.createdAt||0));
+  if(frm.length){
+    homeForum.textContent = `Forum: ${frm[0].title}`;
+  }else{
+    homeForum.textContent = "Forum: (nema)";
+  }
+}
+
 /* INIT */
 (function init(){
   ensureStaticSids();
 
   const session = getSession();
-  if(session && session.email && session.role){
+  if(session && session.username && session.role){
     CURRENT_SESSION = session;
-    userPill.textContent = session.email;
+    userPill.textContent = session.username;
     applyRoleUI(session.role);
 
-    financeInit();
-    forumInit();
-    boardInit();
-    updateBalanceUI(); // NOVO
+    if(!CURRENT_SESSION.activeBuildingId){
+      if(CURRENT_SESSION.role === "stanar"){
+        CURRENT_SESSION.activeBuildingId = (CURRENT_SESSION.buildings || [])[0] || null;
+        saveSession(CURRENT_SESSION);
+        enterPortal();
+      }else{
+        if((CURRENT_SESSION.buildings || []).length > 1){
+          showBuildingSelect();
+        }else{
+          CURRENT_SESSION.activeBuildingId = (CURRENT_SESSION.buildings || [])[0] || null;
+          saveSession(CURRENT_SESSION);
+          enterPortal();
+        }
+      }
+      return;
+    }
 
-    setMode("portal");
+    enterPortal();
   }else{
     CURRENT_SESSION = null;
     applyRoleUI("stanar");
