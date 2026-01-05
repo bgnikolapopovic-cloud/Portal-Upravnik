@@ -670,23 +670,23 @@ body.mode-portal #portalScreen{display:block;}
       </section>
 
      <section class="page active" id="page-home">
-  <section class="card">
-    <h3>Početna</h3>
+      <section class="card">
+        <h3>Početna</h3>
 
-          <div class="smallText">
-            Ovde ide kratak pregled (stanje računa, poslednje promene, istaknuta obaveštenja).
-          </div>
-          <ul class="boardList" style="margin-top:12px;">
-            <li>Poslednja promena: Rashod - Tekuće održavanje (02.01.2026)</li>
-            <li>Istaknuto: Popravka krova - dokument na oglasnoj tabli</li>
-            <li>Forum: Otvorena anketa - Predlog za novu rasvetu</li>
-          </ul>
+        <div class="smallText">
+          Ovde ide kratak pregled (stanje računa, poslednje promene, istaknuta obaveštenja).
+        </div>
+        <ul class="boardList" style="margin-top:12px;">
+          <li>Poslednja promena: Rashod - Tekuće održavanje (02.01.2026)</li>
+          <li>Istaknuto: Popravka krova - dokument na oglasnoj tabli</li>
+          <li>Forum: Otvorena anketa - Predlog za novu rasvetu</li>
+        </ul>
 
-          <div class="smallText" data-role="admin" style="margin-top:12px;">
-            Admin: placeholder (upravljanje korisnicima, regulativama i kontaktima).
-          </div>
-        </section>
+        <div class="smallText" data-role="admin" style="margin-top:12px;">
+          Admin: placeholder (upravljanje korisnicima, regulativama i kontaktima).
+        </div>
       </section>
+     </section>
 
       <!-- ===================== FINANSIJE (MODUL) ===================== -->
       <section class="page" id="page-finansije">
@@ -793,6 +793,37 @@ body.mode-portal #portalScreen{display:block;}
             Klik na fajl = otvori PDF.
           </div>
 
+          <!-- FILTERS (svi vide) -->
+          <div style="margin-top:12px;">
+            <div class="fRow">
+              <div class="grow">
+                <div class="searchInline" style="width:100%;">
+                  <input id="boardSearch" placeholder="Pretraga (naslov/opis)">
+                </div>
+              </div>
+
+              <div class="half field" style="margin-top:0;">
+                <label for="boardSort">Sortiranje</label>
+                <select id="boardSort">
+                  <option value="pinnedFirst">Istaknuto prvo</option>
+                  <option value="newest">Najnovije</option>
+                  <option value="oldest">Najstarije</option>
+                </select>
+              </div>
+
+              <div class="half" style="margin-top:22px;">
+                <label class="check" style="cursor:pointer;">
+                  <input id="boardPinnedOnly" type="checkbox">
+                  Samo istaknuto
+                </label>
+              </div>
+
+              <div class="half" style="margin-top:14px;">
+                <button class="btn btnGhost" id="boardClearFilters" type="button">Reset filtera</button>
+              </div>
+            </div>
+          </div>
+
           <!-- UPRAVNIK: toolbar -->
           <div class="smallText" data-role="upravnik" style="margin-top:12px;">
             <div class="fRow">
@@ -822,6 +853,13 @@ body.mode-portal #portalScreen{display:block;}
               <div class="grow field">
                 <label for="bDesc">Kratak opis</label>
                 <input id="bDesc" type="text" placeholder="npr. Odluka o tekućem održavanju">
+              </div>
+
+              <div class="half" style="margin-top:22px;">
+                <label class="check" style="cursor:pointer;">
+                  <input id="bPinned" type="checkbox">
+                  Istaknuto (pin)
+                </label>
               </div>
 
               <div class="grow field">
@@ -989,7 +1027,7 @@ const FIRM_KEY = "pu_finance_firms_v2";
 const FORUM_KEY = "pu_forum_proposals_v1";
 
 /* ===== oglasna storage (local) ===== */
-const BOARD_KEY = "pu_board_posts_v1";
+const BOARD_KEY = "pu_board_posts_v2"; // bump zbog pinned + filtera
 
 const emailEl = document.getElementById("email");
 const passEl = document.getElementById("pass");
@@ -1039,6 +1077,13 @@ const bTitle = document.getElementById("bTitle");
 const bDate = document.getElementById("bDate");
 const bDesc = document.getElementById("bDesc");
 const bDocs = document.getElementById("bDocs");
+const bPinned = document.getElementById("bPinned");
+
+/* oglasna filters */
+const boardSearch = document.getElementById("boardSearch");
+const boardSort = document.getElementById("boardSort");
+const boardPinnedOnly = document.getElementById("boardPinnedOnly");
+const boardClearFilters = document.getElementById("boardClearFilters");
 
 /* pdf modal elements */
 const pdfModal = document.getElementById("pdfModal");
@@ -1224,35 +1269,35 @@ function canEdit(item){
 }
 
 function loadItems(){
-  const raw = localStorage.getItem(FIN_KEY);
+  const raw = localStorage.getItem("pu_finance_items_v2");
   if(!raw){
     const seed = [
       { id: cryptoRandom(), createdAt: Date.now()-1000*60*60*24*2, date: "2026-01-02", type:"rashod", category:"tekuće održavanje", firm:"Servis DOO", desc:"Uplata servisu", amount: 24000, docs: [] },
       { id: cryptoRandom(), createdAt: Date.now()-1000*60*60*24*6, date: "2025-12-28", type:"prihod", category:"ostalo", firm:"", desc:"Uplata stanara", amount: 120000, docs: [] },
       { id: cryptoRandom(), createdAt: Date.now()-1000*60*60*24*20, date: "2025-12-15", type:"rashod", category:"hitna intervencija", firm:"Vodoinstalater", desc:"Hitna intervencija", amount: 18000, docs: [] }
     ];
-    localStorage.setItem(FIN_KEY, JSON.stringify(seed));
+    localStorage.setItem("pu_finance_items_v2", JSON.stringify(seed));
     return seed;
   }
   try { return JSON.parse(raw) || []; } catch { return []; }
 }
 
 function saveItems(items){
-  localStorage.setItem(FIN_KEY, JSON.stringify(items));
+  localStorage.setItem("pu_finance_items_v2", JSON.stringify(items));
 }
 
 function loadFirms(){
-  const raw = localStorage.getItem(FIRM_KEY);
+  const raw = localStorage.getItem("pu_finance_firms_v2");
   if(!raw){
     const seed = ["Servis DOO","Vodoinstalater","Lift Servis"];
-    localStorage.setItem(FIRM_KEY, JSON.stringify(seed));
+    localStorage.setItem("pu_finance_firms_v2", JSON.stringify(seed));
     return seed;
   }
   try { return JSON.parse(raw) || []; } catch { return []; }
 }
 
 function saveFirms(firms){
-  localStorage.setItem(FIRM_KEY, JSON.stringify(firms));
+  localStorage.setItem("pu_finance_firms_v2", JSON.stringify(firms));
 }
 
 function renderFirmSelect(){
@@ -1493,18 +1538,20 @@ function loadBoardPosts(){
     const seed = [
       {
         id: cryptoRandom(),
-        createdAt: Date.now() - 1000*60*60*24*3,
-        date: "2026-01-01",
-        title: "Akcija čišćenja",
-        desc: "Obaveštenje o terminu akcije čišćenja",
+        createdAt: Date.now() - 1000*60*60*24*2,
+        date: "2026-01-03",
+        title: "Popravka krova",
+        desc: "Plan radova i obaveštenje stanarima",
+        pinned: true,
         docs: []
       },
       {
         id: cryptoRandom(),
-        createdAt: Date.now() - 1000*60*60*24*7,
-        date: "2025-12-28",
-        title: "Popravka krova",
-        desc: "Plan radova i obaveštenje",
+        createdAt: Date.now() - 1000*60*60*24*5,
+        date: "2026-01-01",
+        title: "Akcija čišćenja",
+        desc: "Zajednička akcija čišćenja u 10:00",
+        pinned: false,
         docs: []
       }
     ];
@@ -1530,20 +1577,98 @@ function resetBoardForm(){
   if(bTitle) bTitle.value = "";
   if(bDesc) bDesc.value = "";
   if(bDocs) bDocs.value = "";
+  if(bPinned) bPinned.checked = false;
+}
+
+function getBoardFilters(){
+  return {
+    q: String(boardSearch?.value || "").trim().toLowerCase(),
+    sort: String(boardSort?.value || "pinnedFirst"),
+    pinnedOnly: !!(boardPinnedOnly && boardPinnedOnly.checked)
+  };
+}
+
+function applyBoardFilters(items){
+  const f = getBoardFilters();
+  let out = items.slice();
+
+  if(f.q){
+    out = out.filter(p => {
+      const hay = ((p.title||"") + " " + (p.desc||"")).toLowerCase();
+      return hay.includes(f.q);
+    });
+  }
+
+  if(f.pinnedOnly){
+    out = out.filter(p => !!p.pinned);
+  }
+
+  // Sort
+  if(f.sort === "newest"){
+    out.sort((a,b) => (b.date||"").localeCompare(a.date||""));
+  }else if(f.sort === "oldest"){
+    out.sort((a,b) => (a.date||"").localeCompare(b.date||""));
+  }else{
+    // pinnedFirst default
+    out.sort((a,b) => {
+      const ap = a.pinned ? 1 : 0;
+      const bp = b.pinned ? 1 : 0;
+      if(bp !== ap) return bp - ap;
+      return (b.date||"").localeCompare(a.date||"");
+    });
+  }
+
+  return out;
 }
 
 function renderBoard(){
   if(!boardList) return;
 
-  const items = loadBoardPosts()
-    .slice()
-    .sort((a,b) => (b.date||"").localeCompare(a.date||""));
-
+  const items = applyBoardFilters(loadBoardPosts());
   boardList.innerHTML = "";
+
+  if(!items.length){
+    const li = document.createElement("li");
+    li.textContent = "Nema rezultata za izabrane filtere.";
+    boardList.appendChild(li);
+    return;
+  }
 
   items.forEach(post => {
     const li = document.createElement("li");
-    li.textContent = `${post.date} — ${post.title}${post.desc ? " — " + post.desc : ""}`;
+
+    const top = document.createElement("div");
+    top.style.display = "flex";
+    top.style.justifyContent = "space-between";
+    top.style.gap = "10px";
+    top.style.flexWrap = "wrap";
+
+    const left = document.createElement("div");
+    left.style.fontWeight = "900";
+    left.textContent = `${post.date} — ${post.title}`;
+
+    const right = document.createElement("div");
+    right.style.display = "flex";
+    right.style.gap = "8px";
+    right.style.alignItems = "center";
+
+    if(post.pinned){
+      const pin = document.createElement("span");
+      pin.className = "badge";
+      pin.textContent = "ISTAKNUTO";
+      right.appendChild(pin);
+    }
+
+    top.appendChild(left);
+    top.appendChild(right);
+
+    const desc = document.createElement("div");
+    desc.className = "smallText";
+    desc.style.marginTop = "8px";
+    desc.textContent = post.desc || "";
+
+    li.appendChild(top);
+    if(post.desc) li.appendChild(desc);
 
     if(post.docs && post.docs.length){
       const ul = document.createElement("ul");
@@ -1576,6 +1701,19 @@ function renderBoard(){
       actions.style.gap = "10px";
       actions.style.flexWrap = "wrap";
 
+      const pinBtn = document.createElement("button");
+      pinBtn.className = "btn btnGhost";
+      pinBtn.type = "button";
+      pinBtn.textContent = post.pinned ? "Skini istaknuto" : "Istakni";
+      pinBtn.addEventListener("click", () => {
+        const all = loadBoardPosts();
+        const idx = all.findIndex(x => x.id === post.id);
+        if(idx === -1) return;
+        all[idx].pinned = !all[idx].pinned;
+        saveBoardPosts(all);
+        renderBoard();
+      });
+
       const del = document.createElement("button");
       del.className = "btn btnGhost";
       del.type = "button";
@@ -1586,6 +1724,7 @@ function renderBoard(){
         renderBoard();
       });
 
+      actions.appendChild(pinBtn);
       actions.appendChild(del);
       li.appendChild(actions);
     }
@@ -1598,6 +1737,24 @@ function boardInit(){
   renderBoard();
   resetBoardForm();
   if(boardFormWrap) boardFormWrap.style.display = "none";
+
+  if(boardSearch){
+    boardSearch.oninput = () => renderBoard();
+  }
+  if(boardSort){
+    boardSort.onchange = () => renderBoard();
+  }
+  if(boardPinnedOnly){
+    boardPinnedOnly.onchange = () => renderBoard();
+  }
+  if(boardClearFilters){
+    boardClearFilters.onclick = () => {
+      if(boardSearch) boardSearch.value = "";
+      if(boardSort) boardSort.value = "pinnedFirst";
+      if(boardPinnedOnly) boardPinnedOnly.checked = false;
+      renderBoard();
+    };
+  }
 }
 
 if(addBoardBtn){
@@ -1631,6 +1788,7 @@ if(saveBoardBtn){
     const title = (bTitle?.value || "").trim();
     const date = (bDate?.value || "").trim();
     const desc = (bDesc?.value || "").trim();
+    const pinned = !!(bPinned && bPinned.checked);
 
     if(!title || !date){
       if(boardError){
@@ -1676,6 +1834,7 @@ if(saveBoardBtn){
       date,
       title,
       desc,
+      pinned,
       docs
     };
 
@@ -1809,14 +1968,12 @@ function renderForum(){
       const count = document.createElement("div");
       count.style.marginTop = "6px";
       count.innerHTML = `
-  <span class="badge">Da: ${yes} (${yesPct}%)</span>
-  <span class="badge" style="margin-left:8px;">Ne: ${no} (${noPct}%)</span>
-  <span class="badge" style="margin-left:8px;">Ukupno: ${total}</span>
-`;
-
+        <span class="badge">Da: ${yes} (${yesPct}%)</span>
+        <span class="badge" style="margin-left:8px;">Ne: ${no} (${noPct}%)</span>
+        <span class="badge" style="margin-left:8px;">Ukupno: ${total}</span>
+      `;
       pollBox.appendChild(count);
 
-      // Stanar moze da glasa samo dok je otvoreno i jednom
       if(CURRENT_SESSION && CURRENT_SESSION.role === "stanar"){
         const already = hasVoted(p.poll, CURRENT_SESSION.email);
         if(st.open && !already){
@@ -1853,7 +2010,6 @@ function renderForum(){
           pollBox.appendChild(note);
         }
       }else{
-        // upravnik/admin: samo pregled
         const note = document.createElement("div");
         note.style.marginTop = "8px";
         note.innerHTML = `<span class="badge">Pregled (bez glasanja)</span>`;
@@ -1890,8 +2046,8 @@ function vote(proposalId, dir){
   const p = items[idx];
   if(!p.poll || !p.poll.enabled) return;
 
-  const st = pollStatus(p.poll);
-  if(!st.open) return;
+  const open = Date.now() < p.poll.endsAt;
+  if(!open) return;
 
   if(!CURRENT_SESSION || CURRENT_SESSION.role !== "stanar") return;
   if(hasVoted(p.poll, CURRENT_SESSION.email)) return;
@@ -1907,7 +2063,6 @@ function vote(proposalId, dir){
   renderForum();
 }
 
-/* stanar kreira predlog */
 if(createProposalBtn){
   createProposalBtn.addEventListener("click", () => {
     forumError.style.display = "none";
