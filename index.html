@@ -76,7 +76,6 @@ body::before{
   pointer-events:none;
 }
 
-
 .topRightTitle{
   text-align:left;
   font-weight:900;
@@ -510,6 +509,51 @@ body.sidebar-open .sidebar{ filter:none; }
 body.mode-login #portalScreen{display:none;}
 body.mode-portal #loginScreen{display:none;}
 body.mode-portal #portalScreen{display:block;}
+
+/* ================= PDF MODAL (samo za OGLASNU) ================= */
+.pdfModal{
+  position:fixed; inset:0;
+  z-index:120;
+  display:none;
+}
+.pdfBackdrop{
+  position:absolute; inset:0;
+  background:rgba(2,6,23,.55);
+}
+.pdfPanel{
+  position:absolute;
+  left:50%; top:50%;
+  transform:translate(-50%,-50%);
+  width:min(980px, calc(100% - 24px));
+  height:min(86vh, 860px);
+  background:rgba(255,255,255,.96);
+  border:1px solid rgba(15,23,42,.14);
+  border-radius:22px;
+  box-shadow:0 20px 60px rgba(0,0,0,.25);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+.pdfTop{
+  padding:12px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  border-bottom:1px solid rgba(15,23,42,.10);
+}
+.pdfTitle{
+  font-weight:900;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+#pdfFrame{
+  width:100%;
+  height:100%;
+  border:0;
+  background:white;
+}
 </style>
 </head>
 
@@ -739,19 +783,70 @@ body.mode-portal #portalScreen{display:block;}
         </section>
       </section>
 
+      <!-- ===================== OGLASNA TABLA (MODUL) ===================== -->
       <section class="page" id="page-oglasna">
         <section class="card">
           <h3>Oglasna tabla</h3>
 
-          <div class="smallText" data-role="upravnik">
-            Upravnik: placeholder (postavljanje dokumenata/obavestenja).
+          <div class="smallText">
+            Dokumenta i obaveštenja za stanare (odluke, izveštaji, rešenja, obaveštenja).
+            Klik na fajl = otvori PDF.
           </div>
 
-          <ul class="boardList">
-            <li>Akcija ciscenja</li>
-            <li>Popravka krova</li>
-            <li>Krecenje</li>
-          </ul>
+          <!-- UPRAVNIK: toolbar -->
+          <div class="smallText" data-role="upravnik" style="margin-top:12px;">
+            <div class="fRow">
+              <div class="grow">
+                <span class="badge">Upravnik</span>
+                <span class="badge" style="margin-left:8px;">Upload limit: 10MB po objavi</span>
+              </div>
+              <div>
+                <button class="btn btnGhost" id="addBoardBtn" type="button">Dodaj objavu</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Forma (upravnik-only) -->
+          <div id="boardFormWrap" data-role="upravnik" style="display:none; margin-top:12px;">
+            <div class="fRow">
+              <div class="grow field">
+                <label for="bTitle">Naslov objave</label>
+                <input id="bTitle" type="text" placeholder="npr. Odluka skupštine stanara">
+              </div>
+
+              <div class="half field">
+                <label for="bDate">Datum</label>
+                <input id="bDate" type="date">
+              </div>
+
+              <div class="grow field">
+                <label for="bDesc">Kratak opis</label>
+                <input id="bDesc" type="text" placeholder="npr. Odluka o tekućem održavanju">
+              </div>
+
+              <div class="grow field">
+                <label for="bDocs">PDF dokumenta (više fajlova)</label>
+                <input id="bDocs" type="file" multiple accept="application/pdf">
+                <div class="smallText" style="margin-top:6px;">
+                  Ukupna veličina fajlova po objavi max 10MB.
+                </div>
+              </div>
+
+              <div class="grow" style="display:flex; gap:10px; margin-top:6px;">
+                <button class="btn btnPrimary" id="saveBoardBtn" type="button">Objavi</button>
+                <button class="btn btnGhost" id="cancelBoardBtn" type="button">Otkaži</button>
+              </div>
+
+              <div class="error" id="boardError" style="display:none;">Greška: proveri polja i limit fajlova (10MB).</div>
+            </div>
+          </div>
+
+          <!-- Lista objava -->
+          <ul class="boardList" id="boardList"></ul>
+
+          <div class="smallText" style="margin-top:10px;">
+            Napomena: demo čuva PDF u localStorage (različito po uređaju/browseru).
+          </div>
         </section>
       </section>
 
@@ -848,6 +943,18 @@ body.mode-portal #portalScreen{display:block;}
     </div>
   </main>
 
+  <!-- PDF Viewer Modal (samo za Oglasnu tablu) -->
+  <div id="pdfModal" class="pdfModal">
+    <div class="pdfBackdrop" id="pdfBackdrop"></div>
+    <div class="pdfPanel">
+      <div class="pdfTop">
+        <div class="pdfTitle" id="pdfTitle">Dokument</div>
+        <button class="btn btnGhost" id="pdfCloseBtn" type="button">Zatvori</button>
+      </div>
+      <iframe id="pdfFrame" title="PDF Viewer"></iframe>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -871,7 +978,6 @@ const DEMO_USERS = [
   { email: "stanar10@demo.rs",      pass: "123456", role: "stanar" }
 ];
 
-
 const KEY_PERSIST = "pu_session_persist_v7";
 const KEY_SESSION = "pu_session_session_v7";
 
@@ -881,6 +987,9 @@ const FIRM_KEY = "pu_finance_firms_v2";
 
 /* ===== forum storage (local) ===== */
 const FORUM_KEY = "pu_forum_proposals_v1";
+
+/* ===== oglasna storage (local) ===== */
+const BOARD_KEY = "pu_board_posts_v1";
 
 const emailEl = document.getElementById("email");
 const passEl = document.getElementById("pass");
@@ -918,6 +1027,25 @@ const pDays = document.getElementById("pDays");
 const createProposalBtn = document.getElementById("createProposalBtn");
 const clearProposalBtn = document.getElementById("clearProposalBtn");
 const forumError = document.getElementById("forumError");
+
+/* oglasna elements */
+const boardList = document.getElementById("boardList");
+const addBoardBtn = document.getElementById("addBoardBtn");
+const boardFormWrap = document.getElementById("boardFormWrap");
+const saveBoardBtn = document.getElementById("saveBoardBtn");
+const cancelBoardBtn = document.getElementById("cancelBoardBtn");
+const boardError = document.getElementById("boardError");
+const bTitle = document.getElementById("bTitle");
+const bDate = document.getElementById("bDate");
+const bDesc = document.getElementById("bDesc");
+const bDocs = document.getElementById("bDocs");
+
+/* pdf modal elements */
+const pdfModal = document.getElementById("pdfModal");
+const pdfBackdrop = document.getElementById("pdfBackdrop");
+const pdfCloseBtn = document.getElementById("pdfCloseBtn");
+const pdfFrame = document.getElementById("pdfFrame");
+const pdfTitle = document.getElementById("pdfTitle");
 
 /* ---------- helpers ---------- */
 function setMode(mode){
@@ -961,6 +1089,24 @@ function applyRoleUI(role){
   });
 }
 
+/* pdf modal helpers (samo oglasna) */
+function openPdfInModal(name, dataURL){
+  if(!pdfModal || !pdfFrame) return;
+  if(pdfTitle) pdfTitle.textContent = name || "Dokument";
+  pdfFrame.src = dataURL || "";
+  pdfModal.style.display = "block";
+}
+function closePdfModal(){
+  if(!pdfModal || !pdfFrame) return;
+  pdfModal.style.display = "none";
+  pdfFrame.src = "";
+}
+if(pdfBackdrop) pdfBackdrop.addEventListener("click", closePdfModal);
+if(pdfCloseBtn) pdfCloseBtn.addEventListener("click", closePdfModal);
+document.addEventListener("keydown", (e) => {
+  if(e.key === "Escape") closePdfModal();
+});
+
 /* ---------- login ---------- */
 function attemptLogin(email, pass){
   const u = DEMO_USERS.find(x => x.email === email && x.pass === pass);
@@ -978,6 +1124,7 @@ function attemptLogin(email, pass){
 
   financeInit();
   forumInit();
+  boardInit();
 
   setMode("portal");
 }
@@ -997,6 +1144,7 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
   clearSessions();
   CURRENT_SESSION = null;
   closeS();
+  closePdfModal();
   setMode("login");
 });
 
@@ -1132,6 +1280,12 @@ function fileToDataURL(file){
   });
 }
 
+function totalFilesSizeBytes(fileList){
+  let sum = 0;
+  for(const f of fileList) sum += (f.size || 0);
+  return sum;
+}
+
 function renderFinanceList(){
   const items = loadItems().slice().sort((a,b) => (b.date||"").localeCompare(a.date||""));
   financeList.innerHTML = "";
@@ -1220,12 +1374,6 @@ function resetFinanceForm(){
   fDesc.value = "";
   fAmount.value = "";
   if(fDocs) fDocs.value = "";
-}
-
-function totalFilesSizeBytes(fileList){
-  let sum = 0;
-  for(const f of fileList) sum += (f.size || 0);
-  return sum;
 }
 
 function financeInit(){
@@ -1335,6 +1483,217 @@ if(saveFinanceBtn){
     financeFormWrap.style.display = "none";
     resetFinanceForm();
     renderFinanceList();
+  });
+}
+
+/* ================= OGLASNA TABLA MODULE (demo) ================= */
+function loadBoardPosts(){
+  const raw = localStorage.getItem(BOARD_KEY);
+  if(!raw){
+    const seed = [
+      {
+        id: cryptoRandom(),
+        createdAt: Date.now() - 1000*60*60*24*3,
+        date: "2026-01-01",
+        title: "Akcija čišćenja",
+        desc: "Obaveštenje o terminu akcije čišćenja",
+        docs: []
+      },
+      {
+        id: cryptoRandom(),
+        createdAt: Date.now() - 1000*60*60*24*7,
+        date: "2025-12-28",
+        title: "Popravka krova",
+        desc: "Plan radova i obaveštenje",
+        docs: []
+      }
+    ];
+    localStorage.setItem(BOARD_KEY, JSON.stringify(seed));
+    return seed;
+  }
+  try { return JSON.parse(raw) || []; } catch { return []; }
+}
+
+function saveBoardPosts(items){
+  localStorage.setItem(BOARD_KEY, JSON.stringify(items));
+}
+
+function resetBoardForm(){
+  if(boardError) boardError.style.display = "none";
+
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth()+1).padStart(2,"0");
+  const dd = String(today.getDate()).padStart(2,"0");
+  if(bDate) bDate.value = `${yyyy}-${mm}-${dd}`;
+
+  if(bTitle) bTitle.value = "";
+  if(bDesc) bDesc.value = "";
+  if(bDocs) bDocs.value = "";
+}
+
+function renderBoard(){
+  if(!boardList) return;
+
+  const items = loadBoardPosts()
+    .slice()
+    .sort((a,b) => (b.date||"").localeCompare(a.date||""));
+
+  boardList.innerHTML = "";
+
+  items.forEach(post => {
+    const li = document.createElement("li");
+    li.textContent = `${post.date} — ${post.title}${post.desc ? " — " + post.desc : ""}`;
+
+    if(post.docs && post.docs.length){
+      const ul = document.createElement("ul");
+      ul.className = "fileList";
+
+      post.docs.forEach(d => {
+        const fli = document.createElement("li");
+        fli.style.cursor = "pointer";
+        fli.title = "Klik za otvaranje";
+        fli.innerHTML = `<span>${d.name}</span><small>${d.sizeKB} KB</small>`;
+
+        fli.addEventListener("click", () => {
+          if(!d.dataURL){
+            alert("Ovaj fajl je sačuvan u starom demo formatu (bez sadržaja). Uploaduj ponovo.");
+            return;
+          }
+          openPdfInModal(d.name, d.dataURL);
+        });
+
+        ul.appendChild(fli);
+      });
+
+      li.appendChild(ul);
+    }
+
+    if(CURRENT_SESSION && CURRENT_SESSION.role === "upravnik"){
+      const actions = document.createElement("div");
+      actions.style.marginTop = "10px";
+      actions.style.display = "flex";
+      actions.style.gap = "10px";
+      actions.style.flexWrap = "wrap";
+
+      const del = document.createElement("button");
+      del.className = "btn btnGhost";
+      del.type = "button";
+      del.textContent = "Obriši (demo)";
+      del.addEventListener("click", () => {
+        const next = loadBoardPosts().filter(x => x.id !== post.id);
+        saveBoardPosts(next);
+        renderBoard();
+      });
+
+      actions.appendChild(del);
+      li.appendChild(actions);
+    }
+
+    boardList.appendChild(li);
+  });
+}
+
+function boardInit(){
+  renderBoard();
+  resetBoardForm();
+  if(boardFormWrap) boardFormWrap.style.display = "none";
+}
+
+if(addBoardBtn){
+  addBoardBtn.addEventListener("click", () => {
+    if(!boardFormWrap) return;
+    boardFormWrap.style.display =
+      (boardFormWrap.style.display === "none" || boardFormWrap.style.display === "") ? "block" : "none";
+    if(boardFormWrap.style.display === "block") resetBoardForm();
+  });
+}
+
+if(cancelBoardBtn){
+  cancelBoardBtn.addEventListener("click", () => {
+    if(boardFormWrap) boardFormWrap.style.display = "none";
+    resetBoardForm();
+  });
+}
+
+if(saveBoardBtn){
+  saveBoardBtn.addEventListener("click", async () => {
+    if(!CURRENT_SESSION || CURRENT_SESSION.role !== "upravnik"){
+      if(boardError){
+        boardError.textContent = "Nemate dozvolu.";
+        boardError.style.display = "block";
+      }
+      return;
+    }
+
+    if(boardError) boardError.style.display = "none";
+
+    const title = (bTitle?.value || "").trim();
+    const date = (bDate?.value || "").trim();
+    const desc = (bDesc?.value || "").trim();
+
+    if(!title || !date){
+      if(boardError){
+        boardError.textContent = "Greška: naslov i datum su obavezni.";
+        boardError.style.display = "block";
+      }
+      return;
+    }
+
+    const files = [...(bDocs?.files || [])];
+    const total = totalFilesSizeBytes(files);
+    const LIMIT = 10 * 1024 * 1024;
+    if(total > LIMIT){
+      if(boardError){
+        boardError.textContent = "Greška: ukupna veličina fajlova prelazi 10MB.";
+        boardError.style.display = "block";
+      }
+      return;
+    }
+
+    const docs = [];
+    try{
+      for(const f of files){
+        const dataURL = await fileToDataURL(f);
+        docs.push({
+          name: f.name,
+          sizeKB: Math.ceil((f.size||0)/1024),
+          mime: f.type || "application/pdf",
+          dataURL
+        });
+      }
+    }catch(e){
+      if(boardError){
+        boardError.textContent = "Greška: ne mogu da pročitam fajl (FileReader).";
+        boardError.style.display = "block";
+      }
+      return;
+    }
+
+    const post = {
+      id: cryptoRandom(),
+      createdAt: Date.now(),
+      date,
+      title,
+      desc,
+      docs
+    };
+
+    try{
+      const items = loadBoardPosts();
+      items.push(post);
+      saveBoardPosts(items);
+    }catch(e){
+      if(boardError){
+        boardError.textContent = "Greška: localStorage limit (PDF je prevelik za demo). Probaj manji PDF.";
+        boardError.style.display = "block";
+      }
+      return;
+    }
+
+    if(boardFormWrap) boardFormWrap.style.display = "none";
+    resetBoardForm();
+    renderBoard();
   });
 }
 
@@ -1601,6 +1960,7 @@ if(clearProposalBtn){
     applyRoleUI(session.role);
     financeInit();
     forumInit();
+    boardInit();
     setMode("portal");
   }else{
     CURRENT_SESSION = null;
@@ -1612,10 +1972,3 @@ if(clearProposalBtn){
 
 </body>
 </html>
-
-
-
-
-
-
-
