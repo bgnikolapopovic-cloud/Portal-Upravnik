@@ -284,6 +284,23 @@ body.sidebar-open .sidebar{ filter:none; }
   backdrop-filter:blur(8px);
 }
 .sidebar>*{position:relative;z-index:1}
+  /* Rešenje za svetlu ivicu – konačno */
+.sidebar:not(.open) {
+  background: linear-gradient(180deg, var(--side1), var(--side2)) 16px 0 / calc(100% - 16px) 100% no-repeat, var(--bg-url);
+  background-size: cover;
+}
+
+.sidebar:not(.open)::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: var(--edge-w);
+  background: linear-gradient(180deg, rgba(59,130,246,.40), rgba(14,165,233,.35));
+  pointer-events: none;
+  z-index: 10;
+}
 /* Svetla plava ivica – samo kada je sidebar zatvoren */
 .sidebar:not(.open)::before {
   content: "";
@@ -2605,4 +2622,5 @@ function updateHomeSummary(){
 
 </body>
 </html>
+
 
