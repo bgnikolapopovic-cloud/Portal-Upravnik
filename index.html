@@ -761,7 +761,7 @@ body.mode-portal #portalScreen{display:block;}
           <h3>Finansije</h3>
 
           <div class="smallText">
-            Pregled finansijskih promena i dokumenata. Stanar ima uvid (read-only). Upravnik ima unos i upload.
+            Pregled finansijskih promena i dokumenata.
           </div>
 
           <!-- ✅ DODATO: POCETNO STANJE (samo admin/upravnik) -->
@@ -878,7 +878,7 @@ body.mode-portal #portalScreen{display:block;}
           <ul class="boardList" id="financeList"></ul>
 
           <div class="smallText" style="margin-top:10px;">
-            Napomena: Ovo je front-only priprema. Trenutno se cuva u localStorage po zgradi (kasnije Supabase).
+            
           </div>
         </section>
       </section>
@@ -942,7 +942,7 @@ body.mode-portal #portalScreen{display:block;}
           <ul class="boardList" id="boardList"></ul>
 
           <div class="smallText" style="margin-top:10px;">
-            Napomena: front-only. Podaci su u localStorage po zgradi (kasnije Supabase).
+            
           </div>
         </section>
       </section>
@@ -1004,7 +1004,7 @@ body.mode-portal #portalScreen{display:block;}
         <section class="card">
           <h3>Zakonske regulative</h3>
           <div class="smallText">
-            Informativna stranica sa zakonima i propisima. Sadrzaj menja administrator.
+            Informativna stranica sa zakonima i propisima. Sadržaj menja administrator.
           </div>
 
           <div class="smallText" data-role="admin">
@@ -1603,7 +1603,7 @@ function renderFinanceList(bid, q){
 
         fli.addEventListener("click", () => {
           if(!d.dataURL){
-            alert("Fajl je sacuvan bez sadrzaja. Uploaduj ponovo.");
+            alert("Fajl je sacuvan bez sadržaja. Uploaduj ponovo.");
             return;
           }
           const w = window.open();
@@ -1850,7 +1850,7 @@ function renderBoard(bid, q){
 
         fli.addEventListener("click", () => {
           if(!d.dataURL){
-            alert("Fajl je sacuvan bez sadrzaja. Uploaduj ponovo.");
+            alert("Fajl je sacuvan bez sadržaja. Uploaduj ponovo.");
             return;
           }
           const w = window.open();
@@ -2573,6 +2573,7 @@ function updateHomeSummary(){
 
 </body>
 </html>
+
 
 
 
