@@ -283,7 +283,21 @@ body.sidebar-open .sidebar{ filter:none; }
   backdrop-filter:blur(8px);
 }
 .sidebar>*{position:relative;z-index:1}
-
+/* Svetlija ivica (peek) – nova izmena */
+.sidebar::after {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: var(--edge-w);
+  background: linear-gradient(180deg, rgba(59,130,246,.18), rgba(14,165,233,.14));
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity .2s;
+  z-index: 2;
+}
+.sidebar.open::after {
+  opacity: 0;
+}
 .brand{height:92px}
 .brand h1{font-size:24px;font-weight:900;letter-spacing:.16em}
 .brand p{font-size:13px;opacity:.78;margin-top:8px}
@@ -2573,6 +2587,7 @@ function updateHomeSummary(){
 
 </body>
 </html>
+
 
 
 
