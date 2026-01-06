@@ -831,7 +831,7 @@ body.mode-portal #portalScreen{display:block;}
                 <label for="fCategory">Kategorija</label>
                 <select id="fCategory">
                   <option value="hitna intervencija">Hitna intervencija</option>
-                  <option value="tekuće odrzavanje">Tekuće odrzavanje</option>
+                  <option value="tekuće održavanje">Tekuće održavanje</option>
                   <option value="lift">Lift</option>
                   <option value="ostalo">Ostalo</option>
                   <option value="drugo">Drugo</option>
@@ -909,7 +909,7 @@ body.mode-portal #portalScreen{display:block;}
             <div class="fRow">
               <div class="grow field">
                 <label for="bTitle">Naslov objave</label>
-                <input id="bTitle" type="text" placeholder="npr. Odluka skupstine stanara">
+                <input id="bTitle" type="text" placeholder="npr. Odluka skupštine stanara">
               </div>
 
               <div class="half field">
@@ -919,7 +919,7 @@ body.mode-portal #portalScreen{display:block;}
 
               <div class="grow field">
                 <label for="bDesc">Kratak opis</label>
-                <input id="bDesc" type="text" placeholder="npr. Odluka o tekuće odrzavanje">
+                <input id="bDesc" type="text" placeholder="npr. Odluka o tekuće održavanje">
               </div>
 
               <div class="grow field">
@@ -1012,7 +1012,7 @@ body.mode-portal #portalScreen{display:block;}
           </div>
 
           <ul class="boardList" id="regList">
-            <li>Zakon o stanovanju i odrzavanju zgrada (PDF)</li>
+            <li>Zakon o stanovanju i održavanju zgrada (PDF)</li>
             <li>Pravilnik o upravljanju stambenim zajednicama (PDF)</li>
           </ul>
         </section>
@@ -1464,7 +1464,7 @@ function loadItems(bid){
   const raw = localStorage.getItem("pu_finance_items_v3__" + bid);
   if(!raw){
     const seed = [
-      { id: cryptoRandom(), createdAt: Date.now()-1000*60*60*24*2, date: "2026-01-02", type:"rashod", category:"tekuće odrzavanje", firm:"Servis DOO", desc:"Uplata servisu", amount: 24000, docs: [] },
+      { id: cryptoRandom(), createdAt: Date.now()-1000*60*60*24*2, date: "2026-01-02", type:"rashod", category:"tekuće održavanje", firm:"Servis DOO", desc:"Uplata servisu", amount: 24000, docs: [] },
       { id: cryptoRandom(), createdAt: Date.now()-1000*60*60*24*6, date: "2025-12-28", type:"prihod", category:"ostalo", firm:"", desc:"Uplata stanara", amount: 120000, docs: [] },
       { id: cryptoRandom(), createdAt: Date.now()-1000*60*60*24*20, date: "2025-12-15", type:"rashod", category:"hitna intervencija", firm:"Vodoinstalater", desc:"Hitna intervencija", amount: 18000, docs: [] }
     ];
@@ -1661,7 +1661,7 @@ function resetFinanceForm(){
   const dd = String(today.getDate()).padStart(2,"0");
   fDate.value = `${yyyy}-${mm}-${dd}`;
   fType.value = "rashod";
-  fCategory.value = "tekuće odrzavanje";
+  fCategory.value = "tekuće održavanje";
   fFirm.value = "";
   fFirmNew.value = "";
   fDesc.value = "";
@@ -2573,6 +2573,7 @@ function updateHomeSummary(){
 
 </body>
 </html>
+
 
 
 
