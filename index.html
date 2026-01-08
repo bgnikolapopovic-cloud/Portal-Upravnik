@@ -1401,7 +1401,13 @@ function closeS(){
   overlay.classList.remove("show");
   document.body.classList.remove("sidebar-open");
 }
+
 edge.addEventListener("mouseenter", openS);
+
+/* MOBILE / TOUCH FIX */
+edge.addEventListener("touchstart", openS, { passive: true });
+overlay.addEventListener("touchstart", closeS, { passive: true });
+
 burger.addEventListener("click", () => {
   sidebar.classList.contains("open") ? closeS() : openS();
 });
@@ -1409,6 +1415,7 @@ overlay.addEventListener("click", closeS);
 document.addEventListener("keydown", (e) => {
   if(e.key === "Escape") closeS();
 });
+
 
 /* ===== SPA NAV ===== */
 const nav = document.getElementById("nav");
@@ -2586,6 +2593,7 @@ function updateHomeSummary(){
 
 </body>
 </html>
+
 
 
 
