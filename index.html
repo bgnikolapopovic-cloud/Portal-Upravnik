@@ -343,7 +343,7 @@ body.sidebar-open .sidebar{ filter:none; }
   gap:10px;
 }
 .searchInline,
-.balanceCard{
+.{
   width:clamp(180px,42vw,300px);
   border-radius:18px;
   background:var(--glass);
@@ -357,7 +357,7 @@ body.sidebar-open .sidebar{ filter:none; }
 }
 
 /* stanje */
-.balanceCard{
+.{
   padding:12px;
   text-align:right;
 }
@@ -384,6 +384,12 @@ body.sidebar-open .sidebar{ filter:none; }
   .balanceAmount .value{font-size:32px;}
   .balanceAmount .currency{font-size:13px;}
   .balanceCard{padding:18px;}
+}
+/* MOBILE FIX – veliki iznosi da ne izlaze iz kartice */
+@media (max-width: 520px){
+  .balanceCard{ overflow:hidden; }
+  .balanceAmount{ white-space: normal; }
+  .balanceAmount .value{ font-size: 18px; }
 }
 
 /* cards */
@@ -2594,6 +2600,7 @@ function updateHomeSummary(){
 
 </body>
 </html>
+
 
 
 
