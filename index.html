@@ -1088,9 +1088,24 @@ const BUILDINGS = [
 ];
 
 
-function getBuildingById(id){
-  return BUILDINGS.find(b => b.id === id) || null;
+function normalizeBuildingId(id){
+  return String(id || "")
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")  // skida dijakritike
+    .replace(/č/g, "c").replace(/ć/g, "c")
+    .replace(/š/g, "s").replace(/đ/g, "dj").replace(/ž/g, "z")
+    .toLowerCase()
+    .trim();
 }
+
+function getBuildingById(id){
+  const direct = BUILDINGS.find(b => b.id === id);
+  if(direct) return direct;
+
+  const nid = normalizeBuildingId(id);
+  return BUILDINGS.find(b => normalizeBuildingId(b.id) === nid) || null;
+}
+
 
 /* ====== Users (demo) ====== */
 const USERS = [
@@ -1339,9 +1354,11 @@ document.addEventListener("keydown", (e) => {
 function showBuildingSelect(){
   setMode("buildingSelect");
 
-  const list = (CURRENT_SESSION?.buildings || [])
-    .map(id => getBuildingById(id))
-    .filter(Boolean);
+  const list = (CURRENT_SESSION?.buildings || []).map(id => {
+  const b = getBuildingById(id);
+  return b ? b : { id, title: "Nepoznata zgrada", street: "ID", number: String(id), units: "-" };
+});
+
 
   buildingPickList.innerHTML = "";
   list.forEach(b => {
@@ -2606,6 +2623,7 @@ function updateHomeSummary(){
 
 </body>
 </html>
+
 
 
 
