@@ -342,22 +342,27 @@ body.sidebar-open .sidebar{ filter:none; }
   align-items:flex-end;
   gap:10px;
 }
+
 .searchInline,
-.{
+.balanceCard{
   width:clamp(180px,42vw,300px);
   border-radius:18px;
   background:var(--glass);
   border:1px solid var(--border);
   box-shadow:var(--shadow);
 }
-.searchInline{padding:10px 14px}
+
+.searchInline{ padding:10px 14px; }
 .searchInline input{
-  border:none;background:transparent;width:100%;
-  outline:none;font-size:14px;
+  border:none;
+  background:transparent;
+  width:100%;
+  outline:none;
+  font-size:14px;
 }
 
 /* stanje */
-.{
+.balanceCard{
   padding:12px;
   text-align:right;
 }
@@ -379,6 +384,7 @@ body.sidebar-open .sidebar{ filter:none; }
   opacity:.55;
   margin-left:4px;
 }
+
 @media(min-width:900px){
   .meta{font-size:26px;}
   .balanceAmount .value{font-size:32px;}
@@ -2600,6 +2606,7 @@ function updateHomeSummary(){
 
 </body>
 </html>
+
 
 
 
