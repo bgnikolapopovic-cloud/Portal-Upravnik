@@ -773,6 +773,47 @@ body.sidebar-open .hamburger{
         <section class="card">
           <h3>Finansije</h3>
 
+<!-- FIN HEADER CONTROLS (filter/sort) -->
+<div class="fRow" style="margin-top:12px; gap:10px; align-items:flex-end;">
+  <div class="half field" style="margin-top:0;">
+    <label for="finFilterType">Tip</label>
+    <select id="finFilterType">
+      <option value="svi">Svi</option>
+      <option value="prihod">Prihod</option>
+      <option value="rashod">Rashod</option>
+    </select>
+  </div>
+
+  <div class="half field" style="margin-top:0;">
+    <label for="finFilterCategory">Kategorija</label>
+    <select id="finFilterCategory">
+      <option value="">Sve</option>
+      <option value="hitna intervencija">Hitna intervencija</option>
+      <option value="tekuće održavanje">Tekuće održavanje</option>
+      <option value="lift">Lift</option>
+      <option value="ostalo">Ostalo</option>
+      <option value="drugo">Drugo</option>
+    </select>
+  </div>
+
+  <div class="half field" style="margin-top:0;">
+    <label for="finSortBy">Sortiranje</label>
+    <select id="finSortBy">
+      <option value="date-desc">Datum ↓</option>
+      <option value="date-asc">Datum ↑</option>
+      <option value="amount-desc">Iznos ↓</option>
+      <option value="amount-asc">Iznos ↑</option>
+    </select>
+  </div>
+
+  <div class="grow field" style="margin-top:0;">
+    <label for="finLocalSearch">Pretraga</label>
+    <input id="finLocalSearch" type="text" placeholder="npr. lift, servis, 120000...">
+  </div>
+</div>
+<!-- /FIN HEADER CONTROLS -->
+
+          
           <div class="smallText">
             Pregled finansijskih promena i dokumenata.
           </div>
@@ -1230,6 +1271,11 @@ let CURRENT_QUERY = "";
   let EDIT_FIN_ID = null;          
 let EDIT_FIN_CREATED_AT = null;  
 let EDIT_DOCS = [];              
+
+  // ===== FINANSIJE: filter/sort state =====
+let FIN_FILTER_TYPE = "svi";        // "svi" | "prihod" | "rashod"
+let FIN_FILTER_CATEGORY = "";       // npr. "lift"
+let FIN_SORT_BY = "date-desc";      // "date-desc" | "date-asc" | "amount-desc" | "amount-asc"
 
 
 /* ---------- helpers ---------- */
@@ -2807,6 +2853,7 @@ function updateHomeSummary(){
 
 </body>
 </html>
+
 
 
 
