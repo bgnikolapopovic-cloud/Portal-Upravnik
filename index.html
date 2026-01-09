@@ -878,6 +878,12 @@ body.sidebar-open .hamburger{
                   Ukupna velicina fajlova po unosu max 10MB. Klik na fajl u listi = otvori PDF.
                 </div>
               </div>
+<div class="grow" id="existingDocsWrap" style="display:none; margin-top:6px;">
+  <div class="smallText" style="margin-top:6px;">
+    Postojeći dokumenti (klik “Ukloni” da izbrišeš iz stavke):
+  </div>
+  <ul class="fileList" id="existingDocsList"></ul>
+</div>
 
               <div class="grow" style="display:flex; gap:10px; margin-top:6px;">
                 <button class="btn btnPrimary" id="saveFinanceBtn" type="button">Sacuvaj</button>
@@ -1181,6 +1187,10 @@ const fFirmNew = document.getElementById("fFirmNew");
 const fDesc = document.getElementById("fDesc");
 const fAmount = document.getElementById("fAmount");
 const fDocs = document.getElementById("fDocs");
+  
+  const existingDocsWrap = document.getElementById("existingDocsWrap");
+const existingDocsList = document.getElementById("existingDocsList");
+
 
 /* forum elements */
 const forumList = document.getElementById("forumList");
@@ -1216,6 +1226,11 @@ const homeForum = document.getElementById("homeForum");
 
 let CURRENT_SESSION = null;
 let CURRENT_QUERY = "";
+
+  let EDIT_FIN_ID = null;          
+let EDIT_FIN_CREATED_AT = null;  
+let EDIT_DOCS = [];              
+
 
 /* ---------- helpers ---------- */
 function setMode(mode){
@@ -2623,6 +2638,7 @@ function updateHomeSummary(){
 
 </body>
 </html>
+
 
 
 
