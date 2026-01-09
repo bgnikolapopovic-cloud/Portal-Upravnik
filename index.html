@@ -1228,6 +1228,13 @@ const fFirmNew = document.getElementById("fFirmNew");
 const fDesc = document.getElementById("fDesc");
 const fAmount = document.getElementById("fAmount");
 const fDocs = document.getElementById("fDocs");
+
+/* finance header controls */
+const finFilterType = document.getElementById("finFilterType");
+const finFilterCategory = document.getElementById("finFilterCategory");
+const finSortBy = document.getElementById("finSortBy");
+const finLocalSearch = document.getElementById("finLocalSearch");
+
   
   const existingDocsWrap = document.getElementById("existingDocsWrap");
 const existingDocsList = document.getElementById("existingDocsList");
@@ -1685,8 +1692,33 @@ function financeMatches(item, q){
   return includesQuery(hay, q);
 }
 function renderFinanceList(bid, q){
-  const itemsAll = loadItems(bid).slice().sort((a,b) => (b.date||"").localeCompare(a.date||""));
-  const items = q ? itemsAll.filter(it => financeMatches(it, q)) : itemsAll;
+  
+  let items = loadItems(bid).slice();
+
+// 1) pretraga
+if(q){
+  items = items.filter(it => financeMatches(it, q));
+}
+
+// 2) filter po tipu
+if(FIN_FILTER_TYPE !== "svi"){
+  items = items.filter(it => it.type === FIN_FILTER_TYPE);
+}
+
+// 3) filter po kategoriji
+if(FIN_FILTER_CATEGORY){
+  items = items.filter(it => it.category === FIN_FILTER_CATEGORY);
+}
+
+// 4) sortiranje
+items.sort((a,b) => {
+  if(FIN_SORT_BY === "date-desc") return (b.date||"").localeCompare(a.date||"");
+  if(FIN_SORT_BY === "date-asc")  return (a.date||"").localeCompare(b.date||"");
+  if(FIN_SORT_BY === "amount-desc") return Number(b.amount||0) - Number(a.amount||0);
+  if(FIN_SORT_BY === "amount-asc")  return Number(a.amount||0) - Number(b.amount||0);
+  return 0;
+});
+
 
   financeList.innerHTML = "";
 
@@ -1778,6 +1810,49 @@ function renderFinanceList(bid, q){
     }
 
     financeList.appendChild(li);
+  });
+}
+/* ===== FINANCE HEADER CONTROLS LISTENERS ===== */
+
+function applyFinanceControls(){
+  const bid = activeBid();
+  if(!bid) return;
+
+  // lokalna pretraga ima prednost nad globalnom
+  const localQ = (finLocalSearch?.value || "").trim();
+  const q = localQ || CURRENT_QUERY;
+
+  renderFinanceList(bid, q);
+}
+
+// tip
+if(finFilterType){
+  finFilterType.addEventListener("change", (e) => {
+    FIN_FILTER_TYPE = e.target.value;
+    applyFinanceControls();
+  });
+}
+
+// kategorija
+if(finFilterCategory){
+  finFilterCategory.addEventListener("change", (e) => {
+    FIN_FILTER_CATEGORY = e.target.value;
+    applyFinanceControls();
+  });
+}
+
+// sortiranje
+if(finSortBy){
+  finSortBy.addEventListener("change", (e) => {
+    FIN_SORT_BY = e.target.value;
+    applyFinanceControls();
+  });
+}
+
+// lokalna pretraga
+if(finLocalSearch){
+  finLocalSearch.addEventListener("input", () => {
+    applyFinanceControls();
   });
 }
 
@@ -2853,6 +2928,7 @@ function updateHomeSummary(){
 
 </body>
 </html>
+
 
 
 
