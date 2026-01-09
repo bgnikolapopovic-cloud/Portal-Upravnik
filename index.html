@@ -1695,6 +1695,23 @@ function renderFinanceList(bid, q){
       actions.style.display = "flex";
       actions.style.gap = "10px";
       actions.style.flexWrap = "wrap";
+      const edit = document.createElement("button");
+      edit.className = "btn btnGhost";
+      edit.type = "button";
+      edit.textContent = "Izmeni";
+      edit.disabled = !canEdit(item);
+
+      edit.addEventListener("click", () => {
+        if(!canEdit(item)){
+          alert("Izmena je moguća samo u roku od 30 dana.");
+          return;
+        }
+        renderFirmSelect(bid);
+        setFinanceEditMode(item);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+
+      actions.appendChild(edit);
 
       const del = document.createElement("button");
       del.className = "btn btnGhost";
@@ -1739,37 +1756,142 @@ function financeInit(bid){
   renderFirmSelect(bid);
   renderFinanceList(bid, CURRENT_QUERY);
   resetFinanceForm();
+  clearFinanceEditMode(); // ✅ bitno: svaki put kad inicijalizuješ, izlazi iz edit moda
   if(financeFormWrap) financeFormWrap.style.display = "none";
-  refreshBalanceUI(bid); /* ✅ IZMENJENO */
+  refreshBalanceUI(bid);
 }
 
+/* ===== EDIT MODE HELPERS ===== */
+function clearFinanceEditMode(){
+  EDIT_FIN_ID = null;
+  EDIT_FIN_CREATED_AT = null;
+  EDIT_DOCS = [];
+
+  if(existingDocsWrap) existingDocsWrap.style.display = "none";
+  if(existingDocsList) existingDocsList.innerHTML = "";
+
+  if(saveFinanceBtn) saveFinanceBtn.textContent = "Sacuvaj";
+}
+
+function renderExistingDocs(){
+  if(!existingDocsWrap || !existingDocsList) return;
+
+  if(!EDIT_DOCS || !EDIT_DOCS.length){
+    existingDocsWrap.style.display = "none";
+    existingDocsList.innerHTML = "";
+    return;
+  }
+
+  existingDocsWrap.style.display = "block";
+  existingDocsList.innerHTML = "";
+
+  EDIT_DOCS.forEach((d, idx) => {
+    const li = document.createElement("li");
+
+    const left = document.createElement("span");
+    left.textContent = d.name;
+
+    const right = document.createElement("small");
+    right.style.display = "flex";
+    right.style.gap = "10px";
+    right.style.alignItems = "center";
+
+    const size = document.createElement("span");
+    size.textContent = `${d.sizeKB} KB`;
+
+    const rm = document.createElement("button");
+    rm.type = "button";
+    rm.className = "btn btnGhost";
+    rm.textContent = "Ukloni";
+    rm.style.padding = "8px 12px";
+    rm.style.borderRadius = "12px";
+
+    rm.addEventListener("click", (e) => {
+      e.preventDefault();
+      EDIT_DOCS.splice(idx, 1);
+      renderExistingDocs();
+    });
+
+    right.appendChild(size);
+    right.appendChild(rm);
+
+    li.appendChild(left);
+    li.appendChild(right);
+    existingDocsList.appendChild(li);
+  });
+}
+
+function setFinanceEditMode(item){
+  EDIT_FIN_ID = item.id;
+  EDIT_FIN_CREATED_AT = item.createdAt;
+  EDIT_DOCS = (item.docs || []).map(d => ({ ...d }));
+
+  if(financeFormWrap) financeFormWrap.style.display = "block";
+  if(saveFinanceBtn) saveFinanceBtn.textContent = "Sačuvaj izmene";
+
+  // popuni formu
+  fDate.value = item.date || "";
+  fType.value = item.type || "rashod";
+  fCategory.value = item.category || "tekuće održavanje";
+  fDesc.value = item.desc || "";
+  fAmount.value = String(item.amount ?? "");
+  fFirmNew.value = "";
+
+  // dropdown firm
+  const bid = activeBid();
+  if(bid) renderFirmSelect(bid);
+  fFirm.value = item.firm || "";
+
+  // reset upload input
+  if(fDocs) fDocs.value = "";
+
+  renderExistingDocs();
+}
+
+/* ===== UI LISTENERS ===== */
 if(addFinanceBtn){
   addFinanceBtn.addEventListener("click", () => {
-    financeFormWrap.style.display =
-      (financeFormWrap.style.display === "none" || financeFormWrap.style.display === "") ? "block" : "none";
-    if(financeFormWrap.style.display === "block") resetFinanceForm();
+    if(!financeFormWrap) return;
+
+    const open = (financeFormWrap.style.display === "none" || financeFormWrap.style.display === "");
+    financeFormWrap.style.display = open ? "block" : "none";
+
+    if(open){
+      // ako otvaramo formu ručno za NOVU stavku
+      resetFinanceForm();
+      clearFinanceEditMode();
+      const bid = activeBid();
+      if(bid) renderFirmSelect(bid);
+    }
   });
 }
+
 if(cancelFinanceBtn){
   cancelFinanceBtn.addEventListener("click", () => {
-    financeFormWrap.style.display = "none";
+    if(financeFormWrap) financeFormWrap.style.display = "none";
     resetFinanceForm();
+    clearFinanceEditMode(); // ✅ izlaz iz edit moda
   });
 }
+
 if(saveFinanceBtn){
   saveFinanceBtn.addEventListener("click", async () => {
-    financeError.style.display = "none";
+    if(financeError) financeError.style.display = "none";
 
     const bid = activeBid();
     if(!bid){
-      financeError.textContent = "Nije izabrana zgrada.";
-      financeError.style.display = "block";
+      if(financeError){
+        financeError.textContent = "Nije izabrana zgrada.";
+        financeError.style.display = "block";
+      }
       return;
     }
 
     if(!CURRENT_SESSION || CURRENT_SESSION.role !== "upravnik"){
-      financeError.textContent = "Nemate dozvolu.";
-      financeError.style.display = "block";
+      if(financeError){
+        financeError.textContent = "Nemate dozvolu.";
+        financeError.style.display = "block";
+      }
       return;
     }
 
@@ -1784,20 +1906,26 @@ if(saveFinanceBtn){
     const amount = Number((fAmount.value||"").trim());
 
     if(!date || !type || !category || !desc || !Number.isFinite(amount)){
-      financeError.textContent = "Greska: popuni obavezna polja (datum, opis, iznos).";
-      financeError.style.display = "block";
+      if(financeError){
+        financeError.textContent = "Greska: popuni obavezna polja (datum, opis, iznos).";
+        financeError.style.display = "block";
+      }
       return;
     }
 
-    const files = [...(fDocs.files || [])];
+    // upload limit
+    const files = [...(fDocs?.files || [])];
     const total = totalFilesSizeBytes(files);
-    const LIMIT = 10 * 1024 * 1024; // 10MB
+    const LIMIT = 10 * 1024 * 1024;
     if(total > LIMIT){
-      financeError.textContent = "Greska: ukupna velicina fajlova prelazi 10MB.";
-      financeError.style.display = "block";
+      if(financeError){
+        financeError.textContent = "Greska: ukupna velicina fajlova prelazi 10MB.";
+        financeError.style.display = "block";
+      }
       return;
     }
 
+    // dodaj novu firmu u listu ako je uneta
     if(firmNew){
       const firms = loadFirms(bid);
       if(!firms.includes(firmNew)){
@@ -1807,11 +1935,12 @@ if(saveFinanceBtn){
       renderFirmSelect(bid);
     }
 
-    const docs = [];
+    // procitaj nove upload fajlove
+    const newDocs = [];
     try{
       for(const f of files){
         const dataURL = await fileToDataURL(f);
-        docs.push({
+        newDocs.push({
           name: f.name,
           sizeKB: Math.ceil((f.size||0)/1024),
           mime: f.type || "application/pdf",
@@ -1819,41 +1948,81 @@ if(saveFinanceBtn){
         });
       }
     }catch(err){
-      financeError.textContent = "Greska: ne mogu da procitam fajl (FileReader).";
-      financeError.style.display = "block";
+      if(financeError){
+        financeError.textContent = "Greska: ne mogu da procitam fajl (FileReader).";
+        financeError.style.display = "block";
+      }
       return;
     }
 
-    const item = {
-      id: cryptoRandom(),
-      createdAt: Date.now(),
-      date,
-      type,
-      category,
-      firm,
-      desc,
-      amount,
-      docs
-    };
-
+    // snimi CREATE ili UPDATE
     try{
       const items = loadItems(bid);
-      items.push(item);
-      saveItems(bid, items);
+
+      if(EDIT_FIN_ID){
+        const idx = items.findIndex(x => x.id === EDIT_FIN_ID);
+        if(idx === -1){
+          if(financeError){
+            financeError.textContent = "Greska: stavka za izmenu nije pronađena.";
+            financeError.style.display = "block";
+          }
+          return;
+        }
+
+        const updated = {
+          ...items[idx],
+          id: EDIT_FIN_ID,
+          createdAt: EDIT_FIN_CREATED_AT ?? items[idx].createdAt,
+          date,
+          type,
+          category,
+          firm,
+          desc,
+          amount,
+          docs: [...(EDIT_DOCS || []), ...newDocs] // ✅ postojeći (posle uklanjanja) + novi
+        };
+
+        items[idx] = updated;
+        saveItems(bid, items);
+
+      }else{
+        const item = {
+          id: cryptoRandom(),
+          createdAt: Date.now(),
+          date,
+          type,
+          category,
+          firm,
+          desc,
+          amount,
+          docs: newDocs
+        };
+
+        items.push(item);
+        saveItems(bid, items);
+      }
+
     }catch(e){
-      financeError.textContent = "Greska: localStorage limit (PDF je prevelik). Probaj manji PDF.";
-      financeError.style.display = "block";
+      if(financeError){
+        financeError.textContent = "Greska: localStorage limit (PDF je prevelik). Probaj manji PDF.";
+        financeError.style.display = "block";
+      }
       return;
     }
 
-    financeFormWrap.style.display = "none";
+    // reset UI
+    if(financeFormWrap) financeFormWrap.style.display = "none";
     resetFinanceForm();
+    clearFinanceEditMode();
+
+    // rerender
     renderFinanceList(bid, CURRENT_QUERY);
     renderSearchDropdown(CURRENT_QUERY);
     updateHomeSummary();
-    refreshBalanceUI(bid); /* ✅ IZMENJENO */
+    refreshBalanceUI(bid);
   });
 }
+
 
 /* ================= OGLASNA ================= */
 function loadBoardPosts(bid){
@@ -2638,6 +2807,7 @@ function updateHomeSummary(){
 
 </body>
 </html>
+
 
 
 
