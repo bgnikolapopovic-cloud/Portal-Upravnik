@@ -931,6 +931,62 @@ body.sidebar-open .hamburger{
   .statsCard[style*="grid-column"]{ grid-column:auto !important; }
 }
 
+  /* =========================
+   CUSTOM MONTH PICKER (SR)
+========================= */
+
+.monthPick{
+  margin-top:12px;
+}
+
+.monthPickRow{
+  display:flex;
+  gap:10px;
+  align-items:flex-end;
+  flex-wrap:wrap;
+}
+
+.mpLabel{
+  display:block;
+  font-size:12px;
+  font-weight:800;
+  color:rgba(15,23,42,.72);
+  margin-bottom:8px;
+  letter-spacing:.02em;
+}
+
+.mpSelect{
+  flex:1 1 160px;
+  min-width:160px;
+  padding:12px 12px;
+  border-radius:16px;
+  border:1px solid rgba(15,23,42,.18);
+  background:rgba(255,255,255,.78);
+  color:rgba(15,23,42,.92);
+  font-weight:800;
+  outline:none;
+  box-shadow:0 10px 26px rgba(2,6,23,.06);
+}
+
+.mpSelect:focus{
+  border-color:rgba(29, 78, 216, .45);
+  box-shadow:0 0 0 4px rgba(29, 78, 216, .18);
+}
+
+.mpBtn{
+  padding:12px 14px;
+  border-radius:16px;
+  font-weight:900;
+  white-space:nowrap;
+}
+
+.mpHint{
+  margin-top:10px;
+  font-size:12px;
+  font-weight:800;
+  color:rgba(15,23,42,.65);
+}
+
   
 </style>
 </head>
@@ -1438,8 +1494,42 @@ body.sidebar-open .hamburger{
 <div data-role="upravnik" style="margin-top:12px;">
   <div class="half field" style="margin-top:0; min-width:220px;">
     <label for="uplMonthPick">Mesec (obračun upload-a)</label>
-    <input id="uplMonthPick" type="month">
+   <div class="monthPick">
+  <label class="mpLabel" for="uplMonthMonth">Mesec (obračun upload-a)</label>
+
+  <div class="monthPickRow">
+    <select id="uplMonthMonth" class="mpSelect">
+      <option value="">Mesec</option>
+      <option value="01">Januar</option>
+      <option value="02">Februar</option>
+      <option value="03">Mart</option>
+      <option value="04">April</option>
+      <option value="05">Maj</option>
+      <option value="06">Jun</option>
+      <option value="07">Jul</option>
+      <option value="08">Avgust</option>
+      <option value="09">Septembar</option>
+      <option value="10">Oktobar</option>
+      <option value="11">Novembar</option>
+      <option value="12">Decembar</option>
+    </select>
+
+    <select id="uplMonthYear" class="mpSelect">
+      <option value="">Godina</option>
+      <!-- JS automatski puni -->
+    </select>
+
+    <button type="button" class="btn btnPrimary mpBtn" id="uplMonthApply">
+      Primeni
+    </button>
   </div>
+
+  <!-- hidden value kao YYYY-MM -->
+  <input type="hidden" id="uplMonthPick" value="">
+
+  <div class="mpHint" id="uplMonthHint">Izaberi mesec i godinu</div>
+</div>
+
 
   <div class="statsGrid">
     <div class="statsCard">
@@ -3441,6 +3531,70 @@ function updateHomeSummary(){
     setMode("login");
   }
 })();
+
+/* =========================
+   STATISTIKA - SR mesec/godina picker
+   (radi sa hidden input #uplMonthPick kao YYYY-MM)
+========================= */
+(function initSrMonthPicker(){
+  const monthSel = document.getElementById("uplMonthMonth");
+  const yearSel  = document.getElementById("uplMonthYear");
+  const applyBtn = document.getElementById("uplMonthApply");
+  const hidden   = document.getElementById("uplMonthPick");
+  const hint     = document.getElementById("uplMonthHint");
+
+  if(!monthSel || !yearSel || !applyBtn || !hidden) return;
+
+  // 1) Napuni godine (npr poslednjih 5 + sledećih 1)
+  const now = new Date();
+  const thisYear = now.getFullYear();
+  const startY = thisYear - 5;
+  const endY   = thisYear + 1;
+
+  // Ako select godina nema opcije ili nema dovoljno, popuni
+  if (yearSel.options.length <= 1) {
+    yearSel.innerHTML = '<option value="">Godina</option>';
+    for(let y = endY; y >= startY; y--){
+      const opt = document.createElement("option");
+      opt.value = String(y);
+      opt.textContent = String(y);
+      yearSel.appendChild(opt);
+    }
+  }
+
+  // 2) Postavi default na trenutni mesec/godinu
+  const mm = String(now.getMonth() + 1).padStart(2,"0");
+  monthSel.value = mm;
+  yearSel.value = String(thisYear);
+
+  function updateHiddenAndTrigger(){
+    const m = monthSel.value;
+    const y = yearSel.value;
+
+    if(!m || !y){
+      if(hint) hint.textContent = "Izaberi mesec i godinu";
+      return;
+    }
+
+    hidden.value = `${y}-${m}`;
+
+    // okini change event da postojeći kod preradi statistiku
+    hidden.dispatchEvent(new Event("change", { bubbles:true }));
+
+    if(hint) hint.textContent = `Izabrano: ${m}.${y}`;
+  }
+
+  applyBtn.addEventListener("click", updateHiddenAndTrigger);
+
+  // opcionalno: kada promeni mesec/godinu odmah upiši hint
+  monthSel.addEventListener("change", () => { if(hint) hint.textContent = "Klikni Primeni"; });
+  yearSel.addEventListener("change", () => { if(hint) hint.textContent = "Klikni Primeni"; });
+
+  // inicijalno pokreni odmah
+  updateHiddenAndTrigger();
+})();
+
+  
 </script>
 
 <!-- Supabase SDK -->
@@ -3462,6 +3616,7 @@ function updateHomeSummary(){
 
 </body>
 </html>
+
 
 
 
