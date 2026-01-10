@@ -608,6 +608,13 @@ body.sidebar-open .hamburger{
 }
 .pickBtn .t{font-weight:900;}
 .pickBtn .s{margin-top:4px; font-weight:800; color:rgba(15,23,42,.62); font-size:12px; line-height:1.3;}
+
+  /* Finansije: stavke koje imaju uploadovane dokumente -> PLAVO */
+#financeList li.hasDocs{
+  color:#2563eb; /* plava */
+  font-weight:900;
+}
+
 </style>
 </head>
 
@@ -1729,6 +1736,12 @@ items.sort((a,b) => {
   items.forEach(item => {
     const li = document.createElement("li");
     li.dataset.sid = "fin:" + item.id;
+
+    // ako stavka ima upload dokumente -> oboji plavo
+if(item.docs && item.docs.length){
+  li.classList.add("hasDocs");
+}
+
 
     const firmPart = item.firm ? (" — " + item.firm) : "";
     const editTag = (CURRENT_SESSION && CURRENT_SESSION.role === "upravnik")
@@ -2932,6 +2945,7 @@ function updateHomeSummary(){
 
 </body>
 </html>
+
 
 
 
