@@ -691,6 +691,92 @@ body.sidebar-open .hamburger{
   font-weight:900;
 }
 
+/* FINANSIJE: samo PDF fajlovi (donji deo) da budu PLAVI */
+#financeList .fileList li,
+#financeList .fileList li span,
+#financeList .fileList li small{
+  color:#1d4ed8;
+  font-weight:900;
+}
+
+/* ===== STATISTIKA – uredjen layout ===== */
+.statsGrid{
+  margin-top:12px;
+  display:grid;
+  grid-template-columns: 1fr;
+  gap:12px;
+}
+
+@media(min-width:900px){
+  .statsGrid{
+    grid-template-columns: 1fr 1fr;
+  }
+  .statsGrid .span2{ grid-column: 1 / -1; }
+}
+
+.statsCard{
+  background: rgba(255,255,255,.72);
+  border: 1px solid rgba(15,23,42,.14);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  padding: 14px;
+}
+
+.statsHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.statsTitle{
+  font-weight: 900;
+  letter-spacing:.08em;
+  text-transform: uppercase;
+  font-size: 13px;
+  opacity:.85;
+}
+
+.statsRow{
+  display:grid;
+  grid-template-columns: 1fr auto;
+  gap:10px;
+  align-items:center;
+  padding:10px 0;
+  border-top:1px solid rgba(15,23,42,.08);
+}
+
+.statsRow:first-of-type{ border-top:none; padding-top:0; }
+
+.statsLabel{
+  font-weight:800;
+  color: rgba(15,23,42,.78);
+  font-size: 13px;
+}
+
+.statsValue{
+  font-weight:900;
+  font-size: 14px;
+  padding:6px 10px;
+  border-radius:999px;
+  background: rgba(15,23,42,.06);
+  border: 1px solid rgba(15,23,42,.10);
+  white-space:nowrap;
+}
+
+.statsPicker{
+  display:flex;
+  gap:10px;
+  align-items:flex-end;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+
+.statsPicker .field{ margin-top:0; }
+.statsPicker .field input{ border-radius: 16px; }
+
+  
   /* ====== DARKEN WHITE CARDS (soft, for eyes) ====== */
 :root{
   --glass: rgba(241,245,249,.78); /* manje belo */
@@ -3265,6 +3351,7 @@ function updateHomeSummary(){
 
 </body>
 </html>
+
 
 
 
