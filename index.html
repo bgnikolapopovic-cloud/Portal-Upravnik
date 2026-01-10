@@ -927,10 +927,10 @@ body.sidebar-open .hamburger{
               </div>
 
               <div class="grow field">
-                <label for="fDocs">Dokumenti (vise fajlova)</label>
+                <label for="fDocs">Dokumenti (više fajlova)</label>
                 <input id="fDocs" type="file" multiple accept="application/pdf">
                 <div class="smallText" style="margin-top:6px;">
-                  Ukupna velicina fajlova po unosu max 10MB. Klik na fajl u listi = otvori PDF.
+                  Ukupna veličina fajlova po unosu max 10MB. Klik na fajl u listi = otvori PDF.
                 </div>
               </div>
 <div class="grow" id="existingDocsWrap" style="display:none; margin-top:6px;">
@@ -941,7 +941,7 @@ body.sidebar-open .hamburger{
 </div>
 
               <div class="grow" style="display:flex; gap:10px; margin-top:6px;">
-                <button class="btn btnPrimary" id="saveFinanceBtn" type="button">Sacuvaj</button>
+                <button class="btn btnPrimary" id="saveFinanceBtn" type="button">Sačuvaj</button>
                 <button class="btn btnGhost" id="cancelFinanceBtn" type="button">Otkazi</button>
               </div>
 
@@ -997,7 +997,7 @@ body.sidebar-open .hamburger{
               </div>
 
               <div class="grow field">
-                <label for="bDocs">PDF dokumenta (vise fajlova)</label>
+                <label for="bDocs">PDF dokumenta (više fajlova)</label>
                 <input id="bDocs" type="file" multiple accept="application/pdf">
                 <div class="smallText" style="margin-top:6px;">
                   Ukupna velicina fajlova po objavi max 10MB.
@@ -1119,7 +1119,7 @@ body.sidebar-open .hamburger{
    PRINCIP RADA (front-only priprema)
    - svaka zgrada je "tenant" (nezavisna stambena zajednica)
    - stanari dobijaju kartice: username + lozinka (po stanu)
-   - upravnik moze voditi vise zgrada -> posle logina bira zgradu
+   - upravnik moze voditi više zgrada -> posle logina bira zgradu
    - sve se cuva u localStorage po zgradi (kasnije Supabase)
    ========================================================= */
 
@@ -1385,7 +1385,7 @@ function renderBuildingUI(){
   if(openingBalanceInput) openingBalanceInput.value = String(opening);
   if(openingBalanceInputAdmin) openingBalanceInputAdmin.value = String(opening);
 
-  // "Promeni zgradu" samo ako ima vise zgrada
+  // "Promeni zgradu" samo ako ima više zgrada
   const multi = (CURRENT_SESSION?.buildings || []).length > 1 && (CURRENT_SESSION.role !== "stanar");
   switchBuildingBtn.style.display = multi ? "" : "none";
 }
@@ -1414,7 +1414,7 @@ function attemptLogin(username, pass){
     return;
   }
 
-  // upravnik/admin: ako vise zgrada -> izbor, ako jedna -> direktno
+  // upravnik/admin: ako više zgrada -> izbor, ako jedna -> direktno
   if((CURRENT_SESSION.buildings || []).length > 1){
     saveSession(CURRENT_SESSION);
     showBuildingSelect();
@@ -1913,7 +1913,7 @@ function clearFinanceEditMode(){
   if(existingDocsWrap) existingDocsWrap.style.display = "none";
   if(existingDocsList) existingDocsList.innerHTML = "";
 
-  if(saveFinanceBtn) saveFinanceBtn.textContent = "Sacuvaj";
+  if(saveFinanceBtn) saveFinanceBtn.textContent = "Sačuvaj";
 }
 
 function renderExistingDocs(){
@@ -2950,6 +2950,7 @@ function updateHomeSummary(){
 
 </body>
 </html>
+
 
 
 
