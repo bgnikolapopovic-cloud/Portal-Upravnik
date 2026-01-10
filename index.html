@@ -818,6 +818,51 @@ body.sidebar-open .hamburger{
             Pregled finansijskih promena i dokumenata.
           </div>
 
+<!-- FINANCE HEADER: local search + filter + sort -->
+<div class="fRow" style="margin-top:14px; align-items:flex-end;">
+  <div class="grow field" style="margin-top:0;">
+    <label for="finLocalSearch">Pretraga (samo finansije)</label>
+    <input id="finLocalSearch" type="text" placeholder="npr. lift / Servis / 120000 / 2026-01">
+  </div>
+
+  <div class="half field" style="margin-top:0;">
+    <label for="finFilterType">Tip</label>
+    <select id="finFilterType">
+      <option value="svi">Svi</option>
+      <option value="prihod">Prihod</option>
+      <option value="rashod">Rashod</option>
+    </select>
+  </div>
+
+  <div class="half field" style="margin-top:0;">
+    <label for="finFilterCategory">Kategorija</label>
+    <select id="finFilterCategory">
+      <option value="">Sve</option>
+      <option value="hitna intervencija">Hitna intervencija</option>
+      <option value="tekuće održavanje">Tekuće održavanje</option>
+      <option value="lift">Lift</option>
+      <option value="ostalo">Ostalo</option>
+      <option value="drugo">Drugo</option>
+    </select>
+  </div>
+
+  <div class="half field" style="margin-top:0;">
+    <label for="finSortBy">Sortiranje</label>
+    <select id="finSortBy">
+      <option value="date-desc">Datum (novo → staro)</option>
+      <option value="date-asc">Datum (staro → novo)</option>
+      <option value="amount-desc">Iznos (veći → manji)</option>
+      <option value="amount-asc">Iznos (manji → veći)</option>
+    </select>
+  </div>
+
+  <div style="display:flex; gap:10px;">
+    <button class="btn btnGhost" id="finClearBtn" type="button" style="flex:unset;">Reset</button>
+  </div>
+</div>
+<!-- /FINANCE HEADER -->
+
+          
           <!-- ✅ DODATO: POCETNO STANJE (samo admin/upravnik) -->
           <div class="smallText" data-role="upravnik" style="margin-top:12px;">
             <div class="fRow">
@@ -1229,12 +1274,12 @@ const fDesc = document.getElementById("fDesc");
 const fAmount = document.getElementById("fAmount");
 const fDocs = document.getElementById("fDocs");
 
-/* finance header controls */
+  /* finance header controls */
+const finLocalSearch = document.getElementById("finLocalSearch");
 const finFilterType = document.getElementById("finFilterType");
 const finFilterCategory = document.getElementById("finFilterCategory");
 const finSortBy = document.getElementById("finSortBy");
-const finLocalSearch = document.getElementById("finLocalSearch");
-
+const finClearBtn = document.getElementById("finClearBtn");
   
   const existingDocsWrap = document.getElementById("existingDocsWrap");
 const existingDocsList = document.getElementById("existingDocsList");
@@ -2928,6 +2973,7 @@ function updateHomeSummary(){
 
 </body>
 </html>
+
 
 
 
