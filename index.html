@@ -618,7 +618,6 @@ body.sidebar-open .hamburger{
   font-weight:900;
 }
 
-}
 
 </style>
 </head>
@@ -829,6 +828,43 @@ body.sidebar-open .hamburger{
           <div class="smallText">
             Pregled finansijskih promena i dokumenata.
           </div>
+
+          <!-- ✅ MESEČNI UPLOAD (Finansije + Oglasna) -->
+<div data-role="upravnik" class="fRow" style="margin-top:12px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+  <div class="half field" style="margin-top:0; min-width:220px;">
+    <label for="uplMonthPick">Mesec (obračun upload-a)</label>
+    <input id="uplMonthPick" type="month">
+  </div>
+
+  <span class="badge">Finansije unosa: <b id="uplFinEntries">0</b></span>
+  <span class="badge">Finansije fajlova: <b id="uplFinFiles">0</b></span>
+  <span class="badge">Finansije MB: <b id="uplFinMB">0.00</b></span>
+
+  <span class="badge">Oglasna objava: <b id="uplBrdEntries">0</b></span>
+  <span class="badge">Oglasna fajlova: <b id="uplBrdFiles">0</b></span>
+  <span class="badge">Oglasna MB: <b id="uplBrdMB">0.00</b></span>
+
+  <span class="badge">UKUPNO fajlova: <b id="uplTotalFiles">0</b></span>
+  <span class="badge">UKUPNO MB: <b id="uplTotalMB">0.00</b></span>
+</div>
+
+<div data-role="admin" class="fRow" style="margin-top:12px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+  <div class="half field" style="margin-top:0; min-width:220px;">
+    <label for="uplMonthPickAdmin">Mesec (obračun upload-a)</label>
+    <input id="uplMonthPickAdmin" type="month">
+  </div>
+
+  <span class="badge">Finansije unosa: <b id="uplFinEntriesA">0</b></span>
+  <span class="badge">Finansije fajlova: <b id="uplFinFilesA">0</b></span>
+  <span class="badge">Finansije MB: <b id="uplFinMBA">0.00</b></span>
+
+  <span class="badge">Oglasna objava: <b id="uplBrdEntriesA">0</b></span>
+  <span class="badge">Oglasna fajlova: <b id="uplBrdFilesA">0</b></span>
+  <span class="badge">Oglasna MB: <b id="uplBrdMBA">0.00</b></span>
+
+  <span class="badge">UKUPNO fajlova: <b id="uplTotalFilesA">0</b></span>
+  <span class="badge">UKUPNO MB: <b id="uplTotalMBA">0.00</b></span>
+</div>
 
 
           
@@ -1236,6 +1272,33 @@ const saveFinanceBtn = document.getElementById("saveFinanceBtn");
 const cancelFinanceBtn = document.getElementById("cancelFinanceBtn");
 const financeError = document.getElementById("financeError");
 
+/* ✅ MESEČNI UPLOAD (finansije + oglasna) */
+const uplMonthPick = document.getElementById("uplMonthPick");
+const uplFinEntries = document.getElementById("uplFinEntries");
+const uplFinFiles = document.getElementById("uplFinFiles");
+const uplFinMB = document.getElementById("uplFinMB");
+
+const uplBrdEntries = document.getElementById("uplBrdEntries");
+const uplBrdFiles = document.getElementById("uplBrdFiles");
+const uplBrdMB = document.getElementById("uplBrdMB");
+
+const uplTotalFiles = document.getElementById("uplTotalFiles");
+const uplTotalMB = document.getElementById("uplTotalMB");
+
+/* ✅ MESEČNI UPLOAD (admin) */
+const uplMonthPickAdmin = document.getElementById("uplMonthPickAdmin");
+const uplFinEntriesA = document.getElementById("uplFinEntriesA");
+const uplFinFilesA = document.getElementById("uplFinFilesA");
+const uplFinMBA = document.getElementById("uplFinMBA");
+
+const uplBrdEntriesA = document.getElementById("uplBrdEntriesA");
+const uplBrdFilesA = document.getElementById("uplBrdFilesA");
+const uplBrdMBA = document.getElementById("uplBrdMBA");
+
+const uplTotalFilesA = document.getElementById("uplTotalFilesA");
+const uplTotalMBA = document.getElementById("uplTotalMBA");
+
+  
 const fDate = document.getElementById("fDate");
 const fType = document.getElementById("fType");
 const fCategory = document.getElementById("fCategory");
@@ -1652,6 +1715,121 @@ function totalFilesSizeBytes(fileList){
   return sum;
 }
 
+/* ================= MESEČNI UPLOAD KALKULATOR ================= */
+function bytesToMB(bytes){
+  return (Number(bytes || 0) / (1024 * 1024));
+}
+function monthFromDateStr(dateStr){
+  // očekuje "YYYY-MM-DD" → vraća "YYYY-MM"
+  if(!dateStr || typeof dateStr !== "string") return "";
+  return dateStr.slice(0,7);
+}
+function sumDocs(docs){
+  let files = 0;
+  let bytes = 0;
+  (docs || []).forEach(d => {
+    files += 1;
+    // mi čuvamo sizeKB u objektu
+    const kb = Number(d.sizeKB || 0);
+    bytes += kb * 1024;
+  });
+  return { files, bytes };
+}
+
+function calcMonthlyUploads(bid, monthYYYYMM){
+  // Finansije
+  const finAll = loadItems(bid) || [];
+  const finInMonth = finAll.filter(it => monthFromDateStr(it.date) === monthYYYYMM);
+
+  let finEntries = finInMonth.length;
+  let finFiles = 0;
+  let finBytes = 0;
+  finInMonth.forEach(it => {
+    const s = sumDocs(it.docs || []);
+    finFiles += s.files;
+    finBytes += s.bytes;
+  });
+
+  // Oglasna
+  const brdAll = loadBoardPosts(bid) || [];
+  const brdInMonth = brdAll.filter(p => monthFromDateStr(p.date) === monthYYYYMM);
+
+  let brdEntries = brdInMonth.length;
+  let brdFiles = 0;
+  let brdBytes = 0;
+  brdInMonth.forEach(p => {
+    const s = sumDocs(p.docs || []);
+    brdFiles += s.files;
+    brdBytes += s.bytes;
+  });
+
+  const totalFiles = finFiles + brdFiles;
+  const totalMB = bytesToMB(finBytes + brdBytes);
+
+  return {
+    finEntries, finFiles, finMB: bytesToMB(finBytes),
+    brdEntries, brdFiles, brdMB: bytesToMB(brdBytes),
+    totalFiles, totalMB
+  };
+}
+
+function setText(el, val){
+  if(!el) return;
+  el.textContent = String(val);
+}
+
+function updateMonthlyUploadUI(isAdmin){
+  const bid = activeBid();
+  if(!bid) return;
+
+  const picker = isAdmin ? uplMonthPickAdmin : uplMonthPick;
+  if(!picker) return;
+
+  // ako nije izabran mesec, postavi trenutni
+  if(!picker.value){
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth()+1).padStart(2,"0");
+    picker.value = `${yyyy}-${mm}`;
+  }
+
+  const m = picker.value; // "YYYY-MM"
+  const r = calcMonthlyUploads(bid, m);
+
+  if(isAdmin){
+    setText(uplFinEntriesA, r.finEntries);
+    setText(uplFinFilesA, r.finFiles);
+    setText(uplFinMBA, r.finMB.toFixed(2));
+
+    setText(uplBrdEntriesA, r.brdEntries);
+    setText(uplBrdFilesA, r.brdFiles);
+    setText(uplBrdMBA, r.brdMB.toFixed(2));
+
+    setText(uplTotalFilesA, r.totalFiles);
+    setText(uplTotalMBA, r.totalMB.toFixed(2));
+  }else{
+    setText(uplFinEntries, r.finEntries);
+    setText(uplFinFiles, r.finFiles);
+    setText(uplFinMB, r.finMB.toFixed(2));
+
+    setText(uplBrdEntries, r.brdEntries);
+    setText(uplBrdFiles, r.brdFiles);
+    setText(uplBrdMB, r.brdMB.toFixed(2));
+
+    setText(uplTotalFiles, r.totalFiles);
+    setText(uplTotalMB, r.totalMB.toFixed(2));
+  }
+}
+
+/* listenersi */
+if(uplMonthPick){
+  uplMonthPick.addEventListener("change", () => updateMonthlyUploadUI(false));
+}
+if(uplMonthPickAdmin){
+  uplMonthPickAdmin.addEventListener("change", () => updateMonthlyUploadUI(true));
+}
+
+  
 /* ✅ NOVO: racunanje stanja iz finansija */
 function computeBalanceFromFinance(bid){
   const opening = getOpeningBalance(bid);
@@ -2865,6 +3043,10 @@ function refreshAllModules(){
   renderSearchDropdown(CURRENT_QUERY);
   updateHomeSummary();
   refreshBalanceUI(bid); /* ✅ IZMENJENO */
+
+// ✅ MESEČNI UPLOAD: osveži badge-ove
+  updateMonthlyUploadUI(false);
+  updateMonthlyUploadUI(true);
 }
 
 /* ===== home summary ===== */
@@ -2950,6 +3132,7 @@ function updateHomeSummary(){
 
 </body>
 </html>
+
 
 
 
