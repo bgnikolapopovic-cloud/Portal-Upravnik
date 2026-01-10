@@ -819,7 +819,120 @@ body.sidebar-open .hamburger{
   border: 1px solid rgba(15,23,42,.18) !important;
 }
 
+  /* ===== STATISTIKA: pregledniji raspored ===== */
+.statsGrid{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap:12px;
+  margin-top:12px;
+}
+@media(min-width:900px){
+  .statsGrid{ grid-template-columns: 1fr 1fr; }
+}
 
+.statsCard{
+  background: rgba(255,255,255,.82);
+  border: 1px solid rgba(15,23,42,.12);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  padding: 14px;
+}
+
+.statsCard h4{
+  margin:0 0 10px;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: rgba(15,23,42,.75);
+}
+
+.statsRows{
+  display:grid;
+  gap:8px;
+}
+
+.statRow{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:10px 12px;
+  border-radius: 14px;
+  background: rgba(15,23,42,.05);
+  border: 1px solid rgba(15,23,42,.08);
+}
+
+.statRow .k{
+  font-weight: 800;
+  color: rgba(15,23,42,.78);
+  font-size: 13px;
+}
+.statRow .v{
+  font-weight: 900;
+  color: rgba(15,23,42,.92);
+}
+
+/* =========================
+   STATISTIKA (grid + kartice)
+   nalepi pred </style>
+========================= */
+
+.statsGrid{
+  margin-top:12px;
+  display:grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  gap:12px;
+}
+
+.statsCard{
+  background: rgba(241,245,249,.85); /* manje belo */
+  border: 1px solid rgba(15,23,42,.14);
+  border-radius: 18px;
+  padding: 14px;
+  box-shadow: 0 18px 40px rgba(2,6,23,.08);
+}
+
+.statsCard h4{
+  margin:0 0 10px 0;
+  font-size: 15px;
+  font-weight: 900;
+  color: rgba(15,23,42,.92);
+  letter-spacing:.02em;
+}
+
+.statsRows{ display:flex; flex-direction:column; gap:8px; }
+
+.statRow{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255,255,255,.55);
+  border: 1px solid rgba(15,23,42,.10);
+}
+
+.statRow .k{
+  color: rgba(15,23,42,.70);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.statRow .v{
+  color: rgba(15,23,42,.92);
+  font-weight: 900;
+  font-size: 15px;
+}
+
+/* mobilni prikaz */
+@media (max-width: 640px){
+  .statsGrid{ grid-template-columns: 1fr; }
+  .statsCard[style*="grid-column"]{ grid-column:auto !important; }
+}
+
+  
 </style>
 </head>
 
@@ -1323,41 +1436,40 @@ body.sidebar-open .hamburger{
       Mesečni obračun upload-a (Finansije + Oglasna).
     </div>
 
-    <div data-role="upravnik" class="fRow" style="margin-top:12px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
-      <div class="half field" style="margin-top:0; min-width:220px;">
-        <label for="uplMonthPick">Mesec (obračun upload-a)</label>
-        <input id="uplMonthPick" type="month">
+<div data-role="upravnik" style="margin-top:12px;">
+  <div class="half field" style="margin-top:0; min-width:220px;">
+    <label for="uplMonthPick">Mesec (obračun upload-a)</label>
+    <input id="uplMonthPick" type="month">
+  </div>
+
+  <div class="statsGrid">
+    <div class="statsCard">
+      <h4>Finansije</h4>
+      <div class="statsRows">
+        <div class="statRow"><span class="k">Unosa</span><span class="v" id="uplFinEntries">0</span></div>
+        <div class="statRow"><span class="k">Fajlova</span><span class="v" id="uplFinFiles">0</span></div>
+        <div class="statRow"><span class="k">MB</span><span class="v" id="uplFinMB">0.00</span></div>
       </div>
-
-      <span class="badge">Finansije unosa: <b id="uplFinEntries">0</b></span>
-      <span class="badge">Finansije fajlova: <b id="uplFinFiles">0</b></span>
-      <span class="badge">Finansije MB: <b id="uplFinMB">0.00</b></span>
-
-      <span class="badge">Oglasna objava: <b id="uplBrdEntries">0</b></span>
-      <span class="badge">Oglasna fajlova: <b id="uplBrdFiles">0</b></span>
-      <span class="badge">Oglasna MB: <b id="uplBrdMB">0.00</b></span>
-
-      <span class="badge">UKUPNO fajlova: <b id="uplTotalFiles">0</b></span>
-      <span class="badge">UKUPNO MB: <b id="uplTotalMB">0.00</b></span>
     </div>
 
-    <div data-role="admin" class="fRow" style="margin-top:12px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
-      <div class="half field" style="margin-top:0; min-width:220px;">
-        <label for="uplMonthPickAdmin">Mesec (obračun upload-a)</label>
-        <input id="uplMonthPickAdmin" type="month">
+    <div class="statsCard">
+      <h4>Oglasna</h4>
+      <div class="statsRows">
+        <div class="statRow"><span class="k">Objava</span><span class="v" id="uplBrdEntries">0</span></div>
+        <div class="statRow"><span class="k">Fajlova</span><span class="v" id="uplBrdFiles">0</span></div>
+        <div class="statRow"><span class="k">MB</span><span class="v" id="uplBrdMB">0.00</span></div>
       </div>
-
-      <span class="badge">Finansije unosa: <b id="uplFinEntriesA">0</b></span>
-      <span class="badge">Finansije fajlova: <b id="uplFinFilesA">0</b></span>
-      <span class="badge">Finansije MB: <b id="uplFinMBA">0.00</b></span>
-
-      <span class="badge">Oglasna objava: <b id="uplBrdEntriesA">0</b></span>
-      <span class="badge">Oglasna fajlova: <b id="uplBrdFilesA">0</b></span>
-      <span class="badge">Oglasna MB: <b id="uplBrdMBA">0.00</b></span>
-
-      <span class="badge">UKUPNO fajlova: <b id="uplTotalFilesA">0</b></span>
-      <span class="badge">UKUPNO MB: <b id="uplTotalMBA">0.00</b></span>
     </div>
+
+    <div class="statsCard" style="grid-column:1/-1;">
+      <h4>Ukupno</h4>
+      <div class="statsRows">
+        <div class="statRow"><span class="k">Ukupno fajlova</span><span class="v" id="uplTotalFiles">0</span></div>
+        <div class="statRow"><span class="k">Ukupno MB</span><span class="v" id="uplTotalMB">0.00</span></div>
+      </div>
+    </div>
+  </div>
+</div>
 
   </section>
 </section>
@@ -3351,6 +3463,7 @@ function updateHomeSummary(){
 
 </body>
 </html>
+
 
 
 
