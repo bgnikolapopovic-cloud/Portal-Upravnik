@@ -723,6 +723,12 @@ body.sidebar-open .hamburger{
       <a href="#" data-page="forum">Forum</a>
       <a href="#" data-page="regulative">Zakonske regulative</a>
       <a href="#" data-page="kontakt">Kontakt službe</a>
+      <!-- ✅ STATISTIKA (samo upravnik/admin) -->
+<a href="#" data-page="statistika" data-role="upravnik">Statistika</a>
+<a href="#" data-page="statistika" data-role="admin">Statistika</a>
+
+
+
     </nav>
   </aside>
 
@@ -828,43 +834,6 @@ body.sidebar-open .hamburger{
           <div class="smallText">
             Pregled finansijskih promena i dokumenata.
           </div>
-
-          <!-- ✅ MESEČNI UPLOAD (Finansije + Oglasna) -->
-<div data-role="upravnik" class="fRow" style="margin-top:12px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
-  <div class="half field" style="margin-top:0; min-width:220px;">
-    <label for="uplMonthPick">Mesec (obračun upload-a)</label>
-    <input id="uplMonthPick" type="month">
-  </div>
-
-  <span class="badge">Finansije unosa: <b id="uplFinEntries">0</b></span>
-  <span class="badge">Finansije fajlova: <b id="uplFinFiles">0</b></span>
-  <span class="badge">Finansije MB: <b id="uplFinMB">0.00</b></span>
-
-  <span class="badge">Oglasna objava: <b id="uplBrdEntries">0</b></span>
-  <span class="badge">Oglasna fajlova: <b id="uplBrdFiles">0</b></span>
-  <span class="badge">Oglasna MB: <b id="uplBrdMB">0.00</b></span>
-
-  <span class="badge">UKUPNO fajlova: <b id="uplTotalFiles">0</b></span>
-  <span class="badge">UKUPNO MB: <b id="uplTotalMB">0.00</b></span>
-</div>
-
-<div data-role="admin" class="fRow" style="margin-top:12px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
-  <div class="half field" style="margin-top:0; min-width:220px;">
-    <label for="uplMonthPickAdmin">Mesec (obračun upload-a)</label>
-    <input id="uplMonthPickAdmin" type="month">
-  </div>
-
-  <span class="badge">Finansije unosa: <b id="uplFinEntriesA">0</b></span>
-  <span class="badge">Finansije fajlova: <b id="uplFinFilesA">0</b></span>
-  <span class="badge">Finansije MB: <b id="uplFinMBA">0.00</b></span>
-
-  <span class="badge">Oglasna objava: <b id="uplBrdEntriesA">0</b></span>
-  <span class="badge">Oglasna fajlova: <b id="uplBrdFilesA">0</b></span>
-  <span class="badge">Oglasna MB: <b id="uplBrdMBA">0.00</b></span>
-
-  <span class="badge">UKUPNO fajlova: <b id="uplTotalFilesA">0</b></span>
-  <span class="badge">UKUPNO MB: <b id="uplTotalMBA">0.00</b></span>
-</div>
 
 
           
@@ -1145,6 +1114,54 @@ body.sidebar-open .hamburger{
         </section>
       </section>
 
+<section class="page" id="page-statistika">
+  <section class="card">
+    <h3>Statistika</h3>
+
+    <div class="smallText">
+      Mesečni obračun upload-a (Finansije + Oglasna).
+    </div>
+
+    <div data-role="upravnik" class="fRow" style="margin-top:12px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+      <div class="half field" style="margin-top:0; min-width:220px;">
+        <label for="uplMonthPick">Mesec (obračun upload-a)</label>
+        <input id="uplMonthPick" type="month">
+      </div>
+
+      <span class="badge">Finansije unosa: <b id="uplFinEntries">0</b></span>
+      <span class="badge">Finansije fajlova: <b id="uplFinFiles">0</b></span>
+      <span class="badge">Finansije MB: <b id="uplFinMB">0.00</b></span>
+
+      <span class="badge">Oglasna objava: <b id="uplBrdEntries">0</b></span>
+      <span class="badge">Oglasna fajlova: <b id="uplBrdFiles">0</b></span>
+      <span class="badge">Oglasna MB: <b id="uplBrdMB">0.00</b></span>
+
+      <span class="badge">UKUPNO fajlova: <b id="uplTotalFiles">0</b></span>
+      <span class="badge">UKUPNO MB: <b id="uplTotalMB">0.00</b></span>
+    </div>
+
+    <div data-role="admin" class="fRow" style="margin-top:12px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+      <div class="half field" style="margin-top:0; min-width:220px;">
+        <label for="uplMonthPickAdmin">Mesec (obračun upload-a)</label>
+        <input id="uplMonthPickAdmin" type="month">
+      </div>
+
+      <span class="badge">Finansije unosa: <b id="uplFinEntriesA">0</b></span>
+      <span class="badge">Finansije fajlova: <b id="uplFinFilesA">0</b></span>
+      <span class="badge">Finansije MB: <b id="uplFinMBA">0.00</b></span>
+
+      <span class="badge">Oglasna objava: <b id="uplBrdEntriesA">0</b></span>
+      <span class="badge">Oglasna fajlova: <b id="uplBrdFilesA">0</b></span>
+      <span class="badge">Oglasna MB: <b id="uplBrdMBA">0.00</b></span>
+
+      <span class="badge">UKUPNO fajlova: <b id="uplTotalFilesA">0</b></span>
+      <span class="badge">UKUPNO MB: <b id="uplTotalMBA">0.00</b></span>
+    </div>
+
+  </section>
+</section>
+
+      
     </div>
   </main>
 
@@ -1603,6 +1620,7 @@ const pages = {
   forum: document.getElementById("page-forum"),
   regulative: document.getElementById("page-regulative"),
   kontakt: document.getElementById("page-kontakt")
+  statistika: document.getElementById("page-statistika")
 };
 function showPage(name){
   Object.values(pages).forEach(p => p.classList.remove("active"));
@@ -3132,6 +3150,7 @@ function updateHomeSummary(){
 
 </body>
 </html>
+
 
 
 
