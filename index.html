@@ -945,7 +945,7 @@ body.sidebar-open .hamburger{
                 <button class="btn btnGhost" id="cancelFinanceBtn" type="button">Otkazi</button>
               </div>
 
-              <div class="error" id="financeError" style="display:none;">Greska: proveri polja i limit fajlova (10MB).</div>
+              <div class="error" id="financeError" style="display:none;">Greška: proveri polja i limit fajlova (10MB).</div>
             </div>
           </div>
 
@@ -1009,7 +1009,7 @@ body.sidebar-open .hamburger{
                 <button class="btn btnGhost" id="cancelBoardBtn" type="button">Otkazi</button>
               </div>
 
-              <div class="error" id="boardError" style="display:none;">Greska: proveri polja i limit fajlova (10MB).</div>
+              <div class="error" id="boardError" style="display:none;">Greška: proveri polja i limit fajlova (10MB).</div>
             </div>
           </div>
 
@@ -1059,7 +1059,7 @@ body.sidebar-open .hamburger{
                 <button class="btn btnGhost" id="clearProposalBtn" type="button">Ocisti</button>
               </div>
 
-              <div class="error" id="forumError" style="display:none;">Greska: proveri polja.</div>
+              <div class="error" id="forumError" style="display:none;">Greška: proveri polja.</div>
             </div>
           </div>
 
@@ -2050,7 +2050,7 @@ if(saveFinanceBtn){
 
     if(!date || !type || !category || !desc || !Number.isFinite(amount)){
       if(financeError){
-        financeError.textContent = "Greska: popuni obavezna polja (datum, opis, iznos).";
+        financeError.textContent = "Greška: popuni obavezna polja (datum, opis, iznos).";
         financeError.style.display = "block";
       }
       return;
@@ -2062,7 +2062,7 @@ if(saveFinanceBtn){
     const LIMIT = 10 * 1024 * 1024;
     if(total > LIMIT){
       if(financeError){
-        financeError.textContent = "Greska: ukupna velicina fajlova prelazi 10MB.";
+        financeError.textContent = "Greška: ukupna velicina fajlova prelazi 10MB.";
         financeError.style.display = "block";
       }
       return;
@@ -2092,7 +2092,7 @@ if(saveFinanceBtn){
       }
     }catch(err){
       if(financeError){
-        financeError.textContent = "Greska: ne mogu da procitam fajl (FileReader).";
+        financeError.textContent = "Greška: ne mogu da procitam fajl (FileReader).";
         financeError.style.display = "block";
       }
       return;
@@ -2106,7 +2106,7 @@ if(saveFinanceBtn){
         const idx = items.findIndex(x => x.id === EDIT_FIN_ID);
         if(idx === -1){
           if(financeError){
-            financeError.textContent = "Greska: stavka za izmenu nije pronađena.";
+            financeError.textContent = "Greška: stavka za izmenu nije pronađena.";
             financeError.style.display = "block";
           }
           return;
@@ -2147,7 +2147,7 @@ if(saveFinanceBtn){
 
     }catch(e){
       if(financeError){
-        financeError.textContent = "Greska: localStorage limit (PDF je prevelik). Probaj manji PDF.";
+        financeError.textContent = "Greška: localStorage limit (PDF je prevelik). Probaj manji PDF.";
         financeError.style.display = "block";
       }
       return;
@@ -2172,7 +2172,7 @@ function loadBoardPosts(bid){
   const raw = localStorage.getItem(kBoard(bid));
   if(!raw){
     const seed = [
-      { id: cryptoRandom(), createdAt: Date.now()-1000*60*60*24*3, date: "2026-01-01", title: "Akcija čiscenja", desc: "Obaveštenje o terminu akcije čiscenja", docs: [] },
+      { id: cryptoRandom(), createdAt: Date.now()-1000*60*60*24*3, date: "2026-01-01", title: "Akcija čišcenja", desc: "Obaveštenje o terminu akcije čišcenja", docs: [] },
       { id: cryptoRandom(), createdAt: Date.now()-1000*60*60*24*7, date: "2025-12-28", title: "Popravka krova", desc: "Plan radova i obaveštenje", docs: [] }
     ];
     localStorage.setItem(kBoard(bid), JSON.stringify(seed));
@@ -2320,7 +2320,7 @@ if(saveBoardBtn){
 
     if(!title || !date){
       if(boardError){
-        boardError.textContent = "Greska: naslov i datum su obavezni.";
+        boardError.textContent = "Greška: naslov i datum su obavezni.";
         boardError.style.display = "block";
       }
       return;
@@ -2331,7 +2331,7 @@ if(saveBoardBtn){
     const LIMIT = 10 * 1024 * 1024;
     if(total > LIMIT){
       if(boardError){
-        boardError.textContent = "Greska: ukupna velicina fajlova prelazi 10MB.";
+        boardError.textContent = "Greška: ukupna velicina fajlova prelazi 10MB.";
         boardError.style.display = "block";
       }
       return;
@@ -2350,7 +2350,7 @@ if(saveBoardBtn){
       }
     }catch(e){
       if(boardError){
-        boardError.textContent = "Greska: ne mogu da procitam fajl (FileReader).";
+        boardError.textContent = "Greška: ne mogu da procitam fajl (FileReader).";
         boardError.style.display = "block";
       }
       return;
@@ -2371,7 +2371,7 @@ if(saveBoardBtn){
       saveBoardPosts(bid, items);
     }catch(e){
       if(boardError){
-        boardError.textContent = "Greska: localStorage limit (PDF je prevelik). Probaj manji PDF.";
+        boardError.textContent = "Greška: localStorage limit (PDF je prevelik). Probaj manji PDF.";
         boardError.style.display = "block";
       }
       return;
@@ -2615,7 +2615,7 @@ if(createProposalBtn){
     const days = Math.max(1, Math.min(30, Number(pDays.value||7)));
 
     if(!title || !body){
-      forumError.textContent = "Greska: popuni naslov i opis.";
+      forumError.textContent = "Greška: popuni naslov i opis.";
       forumError.style.display = "block";
       return;
     }
@@ -2950,6 +2950,7 @@ function updateHomeSummary(){
 
 </body>
 </html>
+
 
 
 
