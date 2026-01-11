@@ -29,7 +29,8 @@
 }
 @media(min-width:900px){
   :root{ --main-pad: 52px; }
-
+}
+  
 /* ===== SIDEBAR LOGOUT ===== */
 .nav .logoutItem{
   margin-top: auto;
@@ -1986,12 +1987,15 @@ function enterPortal(){
 }
 
 /* logout (portal) */
-document.getElementById("logoutBtn").addEventListener("click", () => {
-  clearSessions();
-  CURRENT_SESSION = null;
-  closeS();
-  setMode("login");
-});
+const logoutBtn = document.getElementById("logoutBtn");
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", () => {
+    clearSessions();
+    CURRENT_SESSION = null;
+    closeS();
+    setMode("login");
+  });
+}
 
 /* switch building (portal) */
 switchBuildingBtn.addEventListener("click", () => {
