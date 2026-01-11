@@ -1027,6 +1027,15 @@ body.page-statistika #page-statistika{
   padding-top: var(--sidebar-top-offset);
 }
 
+  /* Header (zgrada + pretraga + stanje + promeni zgradu) vidi se samo na Početnoj */
+body.mode-portal .pageHeader{ 
+  display: none;
+}
+body.mode-portal.page-home .pageHeader{
+  display: flex;
+}
+
+
 </style>
 </head>
 
