@@ -1969,10 +1969,13 @@ bsLogoutBtn.addEventListener("click", () => {
   setMode("login");
 });
 
-/* ===== enter portal ===== */
+/* ==== enter portal ==== */
 function enterPortal(){
-  // Ne prikazuj username (UPR-001, ADMIN-001…)
-userPill.textContent = "Korisnik";
+  if(userPill){
+    userPill.textContent = "";
+    userPill.style.display = "none";
+  }
+
   applyRoleUI(CURRENT_SESSION?.role || "stanar");
   setMode("portal");
 
