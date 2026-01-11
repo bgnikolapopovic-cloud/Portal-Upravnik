@@ -987,6 +987,76 @@ body.sidebar-open .hamburger{
   color:rgba(15,23,42,.65);
 }
 
+  .home-notifs{ display:grid; gap:12px; margin-top:12px; }
+.notifs-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.notifs-title{ display:flex; align-items:center; gap:10px; }
+.notifs-title h3{ margin:0; font-size:16px; }
+
+.notif-badge{
+  display:inline-flex; align-items:center; justify-content:center;
+  min-width:22px; height:22px; padding:0 8px;
+  border-radius:999px;
+  background:rgba(59,130,246,.14);
+  border:1px solid rgba(59,130,246,.28);
+  font-weight:700; font-size:12px;
+}
+
+.btn-mini{
+  height:30px; padding:0 10px; border-radius:10px;
+  border:1px solid rgba(15,23,42,.14);
+  background:rgba(255,255,255,.85);
+  font-weight:600; cursor:pointer;
+}
+
+.notif-list{ display:grid; gap:10px; }
+
+.notif-item{
+  border:1px solid rgba(15,23,42,.12);
+  background:rgba(255,255,255,.86);
+  border-radius:14px;
+  padding:10px 12px;
+  display:grid; gap:6px;
+}
+.notif-top{ display:flex; justify-content:space-between; gap:10px; align-items:flex-start; }
+.notif-title{ font-weight:800; font-size:13px; line-height:1.25; }
+.notif-meta{ font-size:12px; opacity:.7; white-space:nowrap; }
+.notif-msg{ font-size:13px; opacity:.9; line-height:1.35; }
+.notif-link{ font-size:12px; font-weight:700; text-decoration:none; opacity:.9; }
+.notif-unread{ box-shadow:0 0 0 2px rgba(59,130,246,.18) inset; }
+
+.pinned-wrap .pinned{
+  border-radius:16px;
+  border:1px solid rgba(59,130,246,.25);
+  background:rgba(59,130,246,.10);
+  padding:12px 12px;
+  display:grid; gap:8px;
+}
+.pinned-top{ display:flex; justify-content:space-between; gap:10px; align-items:flex-start; }
+.pinned-title{ font-weight:900; }
+.pinned-text{ opacity:.92; }
+.pinned-exp{ font-size:12px; opacity:.7; }
+
+.notifs-modal{
+  position:fixed; inset:0; z-index:9999;
+  background:rgba(2,6,23,.55);
+  display:flex; align-items:center; justify-content:center;
+  padding:18px;
+}
+.notifs-modal-card{
+  width:min(820px, 100%);
+  max-height:min(80vh, 760px);
+  overflow:auto;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.20);
+  background:rgba(255,255,255,.92);
+  padding:14px;
+}
+.notifs-modal-head{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:10px; padding:4px 2px 12px;
+}
+.notifs-modal-head h3{ margin:0; }
+
   
 </style>
 </head>
@@ -1148,6 +1218,39 @@ body.sidebar-open .hamburger{
             <li id="homeForum">Forum: (nema)</li>
           </ul>
 
+<!-- HOME: NOTIFIKACIJE -->
+<section class="home-notifs">
+  <!-- PINNED (vidljivo stanarima) -->
+  <div id="pinnedWrap" class="pinned-wrap" style="display:none;"></div>
+
+  <!-- FEED + UNREAD -->
+  <div class="notifs-head">
+    <div class="notifs-title">
+      <h3>Obaveštenja</h3>
+      <span id="notifBadge" class="notif-badge" style="display:none;">0</span>
+    </div>
+
+    <div class="notifs-actions">
+      <button id="btnMarkAllRead" class="btn-mini" type="button" style="display:none;">Označi sve kao pročitano</button>
+      <button id="btnOpenNotifs" class="btn-mini" type="button">Prikaži sve</button>
+    </div>
+  </div>
+
+  <div id="notifList" class="notif-list"></div>
+</section>
+
+<!-- MODAL / PANEL za prikaz svih obaveštenja (može i kao tvoj overlay) -->
+<div id="notifsModal" class="notifs-modal" style="display:none;">
+  <div class="notifs-modal-card">
+    <div class="notifs-modal-head">
+      <h3>Sva obaveštenja</h3>
+      <button id="btnCloseNotifs" class="btn-mini" type="button">Zatvori</button>
+    </div>
+    <div id="notifListAll" class="notif-list"></div>
+  </div>
+</div>
+
+          
           <div class="smallText" data-role="admin" style="margin-top:12px;">
             Admin: placeholder (upravljanje korisnicima, regulativama i kontaktima).
           </div>
@@ -1769,6 +1872,296 @@ const kontaktList = document.getElementById("kontaktList");
 const homeLastChange = document.getElementById("homeLastChange");
 const homePinned = document.getElementById("homePinned");
 const homeForum = document.getElementById("homeForum");
+const pinnedWrap = document.getElementById("pinnedWrap");
+const notifBadge = document.getElementById("notifBadge");
+const notifList = document.getElementById("notifList");
+const notifListAll = document.getElementById("notifListAll");
+const notifsModal = document.getElementById("notifsModal");
+const btnOpenNotifs = document.getElementById("btnOpenNotifs");
+const btnCloseNotifs = document.getElementById("btnCloseNotifs");
+const btnMarkAllRead = document.getElementById("btnMarkAllRead");
+
+
+  /* =========================
+   NOTIFIKACIJE (LOCALSTORAGE)
+   ========================= */
+
+const LS_NOTIFS = "pu_notifs_v1";   // { [bid]: [notif,...] }
+const LS_PINNED = "pu_pinned_v1";   // { [bid]: pinned|null }
+const LS_READS  = "pu_reads_v1";    // { [bid]: { [userId]: { lastSeenAt } } }
+
+function safeParse(json, fallback){
+  try { return JSON.parse(json) ?? fallback; } catch { return fallback; }
+}
+function nowTs(){ return Date.now(); }
+function uid(){ return "n_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16); }
+
+function fmtDate(ts){
+  try{
+    const d = new Date(ts);
+    return d.toLocaleString("sr-RS", { day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit" });
+  } catch { return ""; }
+}
+function escapeHtml(str){
+  return String(str ?? "")
+    .replaceAll("&","&amp;").replaceAll("<","&lt;")
+    .replaceAll(">","&gt;").replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+/* =========================
+   VEZIVANJE SA TVOJIM APP STATE
+   ========================= */
+
+/**
+ * Ovo su 2 funkcije koje povezuju notifikacije sa tvojim kodom.
+ * Ne diramo ostatak aplikacije.
+ */
+
+// 1) Active building id
+function getActiveBuildingId(){
+  // Ako već imaš global ili current objekat, koristi to.
+  // Ovaj fallback radi dok ne povežemo:
+  return window.ACTIVE_BUILDING_ID
+      || window.CURRENT_BUILDING_ID
+      || localStorage.getItem("activeBuildingId")
+      || "demo-building";
+}
+
+// 2) Active user
+function getActiveUser(){
+  // Probamo da povučemo korisnika iz tvog session-a, ako već postoji
+  // (kasnije ćemo tačno spojiti sa tvojim login sistemom)
+  if (window.CURRENT_USER) return window.CURRENT_USER;
+
+  // fallback demo
+  return { id:"demo_user", role:"tenant", name:"User" };
+}
+
+/* =========================
+   STORAGE HELPERS
+   ========================= */
+
+function loadNotifsAll(){ return safeParse(localStorage.getItem(LS_NOTIFS), {}); }
+function saveNotifsAll(obj){ localStorage.setItem(LS_NOTIFS, JSON.stringify(obj)); }
+
+function loadPinnedAll(){ return safeParse(localStorage.getItem(LS_PINNED), {}); }
+function savePinnedAll(obj){ localStorage.setItem(LS_PINNED, JSON.stringify(obj)); }
+
+function loadReadsAll(){ return safeParse(localStorage.getItem(LS_READS), {}); }
+function saveReadsAll(obj){ localStorage.setItem(LS_READS, JSON.stringify(obj)); }
+
+/* =========================
+   PINNED
+   ========================= */
+
+function setPinnedNotice(buildingId, pinnedObjOrNull){
+  const all = loadPinnedAll();
+
+  if (pinnedObjOrNull) {
+    all[buildingId] = {
+      id: pinnedObjOrNull.id || uid(),
+      title: pinnedObjOrNull.title || "Obaveštenje",
+      text: pinnedObjOrNull.text || "",
+      expiresAt: pinnedObjOrNull.expiresAt || null,
+      audience: pinnedObjOrNull.audience || "tenants" // tenants|all
+    };
+  } else {
+    all[buildingId] = null;
+  }
+
+  savePinnedAll(all);
+  renderHomeNotifs();
+}
+
+function getPinnedNotice(buildingId){
+  const all = loadPinnedAll();
+  const p = all[buildingId] || null;
+  if (!p) return null;
+  if (p.expiresAt && Number(p.expiresAt) < nowTs()) return null;
+  return p;
+}
+
+/* =========================
+   FEED
+   ========================= */
+
+function pushNotification(buildingId, notif){
+  const all = loadNotifsAll();
+  const arr = Array.isArray(all[buildingId]) ? all[buildingId] : [];
+
+  const user = getActiveUser();
+  const n = {
+    id: notif.id || uid(),
+    createdAt: notif.createdAt || nowTs(),
+    type: notif.type || "info",
+    title: notif.title || "Nova izmena",
+    message: notif.message || "",
+    link: notif.link || null,
+    actorRole: notif.actorRole || user.role || "manager",
+    actorName: notif.actorName || user.name || "",
+    audience: notif.audience || "tenants"
+  };
+
+  arr.unshift(n);
+
+  // limit da ne raste
+  all[buildingId] = arr.slice(0, 200);
+  saveNotifsAll(all);
+
+  renderHomeNotifs();
+}
+
+function getLastSeen(buildingId, userId){
+  const reads = loadReadsAll();
+  return reads?.[buildingId]?.[userId]?.lastSeenAt || 0;
+}
+
+function markAllRead(buildingId, userId){
+  const reads = loadReadsAll();
+  reads[buildingId] = reads[buildingId] || {};
+  reads[buildingId][userId] = reads[buildingId][userId] || {};
+  reads[buildingId][userId].lastSeenAt = nowTs();
+  saveReadsAll(reads);
+  renderHomeNotifs();
+}
+
+function getVisibleNotifsForUser(buildingId, user){
+  const all = loadNotifsAll();
+  const arr = Array.isArray(all[buildingId]) ? all[buildingId] : [];
+
+  return arr.filter(n => {
+    if (user.role === "tenant") return (n.audience === "tenants" || n.audience === "all");
+    return true;
+  });
+}
+
+function countUnread(buildingId, user){
+  const lastSeen = getLastSeen(buildingId, user.id);
+  const list = getVisibleNotifsForUser(buildingId, user);
+  return list.filter(n => Number(n.createdAt) > Number(lastSeen)).length;
+}
+
+/* =========================
+   RENDER
+   ========================= */
+
+function renderPinnedUI(pinned, user){
+  // 1) novi pinnedWrap (kartica)
+  if (pinnedWrap) {
+    const allow =
+      pinned &&
+      (pinned.audience === "all" || (pinned.audience === "tenants" && user.role === "tenant"));
+
+    if (!allow) {
+      pinnedWrap.style.display = "none";
+      pinnedWrap.innerHTML = "";
+    } else {
+      pinnedWrap.style.display = "";
+      pinnedWrap.innerHTML = `
+        <div class="pinned">
+          <div class="pinned-top">
+            <div class="pinned-title">📌 ${escapeHtml(pinned.title)}</div>
+            ${user.role !== "tenant" ? `<button class="btn-mini" type="button" id="btnClearPinned">Ukloni</button>` : ``}
+          </div>
+          <div class="pinned-text">${escapeHtml(pinned.text)}</div>
+          ${pinned.expiresAt ? `<div class="pinned-exp">Važi do: ${fmtDate(Number(pinned.expiresAt))}</div>` : ``}
+        </div>
+      `;
+
+      if (user.role !== "tenant") {
+        const b = document.getElementById("btnClearPinned");
+        if (b) b.onclick = () => setPinnedNotice(getActiveBuildingId(), null);
+      }
+    }
+  }
+
+  // 2) update u tvom postojećem HOME summary <li id="homePinned">
+  if (homePinned) {
+    if (!pinned) homePinned.textContent = "Istaknuto: (nema)";
+    else homePinned.textContent = `Istaknuto: ${pinned.title}`;
+  }
+}
+
+function renderNotifsList(el, notifs, lastSeen){
+  if (!el) return;
+
+  if (!notifs.length) {
+    el.innerHTML = `<div class="notif-item"><div class="notif-title">Nema obaveštenja.</div></div>`;
+    return;
+  }
+
+  el.innerHTML = notifs.map(n => {
+    const unread = Number(n.createdAt) > Number(lastSeen);
+    return `
+      <div class="notif-item ${unread ? "notif-unread" : ""}">
+        <div class="notif-top">
+          <div class="notif-title">${escapeHtml(n.title)}</div>
+          <div class="notif-meta">${fmtDate(Number(n.createdAt))}</div>
+        </div>
+        ${n.message ? `<div class="notif-msg">${escapeHtml(n.message)}</div>` : ``}
+        <div class="notif-meta">${escapeHtml(n.actorRole)}${n.actorName ? " • " + escapeHtml(n.actorName) : ""} • ${escapeHtml(n.type)}</div>
+        ${n.link ? `<a class="notif-link" href="${n.link}">Otvori</a>` : ``}
+      </div>
+    `;
+  }).join("");
+}
+
+function renderHomeNotifs(){
+  const bid = getActiveBuildingId();
+  const user = getActiveUser();
+
+  // PINNED
+  const pinned = getPinnedNotice(bid);
+  renderPinnedUI(pinned, user);
+
+  // FEED
+  const list = getVisibleNotifsForUser(bid, user);
+  const lastSeen = getLastSeen(bid, user.id);
+  const unread = countUnread(bid, user);
+
+  // badge
+  if (notifBadge) {
+    if (unread > 0) { notifBadge.style.display = ""; notifBadge.textContent = String(unread); }
+    else { notifBadge.style.display = "none"; notifBadge.textContent = "0"; }
+  }
+
+  // “mark all read” samo tenant
+  if (btnMarkAllRead) {
+    if (user.role === "tenant" && list.length) {
+      btnMarkAllRead.style.display = "";
+      btnMarkAllRead.onclick = () => markAllRead(bid, user.id);
+    } else {
+      btnMarkAllRead.style.display = "none";
+      btnMarkAllRead.onclick = null;
+    }
+  }
+
+  // home top 5
+  renderNotifsList(notifList, list.slice(0, 5), lastSeen);
+
+  // modal all
+  renderNotifsList(notifListAll, list, lastSeen);
+
+  // open/close modal
+  if (btnOpenNotifs && notifsModal) btnOpenNotifs.onclick = () => { notifsModal.style.display = ""; };
+  if (btnCloseNotifs && notifsModal) btnCloseNotifs.onclick = () => { notifsModal.style.display = "none"; };
+  if (notifsModal) notifsModal.onclick = (e) => { if (e.target === notifsModal) notifsModal.style.display = "none"; };
+
+  // update existing homeLastChange <li> (opciono)
+  if (homeLastChange) {
+    const newest = list[0] || null;
+    homeLastChange.textContent = newest ? `Poslednja promena: ${newest.title}` : "Poslednja promena: (nema)";
+  }
+}
+
+/* =========================
+   INIT
+   ========================= */
+document.addEventListener("DOMContentLoaded", () => {
+  renderHomeNotifs();
+});
+
 
 let CURRENT_SESSION = null;
 let CURRENT_QUERY = "";
@@ -3615,6 +4008,7 @@ function updateHomeSummary(){
 
 </body>
 </html>
+
 
 
 
