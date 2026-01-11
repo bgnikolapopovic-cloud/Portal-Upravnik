@@ -1865,31 +1865,38 @@ function setActiveBuilding(bid){
 function renderBuildingUI(){
   const bid = CURRENT_SESSION?.activeBuildingId;
   const b = getBuildingById(bid);
-  if(!b){
-    buildingPill.textContent = "Zgrada: -";
-    buildingMeta.textContent = "";
-    return;
+
+  // ❌ ne prikazuj naziv zgrade pored (pill)
+  if(buildingPill){
+    buildingPill.textContent = "";
+    buildingPill.style.display = "none";
   }
 
-  buildingPill.textContent = b.title;
+  // (opciono) ako NEĆEŠ ni meta tekst (levo “Stambena zajednica...”), ugasi ga:
+  // if(buildingMeta){ buildingMeta.innerHTML = ""; }
 
-  buildingMeta.innerHTML = `
-    Stambena zajednica: ${b.title}<br>
-    Broj jedinica: ${b.units}
-  `;
+  // ako HOĆEŠ da meta ostane, ali samo kad postoji zgrada:
+  if(buildingMeta){
+    buildingMeta.innerHTML = b ? `
+      Stambena zajednica: ${b.title}<br>
+      Broj jedinica: ${b.units}
+    ` : "";
+  }
 
-  /* ✅ IZMENJENO: balans se racuna iz pocetnog stanja + finansije */
+  // balans (ako ti je ovo potrebno)
   const bal = computeBalanceFromFinance(bid);
   balanceValue.textContent = formatRSD(bal);
 
-  /* ✅ DODATO: popuni input za pocetno stanje ako postoji */
-  const opening = getOpeningBalance(bid);
-  if(openingBalanceInput) openingBalanceInput.value = String(opening);
-  if(openingBalanceInputAdmin) openingBalanceInputAdmin.value = String(opening);
+  // popuni input za početno stanje (ako postoji)
+  if(bid){
+    const opening = getOpeningBalance(bid);
+    if(openingBalanceInput) openingBalanceInput.value = String(opening);
+    if(openingBalanceInputAdmin) openingBalanceInputAdmin.value = String(opening);
+  }
 
-  // "Promeni zgradu" samo ako ima više zgrada
+  // ✅ dugme "Promeni zgradu" ostaje
   const multi = (CURRENT_SESSION?.buildings || []).length > 1 && (CURRENT_SESSION.role !== "stanar");
-  switchBuildingBtn.style.display = multi ? "" : "none";
+  if(switchBuildingBtn) switchBuildingBtn.style.display = multi ? "" : "none";
 }
 
 /* ===== login flow ===== */
