@@ -1971,7 +1971,8 @@ bsLogoutBtn.addEventListener("click", () => {
 
 /* ===== enter portal ===== */
 function enterPortal(){
-  userPill.textContent = CURRENT_SESSION?.username || "Korisnik";
+  // Ne prikazuj username (UPR-001, ADMIN-001…)
+userPill.textContent = "Korisnik";
   applyRoleUI(CURRENT_SESSION?.role || "stanar");
   setMode("portal");
 
