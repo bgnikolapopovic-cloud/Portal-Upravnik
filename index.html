@@ -1008,11 +1008,14 @@ body.sidebar-open .hamburger{
 body.page-finansije .pageHeader{
   display: none;
 }
-  /* FINANSIJE – spusti ceo blok malo nadole */
-body.page-finansije #page-finansije{
+body.page-finansije #page-finansije,
+body.page-oglasna #page-oglasna,
+body.page-forum #page-forum,
+body.page-regulative #page-regulative,
+body.page-statistika #page-statistika{
   margin-top: 28px;
 }
-
+  
 </style>
 </head>
 
@@ -2067,10 +2070,18 @@ const pages = {
   statistika: document.getElementById("page-statistika")
 };
 function showPage(name){
-    // page flags
-  document.body.classList.remove("page-home", "page-finansije");
-  if(name === "home") document.body.classList.add("page-home");
-  if(name === "finansije") document.body.classList.add("page-finansije");
+  // ukloni sve page klase
+  document.body.classList.remove(
+    "page-home",
+    "page-finansije",
+    "page-oglasna",
+    "page-forum",
+    "page-regulative",
+    "page-statistika"
+  );
+
+  // dodaj odgovarajuću
+  document.body.classList.add(`page-${name}`);
 
   Object.values(pages).forEach(p => p.classList.remove("active"));
   (pages[name] || pages.home).classList.add("active");
@@ -2082,6 +2093,7 @@ function showPage(name){
   closeS();
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
+
 nav.addEventListener("click", (e) => {
   const a = e.target.closest("a[data-page]");
   if(!a) return;
