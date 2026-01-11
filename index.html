@@ -29,7 +29,23 @@
 }
 @media(min-width:900px){
   :root{ --main-pad: 52px; }
+
+/* ===== SIDEBAR LOGOUT ===== */
+.nav .logoutItem{
+  margin-top: auto;
+  background: rgba(220, 38, 38, .12);
+  border: 1px solid rgba(220, 38, 38, .45);
+  color: #fecaca;
+  font-weight: 900;
+  letter-spacing: .04em;
+  text-align: center;
 }
+
+.nav .logoutItem:hover{
+  background: rgba(220, 38, 38, .22);
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, .18);
+}
+
 
 *{margin:0;padding:0;box-sizing:border-box;font-family:"Inter",system-ui,Arial,sans-serif}
 
@@ -1092,6 +1108,8 @@ body.sidebar-open .hamburger{
       <a href="#" data-page="forum">Forum</a>
       <a href="#" data-page="regulative">Zakonske regulative</a>
       <a href="#" data-page="kontakt">Kontakt službe</a>
+      <a href="#" id="sidebarLogout" class="logoutItem">Odjava</a>
+
       <!-- ✅ STATISTIKA (samo upravnik/admin) -->
 <a href="#" data-page="statistika" data-role="upravnik">Statistika</a>
 <a href="#" data-page="statistika" data-role="admin">Statistika</a>
@@ -1116,7 +1134,6 @@ body.sidebar-open .hamburger{
             <div class="pill" id="userPill">Korisnik</div>
             <div class="pill" id="buildingPill">Zgrada</div>
             <div class="pill pillBtn" id="switchBuildingBtn" style="display:none;">Promeni zgradu</div>
-            <div class="pill pillBtn" id="logoutBtn">Odjava</div>
           </div>
 
           <div class="searchInline" style="position:relative;">
@@ -3595,7 +3612,26 @@ function updateHomeSummary(){
   updateHiddenAndTrigger();
 })();
 
-  
+  /* =========================
+   SIDEBAR LOGOUT
+========================= */
+
+const sidebarLogout = document.getElementById("sidebarLogout");
+
+if (sidebarLogout) {
+  sidebarLogout.addEventListener("click", (e) => {
+    e.preventDefault();
+
+    // (opciono) potvrda
+    // if (!confirm("Da li ste sigurni da želite da se odjavite?")) return;
+
+    clearSessions();
+    CURRENT_SESSION = null;
+    closeS();
+    setMode("login");
+  });
+}
+
 </script>
 
 <!-- Supabase SDK -->
