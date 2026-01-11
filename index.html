@@ -1027,14 +1027,16 @@ body.page-statistika #page-statistika{
   padding-top: var(--sidebar-top-offset);
 }
 
-  /* Header (zgrada + pretraga + stanje + promeni zgradu) vidi se samo na Početnoj */
-body.mode-portal .pageHeader{ 
+  /* Header sakriven u portalu... */
+body.mode-portal .pageHeader{
   display: none;
 }
-body.mode-portal.page-home .pageHeader{
+
+/* ...ali VIDI SE kad je Početna aktivna */
+body.mode-portal #page-home.active ~ * .pageHeader,
+body.mode-portal #page-home.active .pageHeader{
   display: flex;
 }
-
 
 </style>
 </head>
@@ -2016,6 +2018,9 @@ function enterPortal(){
 
   applyRoleUI(CURRENT_SESSION?.role || "stanar");
   setMode("portal");
+  // Uvek po ulasku u portal postavi Home kao aktivnu stranu (da bi header bio vidljiv)
+showPage("home");
+
 
   // set active building if missing
   if(!CURRENT_SESSION.activeBuildingId){
