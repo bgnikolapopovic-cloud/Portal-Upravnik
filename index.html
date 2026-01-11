@@ -1015,6 +1015,17 @@ body.page-regulative #page-regulative,
 body.page-statistika #page-statistika{
   margin-top: 28px;
 }
+
+/* ===== GLOBAL OFFSET ISPOD SIDEBARA ===== */
+:root{
+  --sidebar-top-offset: 72px; /* po potrebi menjaj */
+}
+
+/* glavni wrapper svih strana */
+.contentWrap{
+  padding-top: var(--sidebar-top-offset);
+}
+
   
 </style>
 </head>
@@ -2070,15 +2081,19 @@ const pages = {
   statistika: document.getElementById("page-statistika")
 };
 function showPage(name){
-  // ukloni sve page klase
-  document.body.classList.remove(
-    "page-home",
-    "page-finansije",
-    "page-oglasna",
-    "page-forum",
-    "page-regulative",
-    "page-statistika"
-  );
+  // page flags (radi za sve stranice)
+document.body.classList.remove(
+  "page-home",
+  "page-finansije",
+  "page-oglasna",
+  "page-forum",
+  "page-regulative",
+  "page-statistika"
+);
+
+// dodaj klasu za trenutnu stranu
+if(name) document.body.classList.add(`page-${name}`);
+
 
   // dodaj odgovarajuću
   document.body.classList.add(`page-${name}`);
