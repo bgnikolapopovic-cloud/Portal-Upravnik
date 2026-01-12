@@ -3681,14 +3681,6 @@ function scrollToSid(sid){
   if(searchResults) searchResults.style.display = "none";
 }
 
-  setTimeout(() => {
-    applySearchFilter();
-    setTimeout(() => scrollToSid(sid), 60);
-  }, 60);
-
-  if(searchResults) searchResults.style.display = "none";
-}
-
   function bindHomeShortcuts(){
   const map = [
     document.getElementById("homeLastChange"),
