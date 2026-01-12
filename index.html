@@ -1027,15 +1027,13 @@ body.page-statistika #page-statistika{
   padding-top: var(--sidebar-top-offset);
 }
 
-  /* Header sakriven u portalu... */
-body.mode-portal .pageHeader{
-  display: none;
+/* Header (meta + pretraga + stanje) samo na Početnoj */
+body.mode-portal .pageHeader{ 
+  display: none; 
 }
 
-/* ...ali VIDI SE kad je Početna aktivna */
-body.mode-portal #page-home.active ~ * .pageHeader,
-body.mode-portal #page-home.active .pageHeader{
-  display: flex;
+body.mode-portal.page-home .pageHeader{ 
+  display: flex; 
 }
 
 </style>
