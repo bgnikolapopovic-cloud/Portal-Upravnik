@@ -2528,9 +2528,7 @@ if(item.docs && item.docs.length){
 
 
     const firmPart = item.firm ? (" — " + item.firm) : "";
-    const editTag = (CURRENT_SESSION && CURRENT_SESSION.role === "upravnik")
-      ? (canEdit(item) ? " (edit 30 dana)" : " (zakljucano)")
-      : "";
+    const editTag = "";
 
     li.textContent =
       `${item.date} — ${item.type === "rashod" ? "Rashod" : "Prihod"} — ${item.category}${firmPart} — "${item.desc}" — ${formatRSD(item.amount)} RSD${editTag}`;
