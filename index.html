@@ -1155,6 +1155,16 @@ body.mode-portal.page-home .pageHeader{
     margin-top: 0;
   }
 }
+
+  /* Početna: brze prečice (klikabilne stavke) */
+#homeLastChange, #homePinned, #homeForum{
+  cursor: pointer;
+}
+
+#homeLastChange:hover, #homePinned:hover, #homeForum:hover{
+  text-decoration: underline;
+  opacity: .9;
+}
   
 </style>
 </head>
@@ -2150,6 +2160,7 @@ showPage("home");
   refreshAllModules();
   ensureStaticSids();
   updateHomeSummary();
+  bindHomeShortcuts();
 }
 
 /* logout (portal) */
@@ -3622,6 +3633,23 @@ function goToHit(page, sid){
   if(searchResults) searchResults.style.display = "none";
 }
 
+  function bindHomeShortcuts(){
+  const map = [
+    document.getElementById("homeLastChange"),
+    document.getElementById("homePinned"),
+    document.getElementById("homeForum")
+  ];
+
+  map.forEach(el => {
+    if(!el) return;
+    el.addEventListener("click", () => {
+      const page = el.dataset.page || "";
+      const sid  = el.dataset.sid  || "";
+      if(page && sid) goToHit(page, sid);
+    });
+  });
+}
+  
 if(globalSearch){
   globalSearch.addEventListener("input", () => {
     CURRENT_QUERY = (globalSearch.value || "").trim();
@@ -3682,25 +3710,49 @@ function updateHomeSummary(){
 
   const fin = loadItems(bid).slice().sort((a,b) => (b.date||"").localeCompare(a.date||""));
   if(fin.length){
-    const it = fin[0];
-    homeLastChange.textContent = `Poslednja promena: ${it.type === "rashod" ? "Rashod" : "Prihod"} - ${it.category} (${it.date})`;
-  }else{
-    homeLastChange.textContent = "Poslednja promena: (nema)";
-  }
+  const it = fin[0];
+  homeLastChange.textContent = `Poslednja promena: ${it.type === "rashod" ? "Rashod" : "Prihod"} - ${it.category} (${it.date})`;
+
+  // ✅ DODAJ OVE 2 LINIJE
+  homeLastChange.dataset.page = "finansije";
+  homeLastChange.dataset.sid  = "fin:" + it.id;
+
+}else{
+  homeLastChange.textContent = "Poslednja promena: (nema)";
+
+  // ✅ očisti
+  homeLastChange.dataset.page = "";
+  homeLastChange.dataset.sid  = "";
+}
 
   const brd = loadBoardPosts(bid).slice().sort((a,b) => (b.date||"").localeCompare(a.date||""));
   if(brd.length){
-    homePinned.textContent = `Istaknuto: ${brd[0].title} (${brd[0].date})`;
-  }else{
-    homePinned.textContent = "Istaknuto: (nema)";
-  }
+  const p = brd[0];
+  homePinned.textContent = `Istaknuto: ${p.title} (${p.date})`;
+
+  // ✅ DODAJ OVE 2 LINIJE
+  homePinned.dataset.page = "oglasna";
+  homePinned.dataset.sid  = "brd:" + p.id;
+
+}else{
+  homePinned.textContent = "Istaknuto: (nema)";
+
+  // ✅ očisti
+  homePinned.dataset.page = "";
+  homePinned.dataset.sid  = "";
+}
 
   const frm = loadProposals(bid).slice().sort((a,b) => (b.createdAt||0)-(a.createdAt||0));
   if(frm.length){
-    homeForum.textContent = `Forum: ${frm[0].title}`;
-  }else{
-    homeForum.textContent = "Forum: (nema)";
-  }
+  const f = frm[0];
+  homeForum.textContent = `Forum: ${f.title}`;
+
+  homeForum.dataset.page = "forum";
+  homeForum.dataset.sid  = "frm:" + f.id;
+}else{
+  homeForum.textContent = "Forum: (nema)";
+  homeForum.dataset.page = "";
+  homeForum.dataset.sid  = "";
 }
 
 /* INIT */
