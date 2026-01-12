@@ -1038,31 +1038,6 @@ body.mode-portal.page-home .pageHeader{
   display: flex; 
 }
 
-/* Početna: Promeni zgradu levo od Pretrage (bez drugih promena) */
-body.mode-portal.page-home .rightCol{
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-}
-
-/* redosled elemenata */
-body.mode-portal.page-home #switchBuildingBtn{
-  order: 1;
-}
-
-body.mode-portal.page-home .searchInline{
-  order: 2;
-  flex: 1;
-}
-
-body.mode-portal.page-home .balanceCard{
-  order: 3;
-  align-self: flex-start;
-  margin-top: 26px; /* fino spuštanje da krene u visini pretrage */
-}
-
-
 /* Logo smanjen za ~40% */
 .topRightLogo img{
   height: 34px;   /* 56px → 34px */
@@ -1099,12 +1074,6 @@ body.mode-portal.page-home .balanceCard{
   }
 }
 
-/* Početna: spusti Stanje računa da krene u istoj visini kao Pretraga */
-body.mode-portal.page-home .balanceCard{
-  align-self: flex-start;
-  margin-top: 2px; /* po potrebi: 2–6px */
-}
-
   /* Početna: fix overflow na mobilnom (vrati header elemente u kolonu) */
 @media (max-width: 720px){
   body.mode-portal.page-home .rightCol{
@@ -1126,6 +1095,66 @@ body.mode-portal.page-home .balanceCard{
   }
 }
 
+  /* ✅ POČETNA: Promeni zgradu + Pretraga + Stanje računa u ISTOM redu */
+@media (min-width: 721px){
+  body.mode-portal.page-home .rightCol{
+    display: grid;
+    grid-template-columns: auto 1fr auto; /* dugme | pretraga | stanje */
+    align-items: center;
+    gap: 12px;
+  }
+
+  /* "spljošti" topMini da njegovi child elementi postanu grid-items */
+  body.mode-portal.page-home .topMini{ 
+    display: contents; 
+  }
+
+  /* sakrij pill-ove (već ih JS gasi, ali da bude sigurno) */
+  body.mode-portal.page-home #userPill,
+  body.mode-portal.page-home #buildingPill{
+    display: none !important;
+  }
+
+  /* Promeni zgradu ide u prvu kolonu */
+  body.mode-portal.page-home #switchBuildingBtn{
+    grid-column: 1;
+    margin: 0;
+  }
+
+  /* Pretraga u sredinu */
+  body.mode-portal.page-home .searchInline{
+    grid-column: 2;
+    width: 100%;
+    margin: 0;
+  }
+
+  /* Stanje računa desno */
+  body.mode-portal.page-home .balanceCard{
+    grid-column: 3;
+    margin: 0;
+    align-self: center;
+  }
+}
+
+/* ✅ MOBILNI: vraćamo u kolonu kao što si imao */
+@media (max-width: 720px){
+  body.mode-portal.page-home .rightCol{
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  body.mode-portal.page-home .searchInline,
+  body.mode-portal.page-home .balanceCard{
+    width: 100%;
+    max-width: 100%;
+  }
+
+  body.mode-portal.page-home .balanceCard{
+    margin-top: 0;
+  }
+}
   
 </style>
 </head>
