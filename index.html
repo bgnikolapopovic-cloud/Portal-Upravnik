@@ -1178,6 +1178,26 @@ body.mode-portal.page-home .pageHeader{
   background: #2563eb;
   color: #fff;
 }
+
+/* Početna: "NOVO" badge */
+#page-home .boardList li{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.unreadBadge{
+  flex:0 0 auto;
+  padding:6px 10px;
+  border-radius:999px;
+  font-weight:900;
+  font-size:12px;
+  letter-spacing:.06em;
+  background: rgba(59,130,246,.16);
+  border: 1px solid rgba(59,130,246,.45);
+  color:#1d4ed8;
+}
   
 </style>
 </head>
@@ -2238,6 +2258,45 @@ function activeBid(){
   return CURRENT_SESSION?.activeBuildingId || null;
 }
 
+function kRead(bid, kind){
+  return `pu_read_v1__${bid}__${kind}`; // kind: fin | brd | frm
+}
+
+function getReadMap(bid, kind){
+  try{
+    return JSON.parse(localStorage.getItem(kRead(bid, kind)) || "{}");
+  }catch{
+    return {};
+  }
+}
+
+function isRead(bid, kind, id){
+  const map = getReadMap(bid, kind);
+  return !!map[id];
+}
+
+function markRead(bid, kind, id){
+  const map = getReadMap(bid, kind);
+  map[id] = true;
+  localStorage.setItem(kRead(bid, kind), JSON.stringify(map));
+}
+
+function kindFromSid(sid){
+  // sid formati: fin:ID, brd:ID, frm:ID
+  if(!sid) return null;
+  const p = String(sid).split(":")[0];
+  if(p === "fin") return "fin";
+  if(p === "brd") return "brd";
+  if(p === "frm") return "frm";
+  return null;
+}
+
+function idFromSid(sid){
+  if(!sid) return null;
+  const parts = String(sid).split(":");
+  return parts.length >= 2 ? parts.slice(1).join(":") : null;
+}
+  
 /* ✅ NOVO: Pocetno stanje (seed + edit) */
 function getOpeningBalance(bid){
   const raw = localStorage.getItem(kOpeningBalance(bid));
@@ -3597,6 +3656,27 @@ function scrollToSid(sid){
 function goToHit(page, sid){
   showPage(page);
 
+  function goToHit(page, sid){
+  const bid = activeBid();
+  const kind = kindFromSid(sid);
+  const id = idFromSid(sid);
+
+  // čim korisnik ode na stavku (klik sa početne ili iz pretrage) -> pročitano
+  if(bid && kind && id){
+    markRead(bid, kind, id);
+    updateHomeSummary();
+  }
+
+  showPage(page);
+
+  setTimeout(() => {
+    applySearchFilter();
+    setTimeout(() => scrollToSid(sid), 60);
+  }, 60);
+
+  if(searchResults) searchResults.style.display = "none";
+}
+
   setTimeout(() => {
     applySearchFilter();
     setTimeout(() => scrollToSid(sid), 60);
@@ -3683,16 +3763,18 @@ function updateHomeSummary(){
   const fin = loadItems(bid).slice().sort((a,b) => (b.date||"").localeCompare(a.date||""));
   if(fin.length){
   const it = fin[0];
-  homeLastChange.textContent = `Poslednja promena: ${it.type === "rashod" ? "Rashod" : "Prihod"} - ${it.category} (${it.date})`;
+  const sid = "fin:" + it.id;
 
-  // ✅ DODAJ OVE 2 LINIJE
+  const unread = !isRead(bid, "fin", it.id);
+
+  homeLastChange.innerHTML =
+    `Poslednja promena: ${it.type === "rashod" ? "Rashod" : "Prihod"} - ${it.category} (${it.date})` +
+    (unread ? ` <span class="unreadBadge">NOVO</span>` : ``);
+
   homeLastChange.dataset.page = "finansije";
-  homeLastChange.dataset.sid  = "fin:" + it.id;
-
+  homeLastChange.dataset.sid  = sid;
 }else{
   homeLastChange.textContent = "Poslednja promena: (nema)";
-
-  // ✅ očisti
   homeLastChange.dataset.page = "";
   homeLastChange.dataset.sid  = "";
 }
@@ -3700,16 +3782,18 @@ function updateHomeSummary(){
   const brd = loadBoardPosts(bid).slice().sort((a,b) => (b.date||"").localeCompare(a.date||""));
   if(brd.length){
   const p = brd[0];
-  homePinned.textContent = `Istaknuto: ${p.title} (${p.date})`;
+  const sid = "brd:" + p.id;
 
-  // ✅ DODAJ OVE 2 LINIJE
+  const unread = !isRead(bid, "brd", p.id);
+
+  homePinned.innerHTML =
+    `Istaknuto: ${p.title} (${p.date})` +
+    (unread ? ` <span class="unreadBadge">NOVO</span>` : ``);
+
   homePinned.dataset.page = "oglasna";
-  homePinned.dataset.sid  = "brd:" + p.id;
-
+  homePinned.dataset.sid  = sid;
 }else{
   homePinned.textContent = "Istaknuto: (nema)";
-
-  // ✅ očisti
   homePinned.dataset.page = "";
   homePinned.dataset.sid  = "";
 }
@@ -3717,10 +3801,16 @@ function updateHomeSummary(){
   const frm = loadProposals(bid).slice().sort((a,b) => (b.createdAt||0)-(a.createdAt||0));
   if(frm.length){
   const f = frm[0];
-  homeForum.textContent = `Forum: ${f.title}`;
+  const sid = "frm:" + f.id;
+
+  const unread = !isRead(bid, "frm", f.id);
+
+  homeForum.innerHTML =
+    `Forum: ${f.title}` +
+    (unread ? ` <span class="unreadBadge">NOVO</span>` : ``);
 
   homeForum.dataset.page = "forum";
-  homeForum.dataset.sid  = "frm:" + f.id;
+  homeForum.dataset.sid  = sid;
 }else{
   homeForum.textContent = "Forum: (nema)";
   homeForum.dataset.page = "";
