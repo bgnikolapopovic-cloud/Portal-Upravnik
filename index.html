@@ -3756,75 +3756,65 @@ function updateHomeSummary(){
   const bid = activeBid();
   if(!bid) return;
 
+  // ---------- FINANSIJE (Poslednja promena) ----------
+  const fin = loadItems(bid).slice().sort((a,b) => (b.date||"").localeCompare(a.date||""));
   if(fin.length){
-  const it = fin[0];
-  const sid = "fin:" + it.id;
+    const it = fin[0];
+    const sid = "fin:" + it.id;
 
-  const unread = (CURRENT_SESSION?.role === "stanar") && !isRead(bid, "fin", it.id);
+    const unread = (CURRENT_SESSION?.role === "stanar") && !isRead(bid, "fin", it.id);
 
-  homeLastChange.innerHTML =
-    `Poslednja promena: ${it.type === "rashod" ? "Rashod" : "Prihod"} - ${it.category} (${it.date})` +
-    (unread ? ` <span class="unreadBadge">NOVO</span>` : ``);
+    homeLastChange.innerHTML =
+      `Poslednja promena: ${it.type === "rashod" ? "Rashod" : "Prihod"} - ${it.category} (${it.date})` +
+      (unread ? ` <span class="unreadBadge">NOVO</span>` : ``);
 
-  homeLastChange.dataset.page = "finansije";
-  homeLastChange.dataset.sid  = sid;
-}else{
-  homeLastChange.textContent = "Poslednja promena: (nema)";
-  homeLastChange.dataset.page = "";
-  homeLastChange.dataset.sid  = "";
-}
+    homeLastChange.dataset.page = "finansije";
+    homeLastChange.dataset.sid  = sid;
+  }else{
+    homeLastChange.textContent = "Poslednja promena: (nema)";
+    homeLastChange.dataset.page = "";
+    homeLastChange.dataset.sid  = "";
+  }
 
-  const unread = (CURRENT_SESSION?.role === "stanar") && !isRead(bid, "brd", p.id);
-
-  homeLastChange.innerHTML =
-    `Poslednja promena: ${it.type === "rashod" ? "Rashod" : "Prihod"} - ${it.category} (${it.date})` +
-    (unread ? ` <span class="unreadBadge">NOVO</span>` : ``);
-
-  homeLastChange.dataset.page = "finansije";
-  homeLastChange.dataset.sid  = sid;
-}else{
-  homeLastChange.textContent = "Poslednja promena: (nema)";
-  homeLastChange.dataset.page = "";
-  homeLastChange.dataset.sid  = "";
-}
-
+  // ---------- OGLASNA (Istaknuto) ----------
   const brd = loadBoardPosts(bid).slice().sort((a,b) => (b.date||"").localeCompare(a.date||""));
   if(brd.length){
-  const p = brd[0];
-  const sid = "brd:" + p.id;
+    const p = brd[0];
+    const sid = "brd:" + p.id;
 
-  const unread = !isRead(bid, "brd", p.id);
+    const unread = (CURRENT_SESSION?.role === "stanar") && !isRead(bid, "brd", p.id);
 
-  homePinned.innerHTML =
-    `Istaknuto: ${p.title} (${p.date})` +
-    (unread ? ` <span class="unreadBadge">NOVO</span>` : ``);
+    homePinned.innerHTML =
+      `Istaknuto: ${p.title} (${p.date})` +
+      (unread ? ` <span class="unreadBadge">NOVO</span>` : ``);
 
-  homePinned.dataset.page = "oglasna";
-  homePinned.dataset.sid  = sid;
-}else{
-  homePinned.textContent = "Istaknuto: (nema)";
-  homePinned.dataset.page = "";
-  homePinned.dataset.sid  = "";
-}
+    homePinned.dataset.page = "oglasna";
+    homePinned.dataset.sid  = sid;
+  }else{
+    homePinned.textContent = "Istaknuto: (nema)";
+    homePinned.dataset.page = "";
+    homePinned.dataset.sid  = "";
+  }
 
+  // ---------- FORUM ----------
   const frm = loadProposals(bid).slice().sort((a,b) => (b.createdAt||0)-(a.createdAt||0));
   if(frm.length){
-  const f = frm[0];
-  const sid = "frm:" + f.id;
+    const f = frm[0];
+    const sid = "frm:" + f.id;
 
-  const unread = (CURRENT_SESSION?.role === "stanar") && !isRead(bid, "frm", f.id);
+    const unread = (CURRENT_SESSION?.role === "stanar") && !isRead(bid, "frm", f.id);
 
-  homeForum.innerHTML =
-    `Forum: ${f.title}` +
-    (unread ? ` <span class="unreadBadge">NOVO</span>` : ``);
+    homeForum.innerHTML =
+      `Forum: ${f.title}` +
+      (unread ? ` <span class="unreadBadge">NOVO</span>` : ``);
 
-  homeForum.dataset.page = "forum";
-  homeForum.dataset.sid  = sid;
-}else{
-  homeForum.textContent = "Forum: (nema)";
-  homeForum.dataset.page = "";
-  homeForum.dataset.sid  = "";
-}
+    homeForum.dataset.page = "forum";
+    homeForum.dataset.sid  = sid;
+  }else{
+    homeForum.textContent = "Forum: (nema)";
+    homeForum.dataset.page = "";
+    homeForum.dataset.sid  = "";
+  }
 }
   
 /* INIT */
