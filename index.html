@@ -1157,21 +1157,10 @@ body.mode-portal.page-home .pageHeader{
   color: #fff;
 }
 
-button#addBoardBtn{
-  background: transparent;
-  color: #2563eb;
-  border: 1px solid #2563eb;
-}
-
-button#addBoardBtn:hover{
-  background: #2563eb;
-  color: #fff;
-}
-
-/* OGLASNA TABLA – PDF fajlovi plavo */
-#oglasnaList .fileList li,
-#oglasnaList .fileList li span,
-#oglasnaList .fileList li small{
+  /* PDF fajlovi (Finansije + Oglasna tabla) */
+.fileList li.hasDocs,
+.fileList li.hasDocs span,
+.fileList li.hasDocs small{
   color:#1d4ed8;
   font-weight:900;
 }
@@ -2998,6 +2987,8 @@ function renderBoard(bid, q){
     li.textContent = `${post.date} — ${post.title}${post.desc ? " — " + post.desc : ""}`;
 
     if(post.docs && post.docs.length){
+      li.classList.add("hasDocs");
+      
       const ul = document.createElement("ul");
       ul.className = "fileList";
 
