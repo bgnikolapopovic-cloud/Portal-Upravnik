@@ -2258,8 +2258,13 @@ function activeBid(){
   return CURRENT_SESSION?.activeBuildingId || null;
 }
 
+function currentUser(){
+  return CURRENT_SESSION?.username || "anon";
+}
+
 function kRead(bid, kind){
-  return `pu_read_v1__${bid}__${kind}`; // kind: fin | brd | frm
+  const user = currentUser();
+  return `pu_read_v2__${bid}__${kind}__${user}`; // po zgradi + po korisniku
 }
 
 function getReadMap(bid, kind){
@@ -2282,7 +2287,6 @@ function markRead(bid, kind, id){
 }
 
 function kindFromSid(sid){
-  // sid formati: fin:ID, brd:ID, frm:ID
   if(!sid) return null;
   const p = String(sid).split(":")[0];
   if(p === "fin") return "fin";
@@ -3653,18 +3657,18 @@ function scrollToSid(sid){
   el.classList.add("searchHitFlash");
   setTimeout(() => el.classList.remove("searchHitFlash"), 1200);
 }
-function goToHit(page, sid){
-  showPage(page);
 
   function goToHit(page, sid){
-  const bid = activeBid();
-  const kind = kindFromSid(sid);
-  const id = idFromSid(sid);
+  // ✅ samo stanar ima read/unread
+  if(CURRENT_SESSION?.role === "stanar" && sid){
+    const bid = activeBid();
+    const kind = kindFromSid(sid);
+    const id = idFromSid(sid);
 
-  // čim korisnik ode na stavku (klik sa početne ili iz pretrage) -> pročitano
-  if(bid && kind && id){
-    markRead(bid, kind, id);
-    updateHomeSummary();
+    if(bid && kind && id){
+      markRead(bid, kind, id);
+      updateHomeSummary(); // skini NOVO odmah
+    }
   }
 
   showPage(page);
@@ -3760,12 +3764,25 @@ function updateHomeSummary(){
   const bid = activeBid();
   if(!bid) return;
 
-  const fin = loadItems(bid).slice().sort((a,b) => (b.date||"").localeCompare(a.date||""));
   if(fin.length){
   const it = fin[0];
   const sid = "fin:" + it.id;
 
-  const unread = !isRead(bid, "fin", it.id);
+  const unread = (CURRENT_SESSION?.role === "stanar") && !isRead(bid, "fin", it.id);
+
+  homeLastChange.innerHTML =
+    `Poslednja promena: ${it.type === "rashod" ? "Rashod" : "Prihod"} - ${it.category} (${it.date})` +
+    (unread ? ` <span class="unreadBadge">NOVO</span>` : ``);
+
+  homeLastChange.dataset.page = "finansije";
+  homeLastChange.dataset.sid  = sid;
+}else{
+  homeLastChange.textContent = "Poslednja promena: (nema)";
+  homeLastChange.dataset.page = "";
+  homeLastChange.dataset.sid  = "";
+}
+
+  const unread = (CURRENT_SESSION?.role === "stanar") && !isRead(bid, "brd", p.id);
 
   homeLastChange.innerHTML =
     `Poslednja promena: ${it.type === "rashod" ? "Rashod" : "Prihod"} - ${it.category} (${it.date})` +
@@ -3803,7 +3820,7 @@ function updateHomeSummary(){
   const f = frm[0];
   const sid = "frm:" + f.id;
 
-  const unread = !isRead(bid, "frm", f.id);
+  const unread = (CURRENT_SESSION?.role === "stanar") && !isRead(bid, "frm", f.id);
 
   homeForum.innerHTML =
     `Forum: ${f.title}` +
