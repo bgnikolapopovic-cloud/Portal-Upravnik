@@ -1105,6 +1105,27 @@ body.mode-portal.page-home .balanceCard{
   margin-top: 2px; /* po potrebi: 2–6px */
 }
 
+  /* Početna: fix overflow na mobilnom (vrati header elemente u kolonu) */
+@media (max-width: 720px){
+  body.mode-portal.page-home .rightCol{
+    display: flex;
+    flex-direction: column;
+    align-items: stretch; /* da elementi zauzmu širinu lepo */
+  }
+
+  body.mode-portal.page-home .searchInline,
+  body.mode-portal.page-home .balanceCard{
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* pošto si spuštao balanceCard za desktop poravnanje */
+  body.mode-portal.page-home .balanceCard{
+    margin-top: 0;
+    align-self: auto;
+  }
+}
+
   
 </style>
 </head>
