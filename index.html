@@ -1036,6 +1036,29 @@ body.mode-portal.page-home .pageHeader{
   display: flex; 
 }
 
+/* Početna: Promeni zgradu levo od Pretrage (bez drugih promena) */
+body.mode-portal.page-home .rightCol{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+/* redosled elemenata */
+body.mode-portal.page-home #switchBuildingBtn{
+  order: 1;
+}
+
+body.mode-portal.page-home .searchInline{
+  order: 2;
+  flex: 1;
+}
+
+body.mode-portal.page-home .balanceCard{
+  order: 3;
+}
+
+  
 </style>
 </head>
 
