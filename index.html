@@ -1891,46 +1891,11 @@ function kFin(bid){ return "pu_finance_items_v3__" + bid; }
 function kFirm(bid){ return "pu_finance_firms_v3__" + bid; }
 function kForum(bid){ return "pu_forum_proposals_v2__" + bid; }
 function kBoard(bid){ return "pu_board_posts_v2__" + bid; }
-  /* =========================
-   DUG / PRETPLATA (jedan storage key)
-========================= */
-function kDues(bid){ return "pu_dues_v1__" + bid; }
-
-function loadDues(bid){
-  try{
-    return JSON.parse(localStorage.getItem(kDues(bid)) || "{}");
-  }catch{
-    return {};
-  }
-}
-function saveDues(bid, obj){
-  localStorage.setItem(kDues(bid), JSON.stringify(obj || {}));
-}
-
+  
 /* ✅ IZMENJENO: umesto jednog balansa, cuvamo POCETNO STANJE po zgradi */
 function kOpeningBalance(bid){ return "pu_opening_balance_v1__" + bid; }
 
-/* =========================
-   DUG / PRETPLATA – helperi  (3e-2)
-========================= */
-function getUserDues(bid, username){
-  const all = loadDues(bid);
-  return all[username] || { paid: 0, note: "", docs: [] };
-}
-
-function setUserDues(bid, username, data){
-  const all = loadDues(bid);
-  all[username] = data;
-  saveDues(bid, all);
-}
-
-// lista stanara za aktivnu zgradu (iz USERS baze)
-function getBuildingTenants(bid){
-  return USERS
-    .filter(u => u.role === "stanar" && (u.buildings || []).includes(bid))
-    .map(u => u.username);
-}
-
+  /* =========================
    DUG/PRETPLATA (po zgradi, po stanaru)
 ========================= */
 function kDues(bid){ return "pu_dues_v1__" + bid; }
@@ -2023,20 +1988,6 @@ const balanceValue = document.getElementById("balanceValue");
 
 const globalSearch = document.getElementById("globalSearch");
 const searchResults = document.getElementById("searchResults");
-
-  // ===== DUG / PRETPLATA (upravnik) – DOM refs
-const monthlyFeeInput = document.getElementById("monthlyFeeInput");
-const duesStartMonth = document.getElementById("duesStartMonth");
-const saveDuesSettingsBtn = document.getElementById("saveDuesSettingsBtn");
-
-const duesList = document.getElementById("duesList");
-const duesActiveUser = document.getElementById("duesActiveUser");
-
-const duesPaidInput = document.getElementById("duesPaidInput");
-const duesNoteInput = document.getElementById("duesNoteInput");
-const duesPaySaveBtn = document.getElementById("duesPaySaveBtn");
-const duesPayCancelBtn = document.getElementById("duesPayCancelBtn");
-const duesPayError = document.getElementById("duesPayError");
 
 /* ✅ DODATO: inputs za pocetno stanje */
 const openingBalanceInput = document.getElementById("openingBalanceInput");
