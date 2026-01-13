@@ -1416,6 +1416,21 @@ body.mode-portal.page-home .pageHeader{
         <section class="card">
           <h3>Finansije</h3> 
 
+<!-- ✅ TABOVI (samo upravnik/admin) -->
+<div class="fRow" data-role="upravnik" style="margin-top:12px; gap:10px; align-items:center;">
+  <button class="btn btnPrimary" id="finTabEntries" type="button" style="flex:unset;">Promene finansija</button>
+  <button class="btn btnGhost" id="finTabDues" type="button" style="flex:unset;">Dugovanja stanara</button>
+</div>
+
+<div class="fRow" data-role="admin" style="margin-top:12px; gap:10px; align-items:center;">
+  <button class="btn btnPrimary" id="finTabEntriesAdmin" type="button" style="flex:unset;" disabled>Promene finansija</button>
+  <button class="btn btnGhost" id="finTabDuesAdmin" type="button" style="flex:unset;" disabled>Dugovanja stanara</button>
+  <div class="smallText" style="margin-top:0;">(Admin tabovi opcionalno — ako želiš, i adminu možemo uključiti isto kao upravniku.)</div>
+</div>
+
+<!-- ✅ WRAP: PROMENE FINANSIJA -->
+<div id="finEntriesWrap">
+          
 <!-- FIN HEADER CONTROLS (filter/sort) -->
 <div class="fRow" style="margin-top:12px; gap:10px; align-items:flex-end;">
   <div class="half field" style="margin-top:0;">
@@ -1567,7 +1582,8 @@ body.mode-portal.page-home .pageHeader{
             </div>
           </div>
 
-          <ul class="boardList" id="financeList"></ul>
+          <!-- ✅ WRAP: DUGOVANJA STANARA (upravnik) -->
+<div id="finDuesWrap" style="display:none;">
 
   <ul class="boardList" id="duesList" style="margin-top:12px;"></ul>
 
@@ -1582,34 +1598,52 @@ body.mode-portal.page-home .pageHeader{
 
       <div class="half field" style="margin-top:0;">
         <label for="duesPayAmount">Iznos (RSD)</label>
-        <input id="duesPayAmount" type="number" step="0.01" placeholder="npr. 2000">
+        <input id="duesPayAmount" type="number" step="0.01">
       </div>
 
       <div class="grow field" style="margin-top:0;">
-        <label for="duesPayNote">Napomena (opciono)</label>
-        <input id="duesPayNote" type="text" placeholder="npr. januar 2026 / dug / korekcija">
+        <label for="duesPayNote">Napomena</label>
+        <input id="duesPayNote" type="text">
       </div>
     </div>
 
     <div class="field" style="margin-top:10px;">
-      <label for="duesPayDocs">PDF potvrde (više fajlova, max 10MB)</label>
+      <label for="duesPayDocs">PDF potvrde</label>
       <input id="duesPayDocs" type="file" multiple accept="application/pdf">
     </div>
 
     <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
-      <button class="btn btnPrimary" id="duesPaySaveBtn" type="button" style="flex:unset;">Sačuvaj uplatu</button>
-      <button class="btn btnGhost" id="duesPayCancelBtn" type="button" style="flex:unset;">Otkaži</button>
+      <button class="btn btnPrimary" id="duesPaySaveBtn" type="button" style="flex:unset;">
+        Sačuvaj uplatu
+      </button>
+      <button class="btn btnGhost" id="duesPayCancelBtn" type="button" style="flex:unset;">
+        Otkaži
+      </button>
     </div>
 
     <div class="error" id="duesPayError" style="display:none;"></div>
   </div>
-</div>
 
-</div><!-- /finDuesWrap -->
-            
-          <!-- ✅ STANAR: moj dug / pretplata (read-only) -->
+</div>
+<!-- ✅ /finDuesWrap -->
+
+
+<!-- ✅ STANAR: moj dug / pretplata (read-only) -->
 <div class="smallText" data-role="stanar" id="tenantDuesBox" style="margin-top:14px;">
   <span class="badge">Moj dug / pretplata</span>
+
+  <div class="fRow" style="margin-top:10px; gap:10px;">
+    <span class="badge status-uplaceno">
+      Uplaćeno: <b id="tPaid">0,00</b> RSD
+    </span>
+    <span class="badge status-dug">
+      Dug: <b id="tDebt">0,00</b> RSD
+    </span>
+    <span class="badge status-pretplata">
+      Pretplata: <b id="tCredit">0,00</b> RSD
+    </span>
+  </div>
+</div>
 
   <div class="fRow" style="margin-top:10px; gap:10px;">
     <span class="badge status-uplaceno">
