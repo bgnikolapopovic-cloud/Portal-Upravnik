@@ -1590,7 +1590,19 @@ body.mode-portal.page-home .pageHeader{
 
              <div class="smallText" style="margin-top:10px;">
             
-          </div>
+          <!-- ✅ STANAR: moj dug / pretplata (read-only) -->
+<div class="smallText" data-role="stanar" id="tenantDuesBox" style="margin-top:14px;">
+  <span class="badge">Moj dug / pretplata</span>
+
+  <div class="fRow" style="margin-top:10px; gap:10px;">
+    <span class="badge">Uplaćeno: <b id="tPaid">0,00</b> RSD</span>
+    <span class="badge">Obaveza: <b id="tExpected">0,00</b> RSD</span>
+    <span class="badge" id="tSaldoBadge">0,00</span>
+  </div>
+
+  <div class="smallText" id="tPeriod" style="margin-top:8px;"></div>
+</div>
+
         </section>
       </section>
 
@@ -2010,6 +2022,13 @@ const duesPayDocs = document.getElementById("duesPayDocs");
 const duesPaySaveBtn = document.getElementById("duesPaySaveBtn");
 const duesPayCancelBtn = document.getElementById("duesPayCancelBtn");
 const duesPayError = document.getElementById("duesPayError");
+
+  // stanar – moj dug / pretplata
+const tenantDuesBox = document.getElementById("tenantDuesBox");
+const tPaid = document.getElementById("tPaid");
+const tExpected = document.getElementById("tExpected");
+const tSaldoBadge = document.getElementById("tSaldoBadge");
+const tPeriod = document.getElementById("tPeriod");
 
 /* finance elements */
 const financeList = document.getElementById("financeList");
@@ -4053,7 +4072,7 @@ function refreshAllModules(){
   renderDuesAdmin(bid);
   forumInit(bid);
   boardInit(bid);
-
+renderDuesTenant(bid);
   // refresh filtered view
   applySearchFilter();
   renderSearchDropdown(CURRENT_QUERY);
