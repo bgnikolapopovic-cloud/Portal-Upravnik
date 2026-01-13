@@ -1414,14 +1414,7 @@ body.mode-portal.page-home .pageHeader{
       <!-- FINANSIJE -->
       <section class="page" id="page-finansije">
         <section class="card">
-          <h3>Finansije</h3>
-
-          <div class="fRow" data-role="upravnik" style="margin-top:12px; gap:10px;">
-  <button class="btn btnPrimary" id="finTabEntries">Finansijske promene</button>
-  <button class="btn btnGhost" id="finTabDues">Dugovanja stanara</button>
-</div>
-
-       <div id="finEntriesWrap">   
+          <h3>Finansije</h3> 
 
 <!-- FIN HEADER CONTROLS (filter/sort) -->
 <div class="fRow" style="margin-top:12px; gap:10px; align-items:flex-end;">
@@ -1575,32 +1568,6 @@ body.mode-portal.page-home .pageHeader{
           </div>
 
           <ul class="boardList" id="financeList"></ul>
-
-</div><!-- /finEntriesWrap -->
-
-          <div id="finDuesWrap" style="display:none;">
-         
-<!-- ✅ DUG / PRETPLATA STANARA (samo upravnik) -->
-<div class="smallText" data-role="upravnik" style="margin-top:14px;">
-  <span class="badge">Dug / pretplata stanara</span>
-
-  <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end;">
-    <div class="half field" style="margin-top:0;">
-      <label for="monthlyFeeInput">Mesečna obaveza (RSD)</label>
-      <input id="monthlyFeeInput" type="number" min="0" step="1" value="2000">
-    </div>
-
-    <div class="half field" style="margin-top:0;">
-      <label for="duesStartMonth">Početni mesec obračuna</label>
-      <input id="duesStartMonth" type="month">
-    </div>
-
-    <div>
-      <button class="btn btnGhost" id="saveDuesSettingsBtn" type="button" style="flex:unset;">
-        Sačuvaj podešavanja
-      </button>
-    </div>
-  </div>
 
   <ul class="boardList" id="duesList" style="margin-top:12px;"></ul>
 
@@ -3848,7 +3815,7 @@ async function saveDuesPay(){
   duesPayWrap.style.display = "none";
   DUES_ACTIVE_USER = null;
 
-  renderDuesAdmin();
+//  renderDuesAdmin();
 }
 
 function cancelDuesPay(){
@@ -4193,7 +4160,7 @@ function refreshAllModules(){
   if(!bid) return;
 
   financeInit(bid);
-  renderDuesAdmin(bid);
+  //renderDuesAdmin(bid);
   forumInit(bid);
   boardInit(bid);
 renderDuesTenant(bid);
