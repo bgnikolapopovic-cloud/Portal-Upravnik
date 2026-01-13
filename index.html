@@ -1979,6 +1979,32 @@ function addDuesPayment(bid, username, pay){
   dues.paymentsByUser[username].push(pay);
   saveDues(bid, dues);
 }
+function renderDuesTenant(bid){
+  // samo stanar
+  if(CURRENT_SESSION?.role !== "stanar") return;
+
+  // dozvoli da se pozove i bez parametra
+  const buildingId = bid || activeBid();
+  if(!buildingId) return;
+
+  // DOM postoji?
+  if(!tPaid || !tExpected || !tSaldoBadge || !tPeriod) return;
+
+  const r = computeUserDue(buildingId, CURRENT_SESSION.username);
+
+  tPaid.textContent = formatRSD(r.paid);
+  tExpected.textContent = formatRSD(r.expected);
+
+  if(r.saldo < 0){
+    tSaldoBadge.textContent = `DUG: ${formatRSD(-r.saldo)} RSD`;
+  }else if(r.saldo > 0){
+    tSaldoBadge.textContent = `PRETPLATA: ${formatRSD(r.saldo)} RSD`;
+  }else{
+    tSaldoBadge.textContent = `0,00`;
+  }
+
+  tPeriod.textContent = `Obračun od ${r.start} • ${r.months} meseci`;
+}
 
 /* ===== DOM refs ===== */
 const usernameEl = document.getElementById("username");
