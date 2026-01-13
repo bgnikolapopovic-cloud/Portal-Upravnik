@@ -1206,6 +1206,44 @@ body.mode-portal.page-home .pageHeader{
     margin-top: 8px;        /* sada je stvarnih 5px */
   }
 }
+
+/* ===== Finansijski statusi ===== */
+
+/* Dug */
+.status-dug,
+.dug {
+  color: #dc2626;          /* crvena */
+  background: rgba(220,38,38,.12);
+  border: 1px solid rgba(220,38,38,.35);
+}
+
+/* Obaveza */
+.status-obaveza,
+.obaveza {
+  color: #ca8a04;          /* žuta */
+  background: rgba(250,204,21,.18);
+  border: 1px solid rgba(202,138,4,.35);
+}
+
+/* Uplaćeno / Pretplata */
+.status-uplaceno,
+.uplaceno,
+.pretplata {
+  color: #16a34a;          /* zelena */
+  background: rgba(22,163,74,.15);
+  border: 1px solid rgba(22,163,74,.35);
+}
+
+/* Mali UI polish */
+.status-dug,
+.status-obaveza,
+.status-uplaceno {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 12px;
+  display: inline-block;
+}
   
 </style>
 </head>
@@ -1607,9 +1645,17 @@ body.mode-portal.page-home .pageHeader{
   <span class="badge">Moj dug / pretplata</span>
 
   <div class="fRow" style="margin-top:10px; gap:10px;">
-    <span class="badge">Uplaćeno: <b id="tPaid">0,00</b> RSD</span>
-    <span class="badge">Obaveza: <b id="tExpected">0,00</b> RSD</span>
-    <span class="badge" id="tSaldoBadge">0,00</span>
+    <span class="badge status-uplaceno">
+  Uplaćeno: <b id="tPaid">0,00</b> RSD
+</span>
+
+<span class="badge status-obaveza">
+  Obaveza: <b id="tExpected">0,00</b> RSD
+</span>
+
+<span class="badge status-dug" id="tSaldoBadge">
+  0,00
+</span>
   </div>
 
   <div class="smallText" id="tPeriod" style="margin-top:8px;"></div>
@@ -2007,13 +2053,25 @@ function renderDuesTenant(bid){
   tPaid.textContent = formatRSD(r.paid);
   tExpected.textContent = formatRSD(r.expected);
 
-  if(r.saldo < 0){
-    tSaldoBadge.textContent = `DUG: ${formatRSD(-r.saldo)} RSD`;
-  }else if(r.saldo > 0){
-    tSaldoBadge.textContent = `PRETPLATA: ${formatRSD(r.saldo)} RSD`;
-  }else{
-    tSaldoBadge.textContent = `0,00`;
-  }
+  /* ===== SALDO + BOJA ===== */
+tSaldoBadge.classList.remove(
+  "status-dug",
+  "status-obaveza",
+  "status-uplaceno"
+);
+
+if (r.saldo < 0) {
+  tSaldoBadge.textContent = `DUG: ${formatRSD(-r.saldo)} RSD`;
+  tSaldoBadge.classList.add("status-dug");
+
+} else if (r.saldo === 0) {
+  tSaldoBadge.textContent = `0,00 RSD`;
+  tSaldoBadge.classList.add("status-obaveza");
+
+} else {
+  tSaldoBadge.textContent = `PRETPLATA: ${formatRSD(r.saldo)} RSD`;
+  tSaldoBadge.classList.add("status-uplaceno");
+}
 
   tPeriod.textContent = `Obračun od ${r.start} • ${r.months} meseci`;
 }
