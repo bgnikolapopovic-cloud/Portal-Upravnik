@@ -1530,8 +1530,65 @@ body.mode-portal.page-home .pageHeader{
           </div>
 
           <ul class="boardList" id="financeList"></ul>
+<!-- ✅ DUG / PRETPLATA STANARA (samo upravnik) -->
+<div class="smallText" data-role="upravnik" style="margin-top:14px;">
+  <span class="badge">Dug / pretplata stanara</span>
 
-          <div class="smallText" style="margin-top:10px;">
+  <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end;">
+    <div class="half field" style="margin-top:0;">
+      <label for="monthlyFeeInput">Mesečna obaveza (RSD)</label>
+      <input id="monthlyFeeInput" type="number" min="0" step="1" value="2000">
+    </div>
+
+    <div class="half field" style="margin-top:0;">
+      <label for="duesStartMonth">Početni mesec obračuna</label>
+      <input id="duesStartMonth" type="month">
+    </div>
+
+    <div>
+      <button class="btn btnGhost" id="saveDuesSettingsBtn" type="button" style="flex:unset;">
+        Sačuvaj podešavanja
+      </button>
+    </div>
+  </div>
+
+  <ul class="boardList" id="duesList" style="margin-top:12px;"></ul>
+
+  <div id="duesPayWrap" style="display:none; margin-top:14px;">
+    <div class="badge" id="duesPayTitle">Uplata</div>
+
+    <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end;">
+      <div class="half field" style="margin-top:0;">
+        <label for="duesPayDate">Datum uplate</label>
+        <input id="duesPayDate" type="date">
+      </div>
+
+      <div class="half field" style="margin-top:0;">
+        <label for="duesPayAmount">Iznos (RSD)</label>
+        <input id="duesPayAmount" type="number" step="0.01" placeholder="npr. 2000">
+      </div>
+
+      <div class="grow field" style="margin-top:0;">
+        <label for="duesPayNote">Napomena (opciono)</label>
+        <input id="duesPayNote" type="text" placeholder="npr. januar 2026 / dug / korekcija">
+      </div>
+    </div>
+
+    <div class="field" style="margin-top:10px;">
+      <label for="duesPayDocs">PDF potvrde (više fajlova, max 10MB)</label>
+      <input id="duesPayDocs" type="file" multiple accept="application/pdf">
+    </div>
+
+    <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
+      <button class="btn btnPrimary" id="duesPaySaveBtn" type="button" style="flex:unset;">Sačuvaj uplatu</button>
+      <button class="btn btnGhost" id="duesPayCancelBtn" type="button" style="flex:unset;">Otkaži</button>
+    </div>
+
+    <div class="error" id="duesPayError" style="display:none;"></div>
+  </div>
+</div>
+
+             <div class="smallText" style="margin-top:10px;">
             
           </div>
         </section>
@@ -1834,9 +1891,117 @@ function kFin(bid){ return "pu_finance_items_v3__" + bid; }
 function kFirm(bid){ return "pu_finance_firms_v3__" + bid; }
 function kForum(bid){ return "pu_forum_proposals_v2__" + bid; }
 function kBoard(bid){ return "pu_board_posts_v2__" + bid; }
+  /* =========================
+   DUG / PRETPLATA (jedan storage key)
+========================= */
+function kDues(bid){ return "pu_dues_v1__" + bid; }
+
+function loadDues(bid){
+  try{
+    return JSON.parse(localStorage.getItem(kDues(bid)) || "{}");
+  }catch{
+    return {};
+  }
+}
+function saveDues(bid, obj){
+  localStorage.setItem(kDues(bid), JSON.stringify(obj || {}));
+}
 
 /* ✅ IZMENJENO: umesto jednog balansa, cuvamo POCETNO STANJE po zgradi */
 function kOpeningBalance(bid){ return "pu_opening_balance_v1__" + bid; }
+
+/* =========================
+   DUG / PRETPLATA – helperi  (3e-2)
+========================= */
+function getUserDues(bid, username){
+  const all = loadDues(bid);
+  return all[username] || { paid: 0, note: "", docs: [] };
+}
+
+function setUserDues(bid, username, data){
+  const all = loadDues(bid);
+  all[username] = data;
+  saveDues(bid, all);
+}
+
+// lista stanara za aktivnu zgradu (iz USERS baze)
+function getBuildingTenants(bid){
+  return USERS
+    .filter(u => u.role === "stanar" && (u.buildings || []).includes(bid))
+    .map(u => u.username);
+}
+
+   DUG/PRETPLATA (po zgradi, po stanaru)
+========================= */
+function kDues(bid){ return "pu_dues_v1__" + bid; }
+
+function loadDues(bid){
+  const raw = localStorage.getItem(kDues(bid));
+  if(!raw){
+    const now = new Date();
+    const startMonth = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}`;
+    const seed = { monthlyFee: 2000, startMonth, paymentsByUser: {} };
+    localStorage.setItem(kDues(bid), JSON.stringify(seed));
+    return seed;
+  }
+  try{
+    const obj = JSON.parse(raw) || {};
+    obj.monthlyFee = Number(obj.monthlyFee ?? 2000);
+    obj.startMonth = String(obj.startMonth || "2025-01");
+    obj.paymentsByUser = obj.paymentsByUser || {};
+    return obj;
+  }catch{
+    return { monthlyFee: 2000, startMonth: "2025-01", paymentsByUser: {} };
+  }
+}
+
+function saveDues(bid, obj){
+  localStorage.setItem(kDues(bid), JSON.stringify(obj));
+}
+
+function ymNow(){
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`;
+}
+function ymToIndex(ym){
+  const [y,m] = String(ym||"").split("-").map(Number);
+  if(!Number.isFinite(y) || !Number.isFinite(m)) return 0;
+  return y*12 + (m-1);
+}
+function monthsBetweenInclusive(startYM, endYM){
+  return Math.max(0, ymToIndex(endYM) - ymToIndex(startYM) + 1);
+}
+function sumPayments(payments){
+  return (payments||[]).reduce((s,p)=> s + Number(p.amount||0), 0);
+}
+
+function listResidentsForBuilding(bid){
+  return USERS
+    .filter(u => u.role === "stanar" && (u.buildings||[]).includes(bid))
+    .map(u => u.username);
+}
+
+function computeUserDue(bid, username){
+  const dues = loadDues(bid);
+  const fee = Number(dues.monthlyFee||0);
+  const start = String(dues.startMonth||ymNow());
+  const months = monthsBetweenInclusive(start, ymNow());
+  const expected = fee * months;
+
+  const payments = dues.paymentsByUser?.[username] || [];
+  const paid = sumPayments(payments);
+
+  const saldo = paid - expected; // + pretplata, - dug
+  return { fee, start, months, expected, paid, saldo, payments };
+}
+
+function addDuesPayment(bid, username, pay){
+  const dues = loadDues(bid);
+  dues.paymentsByUser = dues.paymentsByUser || {};
+  dues.paymentsByUser[username] = dues.paymentsByUser[username] || [];
+  dues.paymentsByUser[username].push(pay);
+  saveDues(bid, dues);
+}
 
 /* ===== DOM refs ===== */
 const usernameEl = document.getElementById("username");
@@ -1859,11 +2024,41 @@ const balanceValue = document.getElementById("balanceValue");
 const globalSearch = document.getElementById("globalSearch");
 const searchResults = document.getElementById("searchResults");
 
+  // ===== DUG / PRETPLATA (upravnik) – DOM refs
+const monthlyFeeInput = document.getElementById("monthlyFeeInput");
+const duesStartMonth = document.getElementById("duesStartMonth");
+const saveDuesSettingsBtn = document.getElementById("saveDuesSettingsBtn");
+
+const duesList = document.getElementById("duesList");
+const duesActiveUser = document.getElementById("duesActiveUser");
+
+const duesPaidInput = document.getElementById("duesPaidInput");
+const duesNoteInput = document.getElementById("duesNoteInput");
+const duesPaySaveBtn = document.getElementById("duesPaySaveBtn");
+const duesPayCancelBtn = document.getElementById("duesPayCancelBtn");
+const duesPayError = document.getElementById("duesPayError");
+
 /* ✅ DODATO: inputs za pocetno stanje */
 const openingBalanceInput = document.getElementById("openingBalanceInput");
 const saveOpeningBalanceBtn = document.getElementById("saveOpeningBalanceBtn");
 const openingBalanceInputAdmin = document.getElementById("openingBalanceInputAdmin");
 const saveOpeningBalanceBtnAdmin = document.getElementById("saveOpeningBalanceBtnAdmin");
+
+  /* dues DOM */
+const monthlyFeeInput = document.getElementById("monthlyFeeInput");
+const duesStartMonth = document.getElementById("duesStartMonth");
+const saveDuesSettingsBtn = document.getElementById("saveDuesSettingsBtn");
+const duesList = document.getElementById("duesList");
+
+const duesPayWrap = document.getElementById("duesPayWrap");
+const duesPayTitle = document.getElementById("duesPayTitle");
+const duesPayDate = document.getElementById("duesPayDate");
+const duesPayAmount = document.getElementById("duesPayAmount");
+const duesPayNote = document.getElementById("duesPayNote");
+const duesPayDocs = document.getElementById("duesPayDocs");
+const duesPaySaveBtn = document.getElementById("duesPaySaveBtn");
+const duesPayCancelBtn = document.getElementById("duesPayCancelBtn");
+const duesPayError = document.getElementById("duesPayError");
 
 /* finance elements */
 const financeList = document.getElementById("financeList");
@@ -2070,19 +2265,24 @@ function attemptLogin(username, pass){
   errEl.style.display = "none";
 
   CURRENT_SESSION = {
-    username: u.username,
-    role: u.role,
-    buildings: (u.buildings || []).slice(),
-    activeBuildingId: null
-  };
+  username: u.username,
+  role: u.role,
+  buildings: (u.buildings || []).slice(),
+  activeBuildingId: null
+};
 
-  // stanar ide odmah u svoju zgradu
-  if(CURRENT_SESSION.role === "stanar"){
-    CURRENT_SESSION.activeBuildingId = CURRENT_SESSION.buildings[0] || null;
-    saveSession(CURRENT_SESSION);
-    enterPortal();
-    return;
-  }
+// 🔒 sakrij upravnik blokove stanarima
+document.querySelectorAll('[data-role="upravnik"]').forEach(el => {
+  if (CURRENT_SESSION?.role !== "upravnik") el.style.display = "none";
+});
+
+// stanar ide odmah u svoju zgradu
+if(CURRENT_SESSION.role === "stanar"){
+  CURRENT_SESSION.activeBuildingId = CURRENT_SESSION.buildings[0] || null;
+  saveSession(CURRENT_SESSION);
+  enterPortal();
+  return;
+}
 
   // upravnik/admin: ako više zgrada -> izbor, ako jedna -> direktno
   if((CURRENT_SESSION.buildings || []).length > 1){
@@ -3411,6 +3611,160 @@ function renderForum(bid, q){
     forumList.appendChild(li);
   });
 }
+
+let DUES_ACTIVE_USER = null;
+
+function renderDuesAdmin(){
+  const bid = activeBid();
+  if(!bid) return;
+  if(CURRENT_SESSION?.role !== "upravnik") return;
+
+  if(!monthlyFeeInput || !duesStartMonth || !saveDuesSettingsBtn || !duesList) return;
+
+  const dues = loadDues(bid);
+
+  monthlyFeeInput.value = String(Number(dues.monthlyFee || 2000));
+  duesStartMonth.value = dues.startMonth || ymNow();
+
+  saveDuesSettingsBtn.onclick = () => {
+    const fee = Number(monthlyFeeInput.value || 0);
+    const sm = String(duesStartMonth.value || "").trim();
+    const obj = loadDues(bid);
+    obj.monthlyFee = Number.isFinite(fee) ? fee : 0;
+    if(sm) obj.startMonth = sm;
+    saveDues(bid, obj);
+    renderDuesAdmin();
+  };
+
+  const residents = listResidentsForBuilding(bid);
+  duesList.innerHTML = "";
+
+  residents.forEach(username => {
+    const r = computeUserDue(bid, username);
+    const dug = Math.max(0, -r.saldo);
+    const pret = Math.max(0, r.saldo);
+
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; align-items:center;">
+        <div><b>${username}</b></div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <span class="badge">Uplaćeno: ${formatRSD(r.paid)} RSD</span>
+          <span class="badge">Obaveza: ${formatRSD(r.expected)} RSD</span>
+          <span class="badge">${dug>0 ? ("DUG: "+formatRSD(dug)) : (pret>0 ? ("PRETPLATA: "+formatRSD(pret)) : "0,00")}</span>
+        </div>
+      </div>
+      <div class="smallText" style="margin-top:8px;">Obračun od ${r.start} • ${r.months} meseci</div>
+    `;
+
+    const actions = document.createElement("div");
+    actions.style.marginTop = "10px";
+    actions.style.display = "flex";
+    actions.style.gap = "10px";
+    actions.style.flexWrap = "wrap";
+
+    const btnPay = document.createElement("button");
+    btnPay.className = "btn btnGhost";
+    btnPay.type = "button";
+    btnPay.textContent = "Dodaj uplatu + PDF";
+    btnPay.onclick = () => openDuesPay(username, r.fee);
+
+    actions.appendChild(btnPay);
+    li.appendChild(actions);
+
+    duesList.appendChild(li);
+  });
+}
+
+function openDuesPay(username, suggested){
+  DUES_ACTIVE_USER = username;
+
+  if(!duesPayWrap || !duesPayTitle || !duesPayDate || !duesPayAmount || !duesPayDocs) return;
+
+  const d = new Date();
+  duesPayTitle.textContent = `Uplata: ${username}`;
+  duesPayDate.value = d.toISOString().slice(0,10);
+  duesPayAmount.value = String(Number(suggested||0) || "");
+  if(duesPayNote) duesPayNote.value = "";
+  duesPayDocs.value = "";
+  if(duesPayError){ duesPayError.style.display="none"; duesPayError.textContent=""; }
+
+  duesPayWrap.style.display = "block";
+  duesPayWrap.scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+async function saveDuesPay(){
+  const bid = activeBid();
+  if(!bid) return;
+  if(CURRENT_SESSION?.role !== "upravnik") return;
+
+  if(!DUES_ACTIVE_USER) return;
+
+  const date = (duesPayDate?.value || "").trim();
+  const amount = Number((duesPayAmount?.value || "").trim());
+  const note = (duesPayNote?.value || "").trim();
+
+  if(!date || !Number.isFinite(amount)){
+    if(duesPayError){
+      duesPayError.textContent = "Greška: datum i iznos su obavezni.";
+      duesPayError.style.display = "block";
+    }
+    return;
+  }
+
+  const files = [...(duesPayDocs?.files || [])];
+  const total = totalFilesSizeBytes(files);
+  const LIMIT = 10 * 1024 * 1024;
+  if(total > LIMIT){
+    if(duesPayError){
+      duesPayError.textContent = "Greška: ukupna veličina PDF-ova prelazi 10MB.";
+      duesPayError.style.display = "block";
+    }
+    return;
+  }
+
+  const docs = [];
+  try{
+    for(const f of files){
+      const dataURL = await fileToDataURL(f);
+      docs.push({
+        name: f.name,
+        sizeKB: Math.ceil((f.size||0)/1024),
+        mime: f.type || "application/pdf",
+        dataURL
+      });
+    }
+  }catch{
+    if(duesPayError){
+      duesPayError.textContent = "Greška: ne mogu da pročitam PDF (FileReader).";
+      duesPayError.style.display = "block";
+    }
+    return;
+  }
+
+  addDuesPayment(bid, DUES_ACTIVE_USER, {
+    id: cryptoRandom(),
+    createdAt: Date.now(),
+    date,
+    amount,
+    note,
+    docs
+  });
+
+  duesPayWrap.style.display = "none";
+  DUES_ACTIVE_USER = null;
+
+  renderDuesAdmin();
+}
+
+function cancelDuesPay(){
+  if(duesPayWrap) duesPayWrap.style.display = "none";
+  DUES_ACTIVE_USER = null;
+}
+
+if(duesPaySaveBtn) duesPaySaveBtn.addEventListener("click", saveDuesPay);
+if(duesPayCancelBtn) duesPayCancelBtn.addEventListener("click", cancelDuesPay);
+  
 function resetProposalForm(){
   if(!pTitle) return;
   forumError.style.display = "none";
@@ -3745,6 +4099,7 @@ function refreshAllModules(){
   if(!bid) return;
 
   financeInit(bid);
+  renderDuesAdmin(bid);
   forumInit(bid);
   boardInit(bid);
 
