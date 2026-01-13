@@ -1378,6 +1378,13 @@ body.mode-portal.page-home .pageHeader{
         <section class="card">
           <h3>Finansije</h3>
 
+          <div class="fRow" data-role="upravnik" style="margin-top:12px; gap:10px;">
+  <button class="btn btnPrimary" id="finTabEntries">Finansijske promene</button>
+  <button class="btn btnGhost" id="finTabDues">Dugovanja stanara</button>
+</div>
+
+       <div id="finEntriesWrap">   
+
 <!-- FIN HEADER CONTROLS (filter/sort) -->
 <div class="fRow" style="margin-top:12px; gap:10px; align-items:flex-end;">
   <div class="half field" style="margin-top:0;">
@@ -1530,6 +1537,11 @@ body.mode-portal.page-home .pageHeader{
           </div>
 
           <ul class="boardList" id="financeList"></ul>
+
+</div><!-- /finEntriesWrap -->
+
+          <div id="finDuesWrap" style="display:none;">
+         
 <!-- ✅ DUG / PRETPLATA STANARA (samo upravnik) -->
 <div class="smallText" data-role="upravnik" style="margin-top:14px;">
   <span class="badge">Dug / pretplata stanara</span>
@@ -1587,6 +1599,8 @@ body.mode-portal.page-home .pageHeader{
     <div class="error" id="duesPayError" style="display:none;"></div>
   </div>
 </div>
+
+</div><!-- /finDuesWrap -->
             
           <!-- ✅ STANAR: moj dug / pretplata (read-only) -->
 <div class="smallText" data-role="stanar" id="tenantDuesBox" style="margin-top:14px;">
@@ -2012,6 +2026,33 @@ const errEl = document.getElementById("loginError");
 const togglePass = document.getElementById("togglePass");
 const remember = document.getElementById("remember");
 
+// ✅ FIN TABOVI (upravnik)
+const finTabEntries = document.getElementById("finTabEntries");
+const finTabDues    = document.getElementById("finTabDues");
+const finEntriesWrap= document.getElementById("finEntriesWrap");
+const finDuesWrap   = document.getElementById("finDuesWrap");
+function showFinTab(tab){
+  if(!finEntriesWrap || !finDuesWrap || !finTabEntries || !finTabDues) return;
+
+  if(tab === "entries"){
+    finEntriesWrap.style.display = "";
+    finDuesWrap.style.display = "none";
+    finTabEntries.className = "btn btnPrimary";
+    finTabDues.className = "btn btnGhost";
+  }else{
+    finEntriesWrap.style.display = "none";
+    finDuesWrap.style.display = "";
+    finTabEntries.className = "btn btnGhost";
+    finTabDues.className = "btn btnPrimary";
+  }
+}
+
+if(finTabEntries && finTabDues){
+  finTabEntries.addEventListener("click", () => showFinTab("entries"));
+  finTabDues.addEventListener("click", () => showFinTab("dues"));
+}
+
+  
 const buildingPickList = document.getElementById("buildingPickList");
 const bsLogoutBtn = document.getElementById("bsLogoutBtn");
 
@@ -2431,12 +2472,13 @@ document.body.classList.remove(
 // dodaj klasu za trenutnu stranu
 if(name) document.body.classList.add(`page-${name}`);
 
-
-  // dodaj odgovarajuću
-  document.body.classList.add(`page-${name}`);
-
   Object.values(pages).forEach(p => p.classList.remove("active"));
   (pages[name] || pages.home).classList.add("active");
+
+  // ✅ FINANSIJE: default tab za upravnika
+if(name === "finansije" && CURRENT_SESSION?.role === "upravnik"){
+  showFinTab("entries");
+}
 
   [...nav.querySelectorAll("a[data-page]")].forEach(a => {
     a.classList.toggle("active", a.dataset.page === name);
