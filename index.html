@@ -1345,6 +1345,44 @@ body.mode-portal.page-home .pageHeader{
   line-height: 1.2 !important;
 }
 
+  /* ===== FIN stavka: naslov + akcije u istom redu ===== */
+.finRowTop{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.finRowTitle{
+  flex:1;
+  min-width:0;               /* bitno da tekst može da se “skupi” */
+}
+
+.finRowActions{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  white-space:nowrap;        /* da Izmeni/Obriši ne prelomi */
+}
+
+/* da dugmad ne budu ogromna (ako su ti buttoni preveliki) */
+.finRowActions .btn{
+  padding:8px 14px;
+  border-radius:999px;
+}
+
+/* ===== Iznos + veličina fajla u istom redu ===== */
+.finAmountInline{
+  white-space:nowrap;        /* RSD + 4KB u istom redu */
+}
+
+.finFileSize{
+  margin-left:8px;
+  font-size:12px;
+  opacity:.65;
+  white-space:nowrap;
+}
+
   
 </style>
 </head>
@@ -3039,98 +3077,128 @@ items.sort((a,b) => {
   financeList.innerHTML = "";
 
   items.forEach(item => {
-    const li = document.createElement("li");
-    li.dataset.sid = "fin:" + item.id;
+  const li = document.createElement("li");
+  li.dataset.sid = "fin:" + item.id;
 
-    // ako stavka ima upload dokumente -> oboji plavo
-if(item.docs && item.docs.length){
-  li.classList.add("hasDocs");
-}
+  if(item.docs && item.docs.length){
+    li.classList.add("hasDocs");
+  }
 
+  const firmPart = item.firm ? (" — " + item.firm) : "";
 
-    const firmPart = item.firm ? (" — " + item.firm) : "";
-    const editTag = "";
+  // ✅ ukupna veličina dokumenata (da bude posle RSD)
+  const totalKB = (item.docs || []).reduce((s,d)=> s + Number(d.sizeKB || 0), 0);
 
-    li.textContent =
-      `${item.date} — ${item.type === "rashod" ? "Rashod" : "Prihod"} — ${item.category}${firmPart} — "${item.desc}" — ${formatRSD(item.amount)} RSD${editTag}`;
+  // ===== TOP RED (naslov levo + akcije desno) =====
+  const top = document.createElement("div");
+  top.className = "finRowTop";
 
-    if(item.docs && item.docs.length){
-      const ul = document.createElement("ul");
-      ul.className = "fileList";
+  const title = document.createElement("div");
+  title.className = "finRowTitle";
 
-      item.docs.forEach(d => {
-        const fli = document.createElement("li");
-        fli.style.cursor = "pointer";
-        fli.title = "Klik za otvaranje";
-        fli.innerHTML = `<span>${d.name}</span><small>${d.sizeKB} KB</small>`;
+  const prefix =
+    `${item.date} — ${item.type === "rashod" ? "Rashod" : "Prihod"} — ${item.category}${firmPart} — "${item.desc}" — `;
 
-        fli.addEventListener("click", () => {
-          if(!d.dataURL){
-            alert("Fajl je sacuvan bez sadržaja. Uploaduj ponovo.");
-            return;
-          }
-          const w = window.open();
-          if(!w){
-            alert("Browser je blokirao pop-up. Dozvoli pop-up za ovaj sajt.");
-            return;
-          }
-          w.document.write(`
-            <title>${d.name}</title>
-            <iframe src="${d.dataURL}" style="position:fixed; inset:0; width:100%; height:100%; border:0;"></iframe>
-          `);
-          w.document.close();
-        });
+  title.appendChild(document.createTextNode(prefix));
 
-        ul.appendChild(fli);
-      });
+  const amountSpan = document.createElement("span");
+  amountSpan.className = "finAmountInline";
+  amountSpan.appendChild(document.createTextNode(`${formatRSD(item.amount)} RSD`));
 
-      li.appendChild(ul);
-    }
+  if(totalKB > 0){
+    const sizeSpan = document.createElement("span");
+    sizeSpan.className = "finFileSize";
+    sizeSpan.textContent = `${totalKB} KB`;
+    amountSpan.appendChild(sizeSpan);
+  }
 
-    if(CURRENT_SESSION && CURRENT_SESSION.role === "upravnik"){
-      const actions = document.createElement("div");
-      actions.style.marginTop = "10px";
-      actions.style.display = "flex";
-      actions.style.gap = "10px";
-      actions.style.flexWrap = "wrap";
-      const edit = document.createElement("button");
-      edit.className = "btn btnGhost";
-      edit.type = "button";
-      edit.textContent = "Izmeni";
-      edit.disabled = !canEdit(item);
+  title.appendChild(amountSpan);
 
-      edit.addEventListener("click", () => {
-        if(!canEdit(item)){
-          alert("Izmena je moguća samo u roku od 30 dana.");
+  top.appendChild(title);
+
+  // ===== DESNO: IZMENI/OBRIŠI (samo upravnik) =====
+  if(CURRENT_SESSION && CURRENT_SESSION.role === "upravnik"){
+    const actions = document.createElement("div");
+    actions.className = "finRowActions";
+
+    const edit = document.createElement("button");
+    edit.className = "btn btnGhost";
+    edit.type = "button";
+    edit.textContent = "Izmeni";
+    edit.disabled = !canEdit(item);
+
+    edit.addEventListener("click", () => {
+      if(!canEdit(item)){
+        alert("Izmena je moguća samo u roku od 30 dana.");
+        return;
+      }
+      renderFirmSelect(bid);
+      setFinanceEditMode(item);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    const del = document.createElement("button");
+    del.className = "btn btnGhost";
+    del.type = "button";
+    del.textContent = "Obriši";
+    del.disabled = !canEdit(item);
+
+    del.addEventListener("click", () => {
+      const next = loadItems(bid).filter(x => x.id !== item.id);
+      saveItems(bid, next);
+      renderFinanceList(bid, CURRENT_QUERY);
+      renderSearchDropdown(CURRENT_QUERY);
+      updateHomeSummary();
+      refreshBalanceUI(bid);
+    });
+
+    actions.appendChild(edit);
+    actions.appendChild(del);
+    top.appendChild(actions);
+  }
+
+  li.appendChild(top);
+
+  // ===== PDF LISTA (ispod) =====
+  if(item.docs && item.docs.length){
+    const ul = document.createElement("ul");
+    ul.className = "fileList";
+
+    item.docs.forEach(d => {
+      const fli = document.createElement("li");
+      fli.style.cursor = "pointer";
+      fli.title = "Klik za otvaranje";
+
+      // ✅ ostaje samo naziv fajla (ne prikazujemo 4 KB ovde)
+      const nameSpan = document.createElement("span");
+      nameSpan.textContent = d.name;
+      fli.appendChild(nameSpan);
+
+      fli.addEventListener("click", () => {
+        if(!d.dataURL){
+          alert("Fajl je sacuvan bez sadržaja. Uploaduj ponovo.");
           return;
         }
-        renderFirmSelect(bid);
-        setFinanceEditMode(item);
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        const w = window.open();
+        if(!w){
+          alert("Browser je blokirao pop-up. Dozvoli pop-up za ovaj sajt.");
+          return;
+        }
+        w.document.write(`
+          <title>${d.name}</title>
+          <iframe src="${d.dataURL}" style="position:fixed; inset:0; width:100%; height:100%; border:0;"></iframe>
+        `);
+        w.document.close();
       });
 
-      actions.appendChild(edit);
+      ul.appendChild(fli);
+    });
 
-      const del = document.createElement("button");
-      del.className = "btn btnGhost";
-      del.type = "button";
-      del.textContent = "Obriši ";
-      del.disabled = !canEdit(item);
-      del.addEventListener("click", () => {
-        const next = loadItems(bid).filter(x => x.id !== item.id);
-        saveItems(bid, next);
-        renderFinanceList(bid, CURRENT_QUERY);
-        renderSearchDropdown(CURRENT_QUERY);
-        updateHomeSummary();
-        refreshBalanceUI(bid); /* ✅ IZMENJENO */
-      });
+    li.appendChild(ul);
+  }
 
-      actions.appendChild(del);
-      li.appendChild(actions);
-    }
-
-    financeList.appendChild(li);
-  });
+  financeList.appendChild(li);
+});
 }
 /* ===== FINANCE HEADER CONTROLS LISTENERS ===== */
 
