@@ -1443,6 +1443,39 @@ body.mode-portal.page-home .pageHeader{
   font-size: 13px;
 }
 
+  /* fin meta badge (datum/tip/kategorija) */
+.finMeta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  align-items:center;
+}
+
+.finChip{
+  display:inline-flex;
+  align-items:center;
+  padding:6px 10px;
+  border-radius:999px;
+  font-weight:900;
+  font-size:12px;
+  background: rgba(255,255,255,.55);
+  border: 1px solid rgba(15,23,42,.14);
+  white-space:nowrap;
+}
+
+/* datum malo mirniji */
+.finChipDate{
+  opacity:.75;
+  font-weight:800;
+}
+
+/* tekst opisa da bude “normalan” */
+.finDescLine{
+  margin-top:6px;
+  font-weight:800;
+  color: rgba(15,23,42,.86);
+}
+
   
 </style>
 </head>
@@ -3155,26 +3188,6 @@ items.sort((a,b) => {
 
   const title = document.createElement("div");
   title.className = "finRowTitle";
-
-  const prefix =
-    `${item.date} — ${item.type === "rashod" ? "Rashod" : "Prihod"} — ${item.category}${firmPart} — "${item.desc}" — `;
-
-  title.appendChild(document.createTextNode(prefix));
-
-  const amountSpan = document.createElement("span");
-  amountSpan.className = "finAmountInline";
-  amountSpan.appendChild(document.createTextNode(`${formatRSD(item.amount)} RSD`));
-
-  if(totalKB > 0){
-    const sizeSpan = document.createElement("span");
-    sizeSpan.className = "finFileSize";
-    sizeSpan.textContent = `${totalKB} KB`;
-    amountSpan.appendChild(sizeSpan);
-  }
-
-  title.appendChild(amountSpan);
-
-  top.appendChild(title);
 
   // ===== DESNO: IZMENI/OBRIŠI (samo upravnik) =====
   if(CURRENT_SESSION && CURRENT_SESSION.role === "upravnik"){
