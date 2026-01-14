@@ -1310,23 +1310,27 @@ body.mode-portal.page-home .pageHeader{
   white-space:nowrap;
 }
 
-  /* PDF prikaz ispod finansijske stavke – 50% manje (svuda) */
+  /* ===== PDF preview ispod finansijske stavke – 50% manje (desktop + mobile) ===== */
 .fin-pdf-wrap{
   margin-top: 10px;
+  position: relative;
+  width: 100%;
+  height: 260px;              /* kontrola prostora */
+  overflow: hidden;           /* sakrije višak */
   border-radius: 14px;
-  overflow: hidden;
-  border: 1px solid rgba(15,23,42,.10);
+  border: 1px solid rgba(15,23,42,.12);
   background: rgba(255,255,255,.55);
-  height: 260px; /* ti menjaš koliko prostora zauzima */
 }
 
 .fin-pdf-wrap iframe{
-  border:0;
+  position: absolute;
+  inset: 0;
   width: 200%;
   height: 200%;
   transform: scale(0.5);
   transform-origin: top left;
-  display:block;
+  border: 0;
+  display: block;
 }
 
   
