@@ -1244,6 +1244,52 @@ body.mode-portal.page-home .pageHeader{
   font-size: 12px;
   display: inline-block;
 }
+
+/* ===== Finansije: kompaktne kontrole (Tip/Kategorija/Sort/Pretraga) ===== */
+:root{
+  --fin-ctrl-h: 36px;
+  --fin-ctrl-font: 13px;
+  --fin-ctrl-pad-y: 6px;
+  --fin-ctrl-pad-x: 10px;
+}
+
+/* same kontrole */
+#finFilterType,
+#finFilterCategory,
+#finSortBy,
+#finLocalSearch{
+  height: var(--fin-ctrl-h);
+  font-size: var(--fin-ctrl-font);
+  padding: var(--fin-ctrl-pad-y) var(--fin-ctrl-pad-x);
+  border-radius: 12px;
+}
+
+/* dugme "očisti" */
+#finClearBtn{
+  height: var(--fin-ctrl-h);
+  font-size: var(--fin-ctrl-font);
+  padding: var(--fin-ctrl-pad-y) 12px;
+  border-radius: 12px;
+}
+
+/* vizuelno “pro” (opciono ali preporučeno) */
+#finFilterType,
+#finFilterCategory,
+#finSortBy,
+#finLocalSearch,
+#finClearBtn{
+  background: rgba(248,250,252,.88);
+  border: 1px solid rgba(15,23,42,.14);
+}
+
+/* fokus (da izgleda profi kad klikneš) */
+#finFilterType:focus,
+#finFilterCategory:focus,
+#finSortBy:focus,
+#finLocalSearch:focus{
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59,130,246,.18);
+}
   
 </style>
 </head>
