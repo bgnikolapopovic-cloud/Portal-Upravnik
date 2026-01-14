@@ -2146,6 +2146,13 @@ if (r.saldo < 0) {
 }
 
   tPeriod.textContent = `Obračun od ${r.start} • ${r.months} meseci`;
+
+// ✅ OVDE ubaciš ovo da se donji prikaz sakrije (uplaceno/obaveza/dug)
+if(CURRENT_SESSION?.role === "stanar"){
+  if(tenantDuesBox){
+    tenantDuesBox.style.display = "none";
+  }
+}
 }
 
 /* ✅ OVDE LEPIŠ */
