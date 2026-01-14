@@ -1290,6 +1290,25 @@ body.mode-portal.page-home .pageHeader{
   outline: none;
   box-shadow: 0 0 0 3px rgba(59,130,246,.18);
 }
+
+/* FINANSIJE: naslov + stanar badge u istom redu */
+.finTitleRow{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+
+#finTenantBadge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 12px;
+  border-radius:999px;
+  font-weight:900;
+  font-size:12px;
+  white-space:nowrap;
+}
   
 </style>
 </head>
@@ -1460,7 +1479,14 @@ body.mode-portal.page-home .pageHeader{
       <!-- FINANSIJE -->
       <section class="page" id="page-finansije">
         <section class="card">
-          <h3>Finansije</h3>
+          <div class="finTitleRow">
+  <h3>Finansije</h3>
+
+  <!-- STANAR: Moj dug/pretplata u naslovu Finansija -->
+  <div class="finTenantBadge status-obaveza" data-role="stanar" id="finTenantBadge" style="display:none;">
+    <span id="finTenantBadgeText">0,00 RSD</span>
+  </div>
+</div>
 
           <div class="fRow" data-role="upravnik" style="margin-top:12px; gap:10px;">
   <button class="btn btnPrimary" id="finTabEntries">Finansijske promene</button>
@@ -2121,6 +2147,40 @@ if (r.saldo < 0) {
 
   tPeriod.textContent = `Obračun od ${r.start} • ${r.months} meseci`;
 }
+  tPeriod.textContent = `Obračun od ${r.start} • ${r.months} meseci`;
+}
+
+/* ✅ OVDE LEPIŠ */
+function renderTenantFinanceHeaderBadge(bid){
+  if(CURRENT_SESSION?.role !== "stanar") return;
+
+  const buildingId = bid || activeBid();
+  if(!buildingId) return;
+
+  const badge = document.getElementById("finTenantBadge");
+  const textEl = document.getElementById("finTenantBadgeText");
+  if(!badge || !textEl) return;
+
+  const r = computeUserDue(buildingId, CURRENT_SESSION.username);
+
+  badge.classList.remove("status-dug","status-obaveza","status-uplaceno");
+
+  if(r.saldo < 0){
+    textEl.textContent = `DUG: ${formatRSD(-r.saldo)} RSD`;
+    badge.classList.add("status-dug");
+  }else if(r.saldo === 0){
+    textEl.textContent = `0,00 RSD`;
+    badge.classList.add("status-obaveza");
+  }else{
+    textEl.textContent = `PRETPLATA: ${formatRSD(r.saldo)} RSD`;
+    badge.classList.add("status-uplaceno");
+  }
+
+  badge.style.display = "";
+}
+
+/* ===== DOM refs ===== */
+const usernameEl = document.getElementById("username");
 
 /* ===== DOM refs ===== */
 const usernameEl = document.getElementById("username");
@@ -2150,7 +2210,7 @@ function showFinTab(tab){
     finTabDues.className = "btn btnPrimary";
   }
 }
-
+  
 if(finTabEntries && finTabDues){
   finTabEntries.addEventListener("click", () => showFinTab("entries"));
   finTabDues.addEventListener("click", () => showFinTab("dues"));
@@ -2588,6 +2648,10 @@ if(name === "finansije" && CURRENT_SESSION?.role === "upravnik"){
     a.classList.toggle("active", a.dataset.page === name);
   });
 
+  if(name === "finansije"){
+    renderTenantFinanceHeaderBadge(activeBid());
+  }
+  
   closeS();
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -4243,6 +4307,8 @@ function refreshAllModules(){
   forumInit(bid);
   boardInit(bid);
 renderDuesTenant(bid);
+  renderTenantFinanceHeaderBadge(bid);
+
   // refresh filtered view
   applySearchFilter();
   renderSearchDropdown(CURRENT_QUERY);
