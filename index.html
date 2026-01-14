@@ -1247,10 +1247,10 @@ body.mode-portal.page-home .pageHeader{
 
 /* ===== Finansije: kompaktne kontrole (Tip/Kategorija/Sort/Pretraga) ===== */
 :root{
-  --fin-ctrl-h: 29px;        /* 36 → 28.8 ≈ 29 */
-  --fin-ctrl-font: 11px;   /* 13 → 10.4 */
-  --fin-ctrl-pad-y: 5px;     /* 6 → 4.8 */
-  --fin-ctrl-pad-x: 8px;     /* 10 → 8 */
+  --fin-ctrl-h: 36px;
+  --fin-ctrl-font: 13px;
+  --fin-ctrl-pad-y: 6px;
+  --fin-ctrl-pad-x: 10px;
 }
 
 /* same kontrole */
@@ -1310,45 +1310,24 @@ body.mode-portal.page-home .pageHeader{
   white-space:nowrap;
 }
 
-  /* ===== PDF preview ispod finansijske stavke – 50% manje (desktop + mobile) ===== */
-.fin-pdf-wrap{
-  margin-top: 10px;
-  position: relative;
-  width: 100%;
-  height: 260px;              /* kontrola prostora */
-  overflow: hidden;           /* sakrije višak */
-  border-radius: 14px;
-  border: 1px solid rgba(15,23,42,.12);
-  background: rgba(255,255,255,.55);
+/* ===== FINANSIJE: SMANJI NAZIV PDF-a (ono plavo što si zaokružio) ===== */
+#financeList .fileList li{
+  padding: 6px 10px !important;     /* manje prostora */
+  border-radius: 12px !important;
+  font-size: 12px !important;       /* manji tekst (fallback) */
+  line-height: 1.2 !important;
 }
 
-.fin-pdf-wrap iframe{
-  position: absolute;
-  inset: 0;
-  width: 200%;
-  height: 200%;
-  transform: scale(0.5);
-  transform-origin: top left;
-  border: 0;
-  display: block;
+#financeList .fileList li span{
+  font-size: 12px !important;       /* naziv fajla */
+  font-weight: 800 !important;
 }
 
-  /* ===== Naziv PDF fajla ispod finansijske stavke ===== */
-.fin-docs li {
-  font-size: 12px;          /* SMANJENO */
-  line-height: 1.2;
-  padding: 4px 6px;         /* manji razmak */
+#financeList .fileList li small{
+  font-size: 10px !important;       /* "4 KB" */
+  font-weight: 800 !important;
+  opacity: .7 !important;
 }
-
-.fin-docs li span {
-  font-size: 12px;
-}
-
-.fin-docs li small {
-  font-size: 10px;
-  opacity: 0.7;
-}
-
   
 </style>
 </head>
@@ -3069,32 +3048,21 @@ if(item.docs && item.docs.length){
         fli.innerHTML = `<span>${d.name}</span><small>${d.sizeKB} KB</small>`;
 
         fli.addEventListener("click", () => {
-  if(!d.dataURL){
-    alert("Fajl je sacuvan bez sadržaja. Uploaduj ponovo.");
-    return;
-  }
-
-  // INLINE preview unutar stavke (toggle)
-  let prev = li.querySelector(".fin-pdf-wrap");
-
-  // klik na isti PDF -> zatvori
-  if(prev && prev.dataset.src === d.dataURL){
-    prev.remove();
-    return;
-  }
-
-  // napravi ili osveži preview
-  if(!prev){
-    prev = document.createElement("div");
-    prev.className = "fin-pdf-wrap";
-    li.appendChild(prev);
-  }
-
-  prev.dataset.src = d.dataURL;
-  prev.innerHTML = `<iframe src="${d.dataURL}"></iframe>`;
-
-  prev.scrollIntoView({ behavior:"smooth", block:"nearest" });
-});
+          if(!d.dataURL){
+            alert("Fajl je sacuvan bez sadržaja. Uploaduj ponovo.");
+            return;
+          }
+          const w = window.open();
+          if(!w){
+            alert("Browser je blokirao pop-up. Dozvoli pop-up za ovaj sajt.");
+            return;
+          }
+          w.document.write(`
+            <title>${d.name}</title>
+            <iframe src="${d.dataURL}" style="position:fixed; inset:0; width:100%; height:100%; border:0;"></iframe>
+          `);
+          w.document.close();
+        });
 
         ul.appendChild(fli);
       });
