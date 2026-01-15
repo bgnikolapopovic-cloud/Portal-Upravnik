@@ -1455,13 +1455,17 @@ body.mode-portal.page-home .pageHeader{
   padding: 8px 10px;
 }
 
-/* Ako ti tekst postane “slab” na tamnijoj pozadini */
-.finCard strong,
-.finCard b{
-  color: rgba(15,23,42,.95);
+/* ===== FINANSIJE: stvarno potamni svaku stavku ===== */
+#financeList li.finCard{
+  background: rgba(15, 23, 42, .32) !important;
+  border: 1px solid rgba(15, 23, 42, .30) !important;
+  box-shadow: 0 14px 32px rgba(2, 6, 23, .28) !important;
+  border-radius: 18px;
+  padding: 14px 16px;
+  margin: 14px 0;
 }
-.finCard{
-  color: rgba(15,23,42,.90);
+#financeList li.finCard:hover{
+  background: rgba(15,23,42,.38) !important;
 }
 
   
@@ -3160,8 +3164,7 @@ items.sort((a,b) => {
   items.forEach(item => {
   const li = document.createElement("li");
   li.dataset.sid = "fin:" + item.id;
-
-      li.classList.add("finCard"); 
+li.classList.add("finCard"); 
 
   // ako stavka ima upload dokumente -> oboji plavo
   if(item.docs && item.docs.length){
