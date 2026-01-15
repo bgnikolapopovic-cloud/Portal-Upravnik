@@ -1528,7 +1528,9 @@ body.mode-portal.page-home .pageHeader{
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  max-width: 100%;
 }
+
 
   
 </style>
@@ -3205,7 +3207,17 @@ function financeMatches(item, q){
   const hay = `${item.date} ${item.type} ${item.category} ${item.firm||""} ${item.desc||""} ${item.amount||""} ${docsNames}`;
   return includesQuery(hay, q);
 }
-function renderFinanceList(bid, q){
+
+  function escapeHTML(s){
+  return String(s ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+  function renderFinanceList(bid, q){
   
   let items = loadItems(bid).slice();
 
@@ -3254,8 +3266,8 @@ li.classList.add("finCard");
 
   const title = document.createElement("div");
   title.className = "finRowTitle";
-  title.textContent =
-    `${item.date} — ${item.type === "rashod" ? "Rashod" : "Prihod"} — ${item.category}${firmPart} — "${item.desc}" — ${formatRSD(item.amount)} RSD`;
+  title.innerHTML =
+  `${escapeHTML(item.date)} — ${item.type === "rashod" ? "Rashod" : "Prihod"} — ${escapeHTML(item.category)}${escapeHTML(firmPart)} — "<span class="finDesc">${escapeHTML(item.desc)}</span>" — ${escapeHTML(formatRSD(item.amount))} RSD`;
 
   top.appendChild(title);
 
