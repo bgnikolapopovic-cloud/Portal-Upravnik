@@ -1264,20 +1264,10 @@ body.mode-portal.page-home .pageHeader{
   border-radius: 12px;
 }
 
-/* dugme "očisti" */
-#finClearBtn{
-  height: var(--fin-ctrl-h);
-  font-size: var(--fin-ctrl-font);
-  padding: var(--fin-ctrl-pad-y) 12px;
-  border-radius: 12px;
-}
-
-/* vizuelno “pro” (opciono ali preporučeno) */
-#finFilterType,
+  #finFilterType,
 #finFilterCategory,
 #finSortBy,
-#finLocalSearch,
-#finClearBtn{
+#finLocalSearch{
   background: rgba(248,250,252,.88);
   border: 1px solid rgba(15,23,42,.14);
 }
@@ -2439,7 +2429,6 @@ const finLocalSearch = document.getElementById("finLocalSearch");
 const finFilterType = document.getElementById("finFilterType");
 const finFilterCategory = document.getElementById("finFilterCategory");
 const finSortBy = document.getElementById("finSortBy");
-const finClearBtn = document.getElementById("finClearBtn");
   
   const existingDocsWrap = document.getElementById("existingDocsWrap");
 const existingDocsList = document.getElementById("existingDocsList");
@@ -3680,29 +3669,6 @@ li.appendChild(top);
 
       li.appendChild(ul);
     }
-
-    if(CURRENT_SESSION && CURRENT_SESSION.role === "upravnik"){
-  const actions = document.createElement("div");
-  actions.style.marginTop = "10px";
-  actions.style.display = "flex";
-  actions.style.gap = "10px";
-  actions.style.flexWrap = "wrap";
-
-  const del = document.createElement("button");
-  del.className = "btn btnGhost";
-  del.type = "button";
-  del.textContent = "Obriši";
-  del.addEventListener("click", () => {
-    const next = loadBoardPosts(bid).filter(x => x.id !== post.id);
-    saveBoardPosts(bid, next);
-    renderBoard(bid, CURRENT_QUERY);
-    renderSearchDropdown(CURRENT_QUERY);
-    updateHomeSummary();
-  });
-
-  actions.appendChild(del);
-  li.appendChild(actions);
-}
 
     boardList.appendChild(li);
   });
