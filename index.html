@@ -1383,6 +1383,60 @@ body.mode-portal.page-home .pageHeader{
   white-space:nowrap;
 }
 
+/* === FIN: header red (datum/opis + akcije desno) === */
+.finRowTop{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.finRowTitle{
+  flex:1;
+  min-width:0;            /* bitno da tekst može da se “seče” umesto da gura dugmad */
+}
+
+.finRowActions{
+  flex:0 0 auto;
+  display:flex;
+  gap:10px;
+  align-items:center;
+  justify-content:flex-end;
+}
+
+/* mala dugmad gore desno */
+.finActBtn{
+  padding:8px 12px;
+  border-radius:12px;
+  border:1px solid rgba(15,23,42,.18);
+  background:rgba(248,250,252,.92);
+  color:#0f172a;
+  font-weight:800;
+  letter-spacing:.2px;
+  cursor:pointer;
+  transition:transform .08s ease, background .12s ease;
+  line-height:1;
+}
+
+.finActBtn:hover{ transform:translateY(-1px); }
+.finActBtn:active{ transform:translateY(0px); }
+
+.finActBtn.danger{
+  border-color: rgba(239,68,68,.35);
+  color:#b91c1c;
+}
+
+/* mobile: da ne bude tesno */
+@media (max-width: 640px){
+  .finRowTop{
+    flex-direction:column;
+    align-items:stretch;
+  }
+  .finRowActions{
+    justify-content:flex-end;
+  }
+}
+
   
 </style>
 </head>
@@ -1592,15 +1646,16 @@ body.mode-portal.page-home .pageHeader{
     </select>
   </div>
 
-  <div class="half field" style="margin-top:0;">
-    <label for="finSortBy">Sortiranje</label>
-    <select id="finSortBy">
-      <option value="date-desc">Datum ↓</option>
-      <option value="date-asc">Datum ↑</option>
-      <option value="amount-desc">Iznos ↓</option>
-      <option value="amount-asc">Iznos ↑</option>
-    </select>
-  </div>
+  <div class="half field" style="margin-top:0; display:none;">
+  <label for="finSortBy">Sortiranje</label>
+  <select id="finSortBy">
+    <option value="date-desc">Datum ↓</option>
+    <option value="date-asc">Datum ↑</option>
+    <option value="amount-desc">Iznos ↓</option>
+    <option value="amount-asc">Iznos ↑</option>
+  </select>
+</div>
+
 
   <div class="grow field" style="margin-top:0;">
     <label for="finLocalSearch">Pretraga</label>
@@ -3086,12 +3141,6 @@ if(item.docs && item.docs.length){
 }
 
 
-    const firmPart = item.firm ? (" — " + item.firm) : "";
-    const editTag = "";
-
-    li.textContent =
-      `${item.date} — ${item.type === "rashod" ? "Rashod" : "Prihod"} — ${item.category}${firmPart} — "${item.desc}" — ${formatRSD(item.amount)} RSD${editTag}`;
-
     if(item.docs && item.docs.length){
       const ul = document.createElement("ul");
       ul.className = "fileList";
@@ -3125,47 +3174,7 @@ if(item.docs && item.docs.length){
       li.appendChild(ul);
     }
 
-    if(CURRENT_SESSION && CURRENT_SESSION.role === "upravnik"){
-      const actions = document.createElement("div");
-      actions.style.marginTop = "10px";
-      actions.style.display = "flex";
-      actions.style.gap = "10px";
-      actions.style.flexWrap = "wrap";
-      const edit = document.createElement("button");
-      edit.className = "btn btnGhost";
-      edit.type = "button";
-      edit.textContent = "Izmeni";
-      edit.disabled = !canEdit(item);
-
-      edit.addEventListener("click", () => {
-        if(!canEdit(item)){
-          alert("Izmena je moguća samo u roku od 30 dana.");
-          return;
-        }
-        renderFirmSelect(bid);
-        setFinanceEditMode(item);
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      });
-
-      actions.appendChild(edit);
-
-      const del = document.createElement("button");
-      del.className = "btn btnGhost";
-      del.type = "button";
-      del.textContent = "Obriši ";
-      del.disabled = !canEdit(item);
-      del.addEventListener("click", () => {
-        const next = loadItems(bid).filter(x => x.id !== item.id);
-        saveItems(bid, next);
-        renderFinanceList(bid, CURRENT_QUERY);
-        renderSearchDropdown(CURRENT_QUERY);
-        updateHomeSummary();
-        refreshBalanceUI(bid); /* ✅ IZMENJENO */
-      });
-
-      actions.appendChild(del);
-      li.appendChild(actions);
-    }
+    
 
     financeList.appendChild(li);
   });
