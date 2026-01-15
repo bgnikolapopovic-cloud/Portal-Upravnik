@@ -3132,52 +3132,103 @@ items.sort((a,b) => {
   financeList.innerHTML = "";
 
   items.forEach(item => {
-    const li = document.createElement("li");
-    li.dataset.sid = "fin:" + item.id;
+  const li = document.createElement("li");
+  li.dataset.sid = "fin:" + item.id;
 
-    // ako stavka ima upload dokumente -> oboji plavo
-if(item.docs && item.docs.length){
-  li.classList.add("hasDocs");
-}
+  // ako stavka ima upload dokumente -> oboji plavo
+  if(item.docs && item.docs.length){
+    li.classList.add("hasDocs");
+  }
 
+  const firmPart = item.firm ? (" — " + item.firm) : "";
 
-    if(item.docs && item.docs.length){
-      const ul = document.createElement("ul");
-      ul.className = "fileList";
+  // ===== TOP RED (naslov + dugmad) =====
+  const top = document.createElement("div");
+  top.className = "finRowTop";
 
-      item.docs.forEach(d => {
-        const fli = document.createElement("li");
-        fli.style.cursor = "pointer";
-        fli.title = "Klik za otvaranje";
-        fli.innerHTML = `<span>${d.name}</span><small>${d.sizeKB} KB</small>`;
+  const title = document.createElement("div");
+  title.className = "finRowTitle";
+  title.textContent =
+    `${item.date} — ${item.type === "rashod" ? "Rashod" : "Prihod"} — ${item.category}${firmPart} — "${item.desc}" — ${formatRSD(item.amount)} RSD`;
 
-        fli.addEventListener("click", () => {
-          if(!d.dataURL){
-            alert("Fajl je sacuvan bez sadržaja. Uploaduj ponovo.");
-            return;
-          }
-          const w = window.open();
-          if(!w){
-            alert("Browser je blokirao pop-up. Dozvoli pop-up za ovaj sajt.");
-            return;
-          }
-          w.document.write(`
-            <title>${d.name}</title>
-            <iframe src="${d.dataURL}" style="position:fixed; inset:0; width:100%; height:100%; border:0;"></iframe>
-          `);
-          w.document.close();
-        });
+  top.appendChild(title);
 
-        ul.appendChild(fli);
+  if(CURRENT_SESSION && CURRENT_SESSION.role === "upravnik"){
+    const actions = document.createElement("div");
+    actions.className = "finRowActions";
+
+    const edit = document.createElement("button");
+    edit.className = "finActBtn";
+    edit.type = "button";
+    edit.textContent = "Izmeni";
+    edit.disabled = !canEdit(item);
+    edit.addEventListener("click", () => {
+      if(!canEdit(item)) return alert("Izmena je moguća samo u roku od 30 dana.");
+      renderFirmSelect(bid);
+      setFinanceEditMode(item);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    const del = document.createElement("button");
+    del.className = "finActBtn danger";
+    del.type = "button";
+    del.textContent = "Obriši";
+    del.disabled = !canEdit(item);
+    del.addEventListener("click", () => {
+      const next = loadItems(bid).filter(x => x.id !== item.id);
+      saveItems(bid, next);
+      renderFinanceList(bid, CURRENT_QUERY);
+      renderSearchDropdown(CURRENT_QUERY);
+      updateHomeSummary();
+      refreshBalanceUI(bid);
+    });
+
+    actions.appendChild(edit);
+    actions.appendChild(del);
+    top.appendChild(actions);
+  }
+
+  li.appendChild(top);
+  // ===== /TOP RED =====
+
+  // ===== PDF LISTA (ostaje ispod) =====
+  if(item.docs && item.docs.length){
+    const ul = document.createElement("ul");
+    ul.className = "fileList";
+
+    item.docs.forEach(d => {
+      const fli = document.createElement("li");
+      fli.style.cursor = "pointer";
+      fli.title = "Klik za otvaranje";
+      fli.innerHTML = `<span>${d.name}</span><small>${d.sizeKB} KB</small>`;
+
+      fli.addEventListener("click", () => {
+        if(!d.dataURL){
+          alert("Fajl je sacuvan bez sadržaja. Uploaduj ponovo.");
+          return;
+        }
+        const w = window.open();
+        if(!w){
+          alert("Browser je blokirao pop-up. Dozvoli pop-up za ovaj sajt.");
+          return;
+        }
+        w.document.write(`
+          <title>${d.name}</title>
+          <iframe src="${d.dataURL}" style="position:fixed; inset:0; width:100%; height:100%; border:0;"></iframe>
+        `);
+        w.document.close();
       });
 
-      li.appendChild(ul);
-    }
+      ul.appendChild(fli);
+    });
 
-    
+    li.appendChild(ul);
+  }
+  // ===== /PDF LISTA =====
 
-    financeList.appendChild(li);
-  });
+  financeList.appendChild(li);
+});
+
 }
 /* ===== FINANCE HEADER CONTROLS LISTENERS ===== */
 
