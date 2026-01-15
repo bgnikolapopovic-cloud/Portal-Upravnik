@@ -1468,6 +1468,28 @@ body.mode-portal.page-home .pageHeader{
   background: rgba(15,23,42,.38) !important;
 }
 
+  /* Početno stanje – labela manja i diskretnija */
+.openingBalanceLabel{
+  font-size: 0.65em;   /* ~35–40% manje od normalnog teksta */
+  opacity: .65;
+  letter-spacing: .02em;
+  margin-bottom: 2px;
+}
+
+/* Wrapper za početno stanje */
+#openingBalanceView,
+#openingBalanceViewAdmin{
+  gap: 6px !important;      /* približi elemente */
+  align-items: baseline;    /* poravnaj tekst i cifru */
+}
+
+/* Sama cifra */
+#openingBalanceValue,
+#openingBalanceValueAdmin{
+  font-size: 1.25em;        /* blago istaknuta */
+  padding: 4px 10px;        /* manji “balon” */
+}
+
   
 </style>
 </head>
