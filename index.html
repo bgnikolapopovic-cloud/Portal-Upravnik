@@ -1427,6 +1427,43 @@ body.mode-portal.page-home .pageHeader{
   }
 }
 
+  /* ===== Finansije: potamni karticu svake unete stavke ===== */
+.finCard{
+  background: rgba(15, 23, 42, .18);   /* potamnjenje */
+  border: 1px solid rgba(15, 23, 42, .22);
+  box-shadow: 0 10px 26px rgba(2, 6, 23, .10);
+  border-radius: 18px;
+  padding: 14px 16px;
+  margin: 12px 0;
+  backdrop-filter: blur(6px); /* ako koristis glass efekat */
+}
+
+/* malo “uredi” razmake unutar kartice (opciono) */
+.finCard .row,
+.finCard .finRow,
+.finCard .itemRow{
+  align-items: center;
+  gap: 10px;
+}
+
+/* PDF redovi da budu uredniji (opciono) */
+.finCard .fileRow,
+.finCard .docRow{
+  background: rgba(255,255,255,.35);
+  border: 1px solid rgba(15,23,42,.12);
+  border-radius: 14px;
+  padding: 8px 10px;
+}
+
+/* Ako ti tekst postane “slab” na tamnijoj pozadini */
+.finCard strong,
+.finCard b{
+  color: rgba(15,23,42,.95);
+}
+.finCard{
+  color: rgba(15,23,42,.90);
+}
+
   
 </style>
 </head>
@@ -3124,6 +3161,8 @@ items.sort((a,b) => {
   const li = document.createElement("li");
   li.dataset.sid = "fin:" + item.id;
 
+      li.classList.add("finCard"); 
+
   // ako stavka ima upload dokumente -> oboji plavo
   if(item.docs && item.docs.length){
     li.classList.add("hasDocs");
@@ -3600,6 +3639,8 @@ function renderBoard(bid, q){
   items.forEach(post => {
     const li = document.createElement("li");
     li.dataset.sid = "brd:" + post.id;
+    li.classList.add("finCard");
+
 
     // ===== TOP RED (naslov + dugme Obriši) =====
 const top = document.createElement("div");
