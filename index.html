@@ -1490,6 +1490,24 @@ body.mode-portal.page-home .pageHeader{
   padding: 4px 10px;        /* manji “balon” */
 }
 
+  /* =========================================================
+   POCETNO STANJE – smanjeno dugme "Sačuvaj" (−40%)
+   bez promene izgleda + zategnut razmak
+   ========================================================= */
+
+#saveOpeningBalanceBtn,
+#saveOpeningBalanceBtnAdmin{
+  transform: scale(0.6);              /* 40% manje */
+  transform-origin: left center;      /* skuplja se ka inputu */
+  margin-left: -8px;                  /* zategni razmak */
+}
+
+/* opciono: malo zategni ceo red da deluje kompaktnije */
+[data-role="upravnik"] .fRow .grow,
+[data-role="admin"] .fRow .grow{
+  gap: 6px;
+}
+
   
 </style>
 </head>
