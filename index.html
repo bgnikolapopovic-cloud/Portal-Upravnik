@@ -1719,32 +1719,45 @@ body.mode-portal.page-home .pageHeader{
          
           <!-- ✅ DODATO: POCETNO STANJE (samo admin/upravnik) -->
           <div class="smallText" data-role="upravnik" style="margin-top:12px;">
-            <div class="fRow">
-              <div class="grow">
-                <span class="badge">Početno stanje (RSD)</span>
-              </div>
-              <div class="half field" style="margin-top:0; min-width:220px;">
-                <input id="openingBalanceInput" type="number" step="0.01" placeholder="npr. 948889">
-              </div>
-              <div>
-                <button class="btn btnGhost" id="saveOpeningBalanceBtn" type="button" style="flex:unset;">Sačuvaj početno stanje</button>
-              </div>
-            </div>
-          </div>
-          
-          <div class="smallText" data-role="admin" style="margin-top:12px;">
-            <div class="fRow">
-              <div class="grow">
-                <span class="badge">Početno stanje (RSD)</span>
-              </div>
-              <div class="half field" style="margin-top:0; min-width:220px;">
-                <input id="openingBalanceInputAdmin" type="number" step="0.01" placeholder="npr. 948889">
-              </div>
-              <div>
-                <button class="btn btnGhost" id="saveOpeningBalanceBtnAdmin" type="button" style="flex:unset;">Sačuvaj početno stanje</button>
-              </div>
-            </div>
-              </div>
+  <div class="fRow">
+    <div class="grow" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+      <span class="badge" style="font-size:11px; padding:6px 10px; opacity:.75;">
+        Početno stanje (RSD)
+      </span>
+
+      <div class="field" style="margin-top:0; width:220px;">
+        <input id="openingBalanceInput" type="number" step="0.01" placeholder="npr. 948889"
+               style="height:36px; border-radius:14px; padding:8px 10px;">
+      </div>
+
+      <button class="btn btnGhost" id="saveOpeningBalanceBtn" type="button"
+              style="flex:unset; padding:10px 14px; border-radius:14px;">
+        Sačuvaj
+      </button>
+    </div>
+  </div>
+</div>
+
+             <div class="smallText" data-role="admin" style="margin-top:12px;">
+  <div class="fRow">
+    <div class="grow" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+      <span class="badge" style="font-size:11px; padding:6px 10px; opacity:.75;">
+        Početno stanje (RSD)
+      </span>
+
+      <div class="field" style="margin-top:0; width:220px;">
+        <input id="openingBalanceInputAdmin" type="number" step="0.01" placeholder="npr. 948889"
+               style="height:36px; border-radius:14px; padding:8px 10px;">
+      </div>
+
+      <button class="btn btnGhost" id="saveOpeningBalanceBtnAdmin" type="button"
+              style="flex:unset; padding:10px 14px; border-radius:14px;">
+        Sačuvaj
+      </button>
+    </div>
+  </div>
+</div>
+
           <!-- ✅ /DODATO -->
 
           <div class="smallText" data-role="upravnik" style="margin-top:12px;">
