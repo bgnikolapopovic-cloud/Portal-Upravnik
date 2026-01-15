@@ -3609,7 +3609,42 @@ function renderBoard(bid, q){
     const li = document.createElement("li");
     li.dataset.sid = "brd:" + post.id;
 
-    li.textContent = `${post.date} — ${post.title}${post.desc ? " — " + post.desc : ""}`;
+    // ===== TOP RED (naslov + dugme Obriši) =====
+const top = document.createElement("div");
+top.className = "finRowTop"; // koristi isti CSS kao finansije
+
+const title = document.createElement("div");
+title.className = "finRowTitle";
+title.textContent = `${post.date} — ${post.title}${post.desc ? " — " + post.desc : ""}`;
+
+top.appendChild(title);
+
+// samo upravnik vidi obriši
+if (CURRENT_SESSION && CURRENT_SESSION.role === "upravnik") {
+  const actions = document.createElement("div");
+  actions.className = "finRowActions";
+
+  const del = document.createElement("button");
+  del.className = "finActBtn danger";
+  del.type = "button";
+  del.textContent = "Obriši";
+
+  del.addEventListener("click", () => {
+    if (!confirm("Da li ste sigurni da želite da obrišete objavu?")) return;
+
+    const next = loadBoardPosts(bid).filter(x => x.id !== post.id);
+    saveBoardPosts(bid, next);
+    renderBoard(bid, CURRENT_QUERY);
+    renderSearchDropdown(CURRENT_QUERY);
+    updateHomeSummary();
+  });
+
+  actions.appendChild(del);
+  top.appendChild(actions);
+}
+
+li.appendChild(top);
+// ===== /TOP RED =====
 
     if(post.docs && post.docs.length){
       li.classList.add("hasDocs");
@@ -3647,27 +3682,27 @@ function renderBoard(bid, q){
     }
 
     if(CURRENT_SESSION && CURRENT_SESSION.role === "upravnik"){
-      const actions = document.createElement("div");
-      actions.style.marginTop = "10px";
-      actions.style.display = "flex";
-      actions.style.gap = "10px";
-      actions.style.flexWrap = "wrap";
+  const actions = document.createElement("div");
+  actions.style.marginTop = "10px";
+  actions.style.display = "flex";
+  actions.style.gap = "10px";
+  actions.style.flexWrap = "wrap";
 
-      const del = document.createElement("button");
-      del.className = "btn btnGhost";
-      del.type = "button";
-      del.textContent = "Obriši";
-      del.addEventListener("click", () => {
-        const next = loadBoardPosts(bid).filter(x => x.id !== post.id);
-        saveBoardPosts(bid, next);
-        renderBoard(bid, CURRENT_QUERY);
-        renderSearchDropdown(CURRENT_QUERY);
-        updateHomeSummary();
-      });
+  const del = document.createElement("button");
+  del.className = "btn btnGhost";
+  del.type = "button";
+  del.textContent = "Obriši";
+  del.addEventListener("click", () => {
+    const next = loadBoardPosts(bid).filter(x => x.id !== post.id);
+    saveBoardPosts(bid, next);
+    renderBoard(bid, CURRENT_QUERY);
+    renderSearchDropdown(CURRENT_QUERY);
+    updateHomeSummary();
+  });
 
-      actions.appendChild(del);
-      li.appendChild(actions);
-    }
+  actions.appendChild(del);
+  li.appendChild(actions);
+}
 
     boardList.appendChild(li);
   });
