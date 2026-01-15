@@ -3163,7 +3163,10 @@ items.sort((a,b) => {
     del.type = "button";
     del.textContent = "Obriši";
     del.disabled = !canEdit(item);
+    
     del.addEventListener("click", () => {
+  if (!confirm("Da li ste sigurni da želite da obrišete finansijsku stavku?")) return;
+      
       const next = loadItems(bid).filter(x => x.id !== item.id);
       saveItems(bid, next);
       renderFinanceList(bid, CURRENT_QUERY);
