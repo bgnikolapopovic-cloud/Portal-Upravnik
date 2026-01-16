@@ -1539,30 +1539,6 @@ body.mode-portal.page-home .pageHeader{
   line-height: 1;
 }
 
-  /* ✅ FIX samo za DATUM (mobilni) – da ne probija karticu */
-@media (max-width: 720px){
-  #financeFormWrap .fRow{ flex-wrap: wrap; }
-
-  /* ključ: dozvoli da se datum skuplja */
-  #financeFormWrap #fDate{
-    min-width: 0 !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    box-sizing: border-box !important;
-  }
-
-  /* ako ti je datum u .half, i parent neka bude 100% */
-  #financeFormWrap .half{
-    min-width: 0 !important;
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-}
-
-  @media (max-width: 720px){
-  #financeFormWrap .field{ overflow: hidden; }
-}
-
   
 </style>
 </head>
