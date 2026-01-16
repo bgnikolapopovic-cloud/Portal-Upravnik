@@ -2291,6 +2291,13 @@ function kFin(bid){ return "pu_finance_items_v3__" + bid; }
 function kFirm(bid){ return "pu_finance_firms_v3__" + bid; }
 function kForum(bid){ return "pu_forum_proposals_v2__" + bid; }
 function kBoard(bid){ return "pu_board_posts_v2__" + bid; }
+
+  function normalizeText(str){
+  return (str || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
   
 /* ✅ IZMENJENO: umesto jednog balansa, cuvamo POCETNO STANJE po zgradi */
 function kOpeningBalance(bid){ return "pu_opening_balance_v1__" + bid; }
@@ -2703,7 +2710,7 @@ function getSession(){
 function norm(s){ return String(s||"").toLowerCase().trim(); }
 function includesQuery(text, q){
   if(!q) return true;
-  return norm(text).includes(norm(q));
+  return normalizeText(text).includes(normalizeText(q));
 }
 function cryptoRandom(){
   return "id_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
