@@ -2390,7 +2390,8 @@ if (r.saldo < 0) {
 } else if (r.saldo === 0) {
   tSaldoBadge.textContent = `0,00 RSD`;
   tSaldoBadge.classList.add("status-obaveza");
-
+}
+  
 } else {
   tSaldoBadge.textContent = `PRETPLATA: ${formatRSD(r.saldo)} RSD`;
   tSaldoBadge.classList.add("status-uplaceno");
