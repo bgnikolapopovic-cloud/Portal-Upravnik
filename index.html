@@ -1531,112 +1531,6 @@ body.mode-portal.page-home .pageHeader{
   max-width: 100%;
 }
 
-/* ===============================
-   FINANSIJE: POČETNO STANJE (PROFI)
-   =============================== */
-#page-finansije .openingBalanceRow{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  flex-wrap:wrap;
-}
-
-#page-finansije .openingBalanceLabel{
-  font-size: 11px;      /* ~40-50% manje */
-  padding: 6px 10px;
-  opacity: .75;
-}
-
-#page-finansije .openingBalanceValue{
-  font-weight: 900;
-  padding: 6px 10px;
-  cursor: default;
-}
-
-#page-finansije .openingBalanceEdit input{
-  height: 36px;
-  border-radius: 14px;
-  padding: 8px 10px;
-  width: 220px;
-}
-
-#page-finansije .openingBalanceBtns{
-  display:flex;
-  gap:8px;
-  align-items:center;
-}
-
-/* vizuelno "zaključano" kad nije edit */
-#page-finansije .openingLocked{
-  opacity: .7;
-}
-
-  function setupOpeningBalancePro(cfg){
-  const viewText  = document.getElementById(cfg.viewTextId);
-  const editWrap  = document.getElementById(cfg.editWrapId);
-  const input     = document.getElementById(cfg.inputId);
-
-  const btnEdit   = document.getElementById(cfg.btnEditId);
-  const btnSave   = document.getElementById(cfg.btnSaveId);
-  const btnCancel = document.getElementById(cfg.btnCancelId);
-
-  if(!viewText || !editWrap || !input || !btnEdit || !btnSave || !btnCancel) return;
-
-  let original = "";
-
-  function refresh(){
-    const bid = activeBid();
-    if(!bid) return;
-    const opening = getOpeningBalance(bid);
-    viewText.textContent = formatRSD(opening);
-    input.value = String(opening);
-  }
-
-  function lock(){
-    editWrap.style.display = "none";
-    btnSave.style.display = "none";
-    btnCancel.style.display = "none";
-
-    btnEdit.style.display = "";
-    viewText.classList.add("openingLocked");
-  }
-
-  function unlock(){
-    refresh();
-    original = input.value;
-
-    editWrap.style.display = "";
-    btnSave.style.display = "";
-    btnCancel.style.display = "none"; // prvo sakrij, pa pokaži (da izbegne flicker)
-    btnCancel.style.display = "";
-
-    btnEdit.style.display = "none";
-    viewText.classList.remove("openingLocked");
-
-    input.focus();
-    input.select();
-  }
-
-  btnEdit.addEventListener("click", unlock);
-
-  btnCancel.addEventListener("click", () => {
-    input.value = original;
-    lock();
-  });
-
-  btnSave.addEventListener("click", () => {
-    // koristi tvoju postojeću funkciju (ne menjamo logiku)
-    saveOpeningBalanceFromUI();
-    refresh();
-    lock();
-  });
-
-  // inicijalno
-  refresh();
-  lock();
-
-  return { refresh, lock };
-}
 
   
 </style>
@@ -1865,43 +1759,43 @@ body.mode-portal.page-home .pageHeader{
 </div>
 <!-- /FIN HEADER CONTROLS -->
          
-          <!-- ✅ POČETNO STANJE (zaključano) -->
-<div class="smallText openingBalanceBar" data-role="upravnik" style="margin-top:12px;">
-  <div class="openingBalanceRow">
-    <span class="badge openingBalanceLabel">Početno stanje (RSD)</span>
+          <!-- ✅ DODATO: POCETNO STANJE (samo admin/upravnik) -->
+          <div class="smallText" data-role="upravnik" style="margin-top:12px;">
+  <div class="fRow">
+    <div class="grow" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+      <span class="badge" style="font-size:11px; padding:6px 10px; opacity:.75;">
+        Početno stanje (RSD)
+      </span>
 
-    <!-- VIEW -->
-    <span class="badge openingBalanceValue" id="openingBalanceValueText">0,00</span>
+      <div class="field" style="margin-top:0; width:220px;">
+        <input id="openingBalanceInput" type="number" step="0.01" placeholder="npr. 948889"
+               style="height:36px; border-radius:14px; padding:8px 10px;">
+      </div>
 
-    <!-- EDIT -->
-    <div class="field openingBalanceEdit" id="openingBalanceEditWrap" style="display:none; margin-top:0;">
-      <input id="openingBalanceInput" type="number" step="0.01" placeholder="npr. 948889">
-    </div>
-
-    <div class="openingBalanceBtns">
-      <button class="btn btnGhost" id="openingBalanceEditBtn" type="button">Izmeni</button>
-      <button class="btn btnGhost" id="saveOpeningBalanceBtn" type="button" style="display:none;">Sačuvaj</button>
-      <button class="btn btnGhost" id="openingBalanceCancelBtn" type="button" style="display:none;">Odustani</button>
+      <button class="btn btnGhost" id="saveOpeningBalanceBtn" type="button"
+              style="flex:unset; padding:10px 14px; border-radius:14px;">
+        Sačuvaj
+      </button>
     </div>
   </div>
 </div>
 
-<div class="smallText openingBalanceBar" data-role="admin" style="margin-top:12px;">
-  <div class="openingBalanceRow">
-    <span class="badge openingBalanceLabel">Početno stanje (RSD)</span>
+             <div class="smallText" data-role="admin" style="margin-top:12px;">
+  <div class="fRow">
+    <div class="grow" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+      <span class="badge" style="font-size:11px; padding:6px 10px; opacity:.75;">
+        Početno stanje (RSD)
+      </span>
 
-    <!-- VIEW -->
-    <span class="badge openingBalanceValue" id="openingBalanceValueTextAdmin">0,00</span>
+      <div class="field" style="margin-top:0; width:220px;">
+        <input id="openingBalanceInputAdmin" type="number" step="0.01" placeholder="npr. 948889"
+               style="height:36px; border-radius:14px; padding:8px 10px;">
+      </div>
 
-    <!-- EDIT -->
-    <div class="field openingBalanceEdit" id="openingBalanceEditWrapAdmin" style="display:none; margin-top:0;">
-      <input id="openingBalanceInputAdmin" type="number" step="0.01" placeholder="npr. 948889">
-    </div>
-
-    <div class="openingBalanceBtns">
-      <button class="btn btnGhost" id="openingBalanceEditBtnAdmin" type="button">Izmeni</button>
-      <button class="btn btnGhost" id="saveOpeningBalanceBtnAdmin" type="button" style="display:none;">Sačuvaj</button>
-      <button class="btn btnGhost" id="openingBalanceCancelBtnAdmin" type="button" style="display:none;">Odustani</button>
+      <button class="btn btnGhost" id="saveOpeningBalanceBtnAdmin" type="button"
+              style="flex:unset; padding:10px 14px; border-radius:14px;">
+        Sačuvaj
+      </button>
     </div>
   </div>
 </div>
@@ -2581,24 +2475,6 @@ const saveOpeningBalanceBtn = document.getElementById("saveOpeningBalanceBtn");
 const openingBalanceInputAdmin = document.getElementById("openingBalanceInputAdmin");
 const saveOpeningBalanceBtnAdmin = document.getElementById("saveOpeningBalanceBtnAdmin");
 
-  const OB_U = setupOpeningBalancePro({
-  viewTextId: "openingBalanceValueText",
-  editWrapId: "openingBalanceEditWrap",
-  inputId: "openingBalanceInput",
-  btnEditId: "openingBalanceEditBtn",
-  btnSaveId: "saveOpeningBalanceBtn",
-  btnCancelId: "openingBalanceCancelBtn"
-});
-
-const OB_A = setupOpeningBalancePro({
-  viewTextId: "openingBalanceValueTextAdmin",
-  editWrapId: "openingBalanceEditWrapAdmin",
-  inputId: "openingBalanceInputAdmin",
-  btnEditId: "openingBalanceEditBtnAdmin",
-  btnSaveId: "saveOpeningBalanceBtnAdmin",
-  btnCancelId: "openingBalanceCancelBtnAdmin"
-});
-
   /* dues DOM */
 const monthlyFeeInput = document.getElementById("monthlyFeeInput");
 const duesStartMonth = document.getElementById("duesStartMonth");
@@ -2810,9 +2686,6 @@ function renderBuildingUI(){
     if(openingBalanceInput) openingBalanceInput.value = String(opening);
     if(openingBalanceInputAdmin) openingBalanceInputAdmin.value = String(opening);
   }
-// 🔄 osveži "profi" prikaz početnog stanja
-if (typeof OB_U !== "undefined" && OB_U?.refresh) OB_U.refresh();
-if (typeof OB_A !== "undefined" && OB_A?.refresh) OB_A.refresh();
 
   // ✅ dugme "Promeni zgradu" ostaje
   const multi = (CURRENT_SESSION?.buildings || []).length > 1 && (CURRENT_SESSION.role !== "stanar");
