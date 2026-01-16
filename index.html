@@ -1564,6 +1564,87 @@ body.mode-portal.page-home .pageHeader{
   content:"🔓";
 }
 
+/* ✅ Confirm modal (custom) */
+.cModal{
+  position:fixed;
+  inset:0;
+  z-index:2000;
+}
+
+.cModalOverlay{
+  position:absolute;
+  inset:0;
+  background: rgba(2,6,23,.45);
+  backdrop-filter: blur(6px);
+}
+
+.cModalCard{
+  position: absolute;
+  left:50%;
+  top:50%;
+  transform: translate(-50%,-50%);
+  width: min(520px, calc(100vw - 28px));
+  border-radius: 22px;
+  background: rgba(241,245,249,.96);
+  border: 1px solid rgba(15,23,42,.18);
+  box-shadow: 0 26px 70px rgba(2,6,23,.28);
+  padding: 14px;
+}
+
+.cModalHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding: 6px 6px 10px 6px;
+  border-bottom: 1px solid rgba(15,23,42,.10);
+}
+
+.cModalTitle{
+  font-weight: 900;
+  font-size: 16px;
+  letter-spacing: .02em;
+}
+
+.cModalX{
+  border:none;
+  background: rgba(15,23,42,.06);
+  border: 1px solid rgba(15,23,42,.14);
+  border-radius: 12px;
+  padding: 8px 10px;
+  cursor:pointer;
+  font-weight: 900;
+}
+
+.cModalBody{
+  padding: 12px 6px;
+}
+
+.cModalText{
+  font-weight: 800;
+  color: rgba(15,23,42,.82);
+  line-height: 1.35;
+}
+
+.cModalActions{
+  display:flex;
+  gap:10px;
+  padding: 0 6px 6px 6px;
+}
+
+.cModalActions .btn{
+  flex:1;
+}
+
+.cDanger{
+  background: rgba(220,38,38,.92) !important;
+  color:#fff !important;
+}
+
+.cDanger:hover{
+  transform: translateY(-1px);
+}
+
   
 </style>
 </head>
@@ -2775,6 +2856,53 @@ function cryptoRandom(){
   return "id_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
 }
 
+  /* =========================
+   CUSTOM CONFIRM MODAL
+========================= */
+const cModal = document.getElementById("cModal");
+const cModalOverlay = document.getElementById("cModalOverlay");
+const cModalX = document.getElementById("cModalX");
+const cTitle = document.getElementById("cTitle");
+const cText = document.getElementById("cText");
+const cCancel = document.getElementById("cCancel");
+const cOk = document.getElementById("cOk");
+
+let _confirmResolve = null;
+
+function showConfirm({ title = "Potvrda", text = "Da li ste sigurni?", okText = "Obriši" } = {}){
+  return new Promise((resolve) => {
+    _confirmResolve = resolve;
+
+    if(cTitle) cTitle.textContent = title;
+    if(cText) cText.textContent = text;
+    if(cOk) cOk.textContent = okText;
+
+    if(cModal) cModal.style.display = "block";
+
+    // fokus na "Otkaži" (sigurnije)
+    setTimeout(() => { try{ cCancel?.focus(); }catch{} }, 0);
+  });
+}
+
+function _closeConfirm(result){
+  if(cModal) cModal.style.display = "none";
+  const r = _confirmResolve;
+  _confirmResolve = null;
+  if(typeof r === "function") r(!!result);
+}
+
+// klikovi
+cCancel?.addEventListener("click", () => _closeConfirm(false));
+cOk?.addEventListener("click", () => _closeConfirm(true));
+cModalOverlay?.addEventListener("click", () => _closeConfirm(false));
+cModalX?.addEventListener("click", () => _closeConfirm(false));
+
+// Esc
+document.addEventListener("keydown", (e) => {
+  if(!cModal || cModal.style.display === "none") return;
+  if(e.key === "Escape") _closeConfirm(false);
+});
+
 /* password eye */
 togglePass.addEventListener("click", () => {
   const isPass = passEl.type === "password";
@@ -3460,16 +3588,21 @@ li.classList.add("finCard");
     del.textContent = "Obriši";
     del.disabled = !canEdit(item);
     
-    del.addEventListener("click", () => {
-  if (!confirm("Da li ste sigurni da želite da obrišete finansijsku stavku?")) return;
-      
-      const next = loadItems(bid).filter(x => x.id !== item.id);
-      saveItems(bid, next);
-      renderFinanceList(bid, CURRENT_QUERY);
-      renderSearchDropdown(CURRENT_QUERY);
-      updateHomeSummary();
-      refreshBalanceUI(bid);
-    });
+    del.addEventListener("click", async () => {
+  const ok = await showConfirm({
+    title: "Brisanje finansijske stavke",
+    text: "Da li ste sigurni da želite da obrišete ovu finansijsku stavku? Ova radnja je trajna.",
+    okText: "Obriši"
+  });
+  if(!ok) return;
+
+  const next = loadItems(bid).filter(x => x.id !== item.id);
+  saveItems(bid, next);
+  renderFinanceList(bid, CURRENT_QUERY);
+  renderSearchDropdown(CURRENT_QUERY);
+  updateHomeSummary();
+  refreshBalanceUI(bid);
+});
 
     actions.appendChild(edit);
     actions.appendChild(del);
@@ -4979,6 +5112,28 @@ function renderUserBadge(){
   console.log("Supabase connected:", supabaseClient);
 </script>
 
+<!-- ✅ CONFIRM MODAL (custom, mobile-friendly) -->
+<div class="cModal" id="cModal" style="display:none;">
+  <div class="cModalOverlay" id="cModalOverlay"></div>
+
+  <div class="cModalCard" role="dialog" aria-modal="true" aria-labelledby="cTitle" aria-describedby="cText">
+    <div class="cModalHead">
+      <div class="cModalTitle" id="cTitle">Potvrda</div>
+      <button class="cModalX" id="cModalX" type="button" aria-label="Zatvori">✕</button>
+    </div>
+
+    <div class="cModalBody">
+      <div class="cModalText" id="cText">Da li ste sigurni?</div>
+    </div>
+
+    <div class="cModalActions">
+      <button class="btn btnGhost" id="cCancel" type="button">Otkaži</button>
+      <button class="btn btnPrimary cDanger" id="cOk" type="button">Obriši</button>
+    </div>
+  </div>
+</div>
+
+  
 </body>
 </html>
 
