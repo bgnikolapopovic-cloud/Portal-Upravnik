@@ -2383,8 +2383,9 @@ tSaldoBadge.classList.remove(
 );
 
 if (r.saldo < 0) {
-  tSaldoBadge.textContent = `DUG: ${formatRSD(-r.saldo)} RSD`;
+  tSaldoBadge.textContent = `Potraživanje SZ: ${formatRSD(-r.saldo)} RSD`;
   tSaldoBadge.classList.add("status-dug");
+}
 
 } else if (r.saldo === 0) {
   tSaldoBadge.textContent = `0,00 RSD`;
