@@ -2402,7 +2402,7 @@ if (r.saldo < 0) {
 }
 
 
-tPeriod.textContent = `Obračun od ${r.start} • ${r.months} meseci`;
+tPeriod.textContent = `Obračun od ${formatDateDMY(r.start)} • ${r.months} meseci`;
 
 
 // ✅ OVDE ubaciš ovo da se donji prikaz sakrije (uplaceno/obaveza/dug)
@@ -4162,7 +4162,9 @@ function renderDuesAdmin(){
           <span class="badge">${dug>0 ? ("DUG: "+formatRSD(dug)) : (pret>0 ? ("PRETPLATA: "+formatRSD(pret)) : "0,00")}</span>
         </div>
       </div>
-      <div class="smallText" style="margin-top:8px;">Obračun od ${r.start} • ${r.months} meseci</div>
+      <div class="smallText" style="margin-top:8px;">
+  Obračun od ${formatDateDMY(r.start)} • ${r.months} meseci
+</div>
     `;
 
     const actions = document.createElement("div");
@@ -4807,6 +4809,13 @@ if (sidebarLogout) {
   });
 }
 
+function formatDateDMY(dateStr){
+  if(!dateStr) return "";
+  const [y, m, d] = dateStr.split("-");
+  return `${d}.${m}.${y}`;
+}
+
+  
 function renderUserBadge(){
   const el = document.getElementById("userBadge");
   if(!el || !CURRENT_SESSION) return;
