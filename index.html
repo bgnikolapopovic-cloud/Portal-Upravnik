@@ -2467,6 +2467,46 @@ const errEl = document.getElementById("loginError");
 const togglePass = document.getElementById("togglePass");
 const remember = document.getElementById("remember");
 
+  /* =========================
+   REMEMBER USER+PASS (login autofill)
+========================= */
+const KEY_LOGIN_REMEMBER = "pu_login_remember_v1";
+const KEY_LOGIN_CREDS    = "pu_login_creds_v1"; // { username, pass }
+
+function saveLoginCredsIfNeeded(){
+  if(!usernameEl || !passEl || !remember) return;
+
+  const u = (usernameEl.value || "").trim();
+  const p = (passEl.value || "").trim();
+
+  if(remember.checked){
+    localStorage.setItem(KEY_LOGIN_REMEMBER, "1");
+    localStorage.setItem(KEY_LOGIN_CREDS, JSON.stringify({ username: u, pass: p }));
+  }else{
+    localStorage.removeItem(KEY_LOGIN_REMEMBER);
+    localStorage.removeItem(KEY_LOGIN_CREDS);
+  }
+}
+
+function loadLoginCreds(){
+  if(!usernameEl || !passEl || !remember) return;
+
+  const on = localStorage.getItem(KEY_LOGIN_REMEMBER) === "1";
+  remember.checked = on;
+
+  if(!on) return;
+
+  try{
+    const creds = JSON.parse(localStorage.getItem(KEY_LOGIN_CREDS) || "{}");
+    if(creds.username) usernameEl.value = creds.username;
+    if(creds.pass) passEl.value = creds.pass;
+  }catch(e){
+    // ako je nesto puklo u storage-u, ocisti
+    localStorage.removeItem(KEY_LOGIN_CREDS);
+  }
+}
+
+
 // ✅ FIN TABOVI (upravnik)
 const finTabEntries = document.getElementById("finTabEntries");
 const finTabDues    = document.getElementById("finTabDues");
@@ -2771,13 +2811,17 @@ if(CURRENT_SESSION.role === "stanar"){
 }
 
 loginBtn.addEventListener("click", () => {
+  saveLoginCredsIfNeeded();
   attemptLogin((usernameEl.value||"").trim(), (passEl.value||"").trim());
 });
+
 document.addEventListener("keydown", (e) => {
   if(document.body.classList.contains("mode-login") && e.key === "Enter"){
+    saveLoginCredsIfNeeded();
     attemptLogin((usernameEl.value||"").trim(), (passEl.value||"").trim());
   }
 });
+
 
 /* ===== building select screen ===== */
 function showBuildingSelect(){
@@ -4732,6 +4776,7 @@ function updateHomeSummary(){
     CURRENT_SESSION = null;
     applyRoleUI("stanar");
     setMode("login");
+    loadLoginCreds();
   }
 })();
 
