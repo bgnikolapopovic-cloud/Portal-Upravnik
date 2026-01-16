@@ -4794,12 +4794,8 @@ function renderUserBadge(){
   const el = document.getElementById("userBadge");
   if(!el || !CURRENT_SESSION) return;
 
-  const id = String(CURRENT_SESSION.uid || 1).padStart(3,"0");
-
-  el.textContent =
-    CURRENT_SESSION.role === "upravnik"
-      ? `UPR-${id}`
-      : `STA-${id}`;
+  // Prikaži tačno korisničko ime (npr. NC28-003)
+  el.textContent = CURRENT_SESSION.username || "";
 }
 
   
