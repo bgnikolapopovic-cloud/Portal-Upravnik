@@ -2375,7 +2375,7 @@ function renderDuesTenant(bid){
   tPaid.textContent = formatRSD(r.paid);
   tExpected.textContent = formatRSD(r.expected);
 
-  /* ===== SALDO + BOJA ===== */
+  // ===== SALDO + BOJA =====
 tSaldoBadge.classList.remove(
   "status-dug",
   "status-obaveza",
@@ -2385,19 +2385,18 @@ tSaldoBadge.classList.remove(
 if (r.saldo < 0) {
   tSaldoBadge.textContent = `Potraživanje SZ: ${formatRSD(-r.saldo)} RSD`;
   tSaldoBadge.classList.add("status-dug");
-}
 
 } else if (r.saldo === 0) {
   tSaldoBadge.textContent = `0,00 RSD`;
   tSaldoBadge.classList.add("status-obaveza");
-}
-  
+
 } else {
   tSaldoBadge.textContent = `PRETPLATA: ${formatRSD(r.saldo)} RSD`;
   tSaldoBadge.classList.add("status-uplaceno");
 }
 
-  tPeriod.textContent = `Obračun od ${r.start} • ${r.months} meseci`;
+tPeriod.textContent = `Obračun od ${r.start} • ${r.months} meseci`;
+
 
 // ✅ OVDE ubaciš ovo da se donji prikaz sakrije (uplaceno/obaveza/dug)
 if(CURRENT_SESSION?.role === "stanar"){
