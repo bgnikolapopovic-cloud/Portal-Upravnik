@@ -2375,7 +2375,7 @@ function renderDuesTenant(bid){
   tPaid.textContent = formatRSD(r.paid);
   tExpected.textContent = formatRSD(r.expected);
 
-  // ===== SALDO + BOJA =====
+  // uvek prikazujemo Potraživanje SZ
 tSaldoBadge.classList.remove(
   "status-dug",
   "status-obaveza",
@@ -2383,17 +2383,24 @@ tSaldoBadge.classList.remove(
 );
 
 if (r.saldo < 0) {
-  tSaldoBadge.textContent = `Potraživanje SZ: ${formatRSD(-r.saldo)} RSD`;
+  // dug → crveno
+  tSaldoBadge.textContent =
+    `Potraživanje SZ: ${formatRSD(-r.saldo)} RSD`;
   tSaldoBadge.classList.add("status-dug");
 
 } else if (r.saldo === 0) {
-  tSaldoBadge.textContent = `0,00 RSD`;
+  // nula → žuto
+  tSaldoBadge.textContent =
+    `Potraživanje SZ: 0,00 RSD`;
   tSaldoBadge.classList.add("status-obaveza");
 
 } else {
-  tSaldoBadge.textContent = `PRETPLATA: ${formatRSD(r.saldo)} RSD`;
+  // pretplata → zeleno + znak
+  tSaldoBadge.textContent =
+    `Potraživanje SZ: +${formatRSD(r.saldo)} RSD`;
   tSaldoBadge.classList.add("status-uplaceno");
 }
+
 
 tPeriod.textContent = `Obračun od ${r.start} • ${r.months} meseci`;
 
@@ -2419,24 +2426,29 @@ function renderTenantFinanceHeaderBadge(bid){
 
   const r = computeUserDue(buildingId, CURRENT_SESSION.username);
 
-  badge.classList.remove("status-dug","status-obaveza","status-uplaceno");
+  badge.classList.remove(
+  "status-dug",
+  "status-obaveza",
+  "status-uplaceno"
+);
 
-  if(r.saldo < 0){
-  textEl.textContent = `Potraživanje SZ: ${formatRSD(-r.saldo)} RSD`;
+if (r.saldo < 0) {
+  textEl.textContent =
+    `Potraživanje SZ: ${formatRSD(-r.saldo)} RSD`;
   badge.classList.add("status-dug");
 
-} else if(r.saldo === 0){
-  textEl.textContent = `0,00 RSD`;
+} else if (r.saldo === 0) {
+  textEl.textContent =
+    `Potraživanje SZ: 0,00 RSD`;
   badge.classList.add("status-obaveza");
 
 } else {
-  textEl.textContent = `PRETPLATA: ${formatRSD(r.saldo)} RSD`;
+  textEl.textContent =
+    `Potraživanje SZ: +${formatRSD(r.saldo)} RSD`;
   badge.classList.add("status-uplaceno");
 }
 
-
-  badge.style.display = "";
-}
+badge.style.display = "";
 
 /* ===== DOM refs ===== */
 const usernameEl = document.getElementById("username");
