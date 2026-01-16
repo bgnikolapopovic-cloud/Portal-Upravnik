@@ -1793,10 +1793,15 @@ body.mode-portal.page-home .pageHeader{
                style="height:36px; border-radius:14px; padding:8px 10px;">
       </div>
 
-      <button class="btn btnGhost" id="saveOpeningBalanceBtn" type="button"
-              style="flex:unset; padding:10px 14px; border-radius:14px;">
-        Sačuvaj
-      </button>
+      <button class="btn btnGhost" id="editOpeningBalanceBtn" type="button"
+        style="flex:unset; padding:10px 14px; border-radius:14px;">
+  Izmeni
+</button>
+
+<button class="btn btnGhost" id="saveOpeningBalanceBtn" type="button"
+        style="flex:unset; padding:10px 14px; border-radius:14px; display:none;">
+  Sačuvaj
+</button>
     </div>
   </div>
 </div>
@@ -1813,10 +1818,15 @@ body.mode-portal.page-home .pageHeader{
                style="height:36px; border-radius:14px; padding:8px 10px;">
       </div>
 
-      <button class="btn btnGhost" id="saveOpeningBalanceBtnAdmin" type="button"
-              style="flex:unset; padding:10px 14px; border-radius:14px;">
-        Sačuvaj
-      </button>
+      <button class="btn btnGhost" id="editOpeningBalanceBtnAdmin" type="button"
+        style="flex:unset; padding:10px 14px; border-radius:14px;">
+  Izmeni
+</button>
+
+<button class="btn btnGhost" id="saveOpeningBalanceBtnAdmin" type="button"
+        style="flex:unset; padding:10px 14px; border-radius:14px; display:none;">
+  Sačuvaj
+</button>
     </div>
   </div>
 </div>
@@ -2559,7 +2569,28 @@ const openingBalanceInput = document.getElementById("openingBalanceInput");
 const saveOpeningBalanceBtn = document.getElementById("saveOpeningBalanceBtn");
 const openingBalanceInputAdmin = document.getElementById("openingBalanceInputAdmin");
 const saveOpeningBalanceBtnAdmin = document.getElementById("saveOpeningBalanceBtnAdmin");
+const editOpeningBalanceBtn = document.getElementById("editOpeningBalanceBtn");
+const editOpeningBalanceBtnAdmin = document.getElementById("editOpeningBalanceBtnAdmin");
 
+  function setOpeningBalanceEditing(on){
+  const isAdmin = CURRENT_SESSION?.role === "admin";
+  const input = isAdmin ? openingBalanceInputAdmin : openingBalanceInput;
+  const btnEdit = isAdmin ? editOpeningBalanceBtnAdmin : editOpeningBalanceBtn;
+  const btnSave = isAdmin ? saveOpeningBalanceBtnAdmin : saveOpeningBalanceBtn;
+
+  if(!input || !btnEdit || !btnSave) return;
+
+  input.readOnly = !on;
+  input.style.opacity = on ? "1" : ".65";
+
+  btnEdit.style.display = on ? "none" : "";
+  btnSave.style.display = on ? "" : "none";
+
+  if(on){
+    input.focus();
+    input.select();
+  }
+}
   /* dues DOM */
 const monthlyFeeInput = document.getElementById("monthlyFeeInput");
 const duesStartMonth = document.getElementById("duesStartMonth");
@@ -2770,6 +2801,7 @@ function renderBuildingUI(){
     const opening = getOpeningBalance(bid);
     if(openingBalanceInput) openingBalanceInput.value = String(opening);
     if(openingBalanceInputAdmin) openingBalanceInputAdmin.value = String(opening);
+    setOpeningBalanceEditing(false);
   }
 
   // ✅ dugme "Promeni zgradu" ostaje
@@ -3285,6 +3317,9 @@ function saveOpeningBalanceFromUI(){
   setOpeningBalance(bid, n);
   refreshBalanceUI(bid);
   updateHomeSummary();
+  
+  setOpeningBalanceEditing(false);
+
 }
 
 if(saveOpeningBalanceBtn){
@@ -3293,7 +3328,19 @@ if(saveOpeningBalanceBtn){
 if(saveOpeningBalanceBtnAdmin){
   saveOpeningBalanceBtnAdmin.addEventListener("click", saveOpeningBalanceFromUI);
 }
+if(editOpeningBalanceBtn){
+  editOpeningBalanceBtn.addEventListener("click", () => {
+    setOpeningBalanceEditing(true);
+  });
+}
 
+if(editOpeningBalanceBtnAdmin){
+  editOpeningBalanceBtnAdmin.addEventListener("click", () => {
+    setOpeningBalanceEditing(true);
+  });
+}
+
+  
 function financeMatches(item, q){
   const docsNames = (item.docs||[]).map(d => d.name).join(" ");
   const hay = `${item.date} ${item.type} ${item.category} ${item.firm||""} ${item.desc||""} ${item.amount||""} ${docsNames}`;
