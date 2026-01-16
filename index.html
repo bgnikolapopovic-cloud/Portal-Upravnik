@@ -1531,6 +1531,13 @@ body.mode-portal.page-home .pageHeader{
   max-width: 100%;
 }
 
+.userBadge{
+  font-weight: 900;
+  font-size: 18px;
+  letter-spacing: .6px;
+  color: #e11d48;
+  line-height: 1;
+}
 
   
 </style>
@@ -1542,13 +1549,19 @@ body.mode-portal.page-home .pageHeader{
 <!-- TOP RIGHT BRAND -->
 <div class="topRightBar">
   <div class="topRightTitle">
+
+    <!-- USER ID BADGE -->
+    <div class="userBadge" id="userBadge"></div>
+
     <span>Portal</span>
     <span>Upravnik</span>
   </div>
+
   <div class="topRightLogo">
     <img src="logo.png" alt="Portal Upravnik logo">
   </div>
 </div>
+
 
 <!-- LOGIN SCREEN -->
 <section class="loginWrap" id="loginScreen">
@@ -2783,6 +2796,9 @@ function enterPortal(){
 
   applyRoleUI(CURRENT_SESSION?.role || "stanar");
   setMode("portal");
+  
+  renderUserBadge();
+  
   // Uvek po ulasku u portal postavi Home kao aktivnu stranu (da bi header bio vidljiv)
 showPage("home");
 
@@ -4774,6 +4790,19 @@ if (sidebarLogout) {
   });
 }
 
+function renderUserBadge(){
+  const el = document.getElementById("userBadge");
+  if(!el || !CURRENT_SESSION) return;
+
+  const id = String(CURRENT_SESSION.uid || 1).padStart(3,"0");
+
+  el.textContent =
+    CURRENT_SESSION.role === "upravnik"
+      ? `UPR-${id}`
+      : `STA-${id}`;
+}
+
+  
 </script>
 
 <!-- Supabase SDK -->
