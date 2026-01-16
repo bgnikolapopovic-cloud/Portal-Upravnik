@@ -2422,15 +2422,18 @@ function renderTenantFinanceHeaderBadge(bid){
   badge.classList.remove("status-dug","status-obaveza","status-uplaceno");
 
   if(r.saldo < 0){
-    textEl.textContent = `DUG: ${formatRSD(-r.saldo)} RSD`;
-    badge.classList.add("status-dug");
-  }else if(r.saldo === 0){
-    textEl.textContent = `0,00 RSD`;
-    badge.classList.add("status-obaveza");
-  }else{
-    textEl.textContent = `PRETPLATA: ${formatRSD(r.saldo)} RSD`;
-    badge.classList.add("status-uplaceno");
-  }
+  textEl.textContent = `Potraživanje SZ: ${formatRSD(-r.saldo)} RSD`;
+  badge.classList.add("status-dug");
+
+} else if(r.saldo === 0){
+  textEl.textContent = `0,00 RSD`;
+  badge.classList.add("status-obaveza");
+
+} else {
+  textEl.textContent = `PRETPLATA: ${formatRSD(r.saldo)} RSD`;
+  badge.classList.add("status-uplaceno");
+}
+
 
   badge.style.display = "";
 }
