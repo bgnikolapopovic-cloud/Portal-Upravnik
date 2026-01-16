@@ -1547,6 +1547,23 @@ body.mode-portal.page-home .pageHeader{
   box-sizing: border-box;
 }
 
+  .lockIcon{
+  font-size:16px;
+  line-height:1;
+  opacity:.7;
+  user-select:none;
+}
+
+/* zaključano */
+.lockIcon.locked::before{
+  content:"🔒";
+}
+
+/* otključano */
+.lockIcon.unlocked::before{
+  content:"🔓";
+}
+
   
 </style>
 </head>
@@ -1788,11 +1805,16 @@ body.mode-portal.page-home .pageHeader{
         Početno stanje (RSD)
       </span>
 
-      <div class="field" style="margin-top:0; width:220px;">
-        <input id="openingBalanceInput" type="number" step="0.01" placeholder="npr. 948889"
-               style="height:36px; border-radius:14px; padding:8px 10px;">
-      </div>
+      <div class="field openingBalanceWrap" style="margin-top:0; width:220px; display:flex; align-items:center; gap:8px;">
+  <input id="openingBalanceInput" type="number" step="0.01"
+    placeholder="npr. 948889"
+    style="height:36px; border-radius:14px; padding:8px 10px;">
 
+  <span id="openingBalanceLock"
+        class="lockIcon locked"
+        title="Zaključano – kliknite Izmeni">
+  </span>
+</div>
       <button class="btn btnGhost" id="editOpeningBalanceBtn" type="button"
         style="flex:unset; padding:10px 14px; border-radius:14px;">
   Izmeni
@@ -2567,16 +2589,14 @@ const searchResults = document.getElementById("searchResults");
 /* ✅ DODATO: inputs za pocetno stanje */
 const openingBalanceInput = document.getElementById("openingBalanceInput");
 const saveOpeningBalanceBtn = document.getElementById("saveOpeningBalanceBtn");
-const openingBalanceInputAdmin = document.getElementById("openingBalanceInputAdmin");
-const saveOpeningBalanceBtnAdmin = document.getElementById("saveOpeningBalanceBtnAdmin");
 const editOpeningBalanceBtn = document.getElementById("editOpeningBalanceBtn");
-const editOpeningBalanceBtnAdmin = document.getElementById("editOpeningBalanceBtnAdmin");
+  const openingBalanceLock = document.getElementById("openingBalanceLock");
 
   function setOpeningBalanceEditing(on){
-  const isAdmin = CURRENT_SESSION?.role === "admin";
-  const input = isAdmin ? openingBalanceInputAdmin : openingBalanceInput;
-  const btnEdit = isAdmin ? editOpeningBalanceBtnAdmin : editOpeningBalanceBtn;
-  const btnSave = isAdmin ? saveOpeningBalanceBtnAdmin : saveOpeningBalanceBtn;
+  const input = openingBalanceInput;
+  const btnEdit = editOpeningBalanceBtn;
+  const btnSave = saveOpeningBalanceBtn;
+  const lock = openingBalanceLock;
 
   if(!input || !btnEdit || !btnSave) return;
 
@@ -2585,6 +2605,14 @@ const editOpeningBalanceBtnAdmin = document.getElementById("editOpeningBalanceBt
 
   btnEdit.style.display = on ? "none" : "";
   btnSave.style.display = on ? "" : "none";
+
+  if(lock){
+    lock.classList.toggle("locked", !on);
+    lock.classList.toggle("unlocked", on);
+    lock.title = on
+      ? "Otključano – možete menjati iznos"
+      : "Zaključano – kliknite Izmeni";
+  }
 
   if(on){
     input.focus();
