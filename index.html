@@ -2322,19 +2322,6 @@ body.mode-portal.page-home .pageHeader{
                 <textarea id="pBody" placeholder="Kratak opis predloga (bez licnih podataka)"></textarea>
               </div>
 
-              <div class="half field">
-                <label for="pPoll">Anketa</label>
-                <select id="pPoll">
-                  <option value="ne">Ne</option>
-                  <option value="da">Da (Da/Ne glasanje)</option>
-                </select>
-              </div>
-
-              <div class="half field">
-                <label for="pDays">Trajanje ankete (dani)</label>
-                <input id="pDays" type="number" min="1" max="30" value="7">
-              </div>
-
               <div class="grow" style="display:flex; gap:10px; margin-top:6px;">
                 <button class="btn btnPrimary" id="createProposalBtn" type="button">Objavi predlog</button>
                 <button class="btn btnGhost" id="clearProposalBtn" type="button">Odustani</button>
@@ -2948,8 +2935,6 @@ const existingDocsList = document.getElementById("existingDocsList");
 const forumList = document.getElementById("forumList");
 const pTitle = document.getElementById("pTitle");
 const pBody = document.getElementById("pBody");
-const pPoll = document.getElementById("pPoll");
-const pDays = document.getElementById("pDays");
 const createProposalBtn = document.getElementById("createProposalBtn");
 const clearProposalBtn = document.getElementById("clearProposalBtn");
 const forumError = document.getElementById("forumError");
@@ -4446,15 +4431,6 @@ function fmtDateTime(ms){
   const d = new Date(ms);
   return d.toLocaleString("sr-RS");
 }
-function pollStatus(poll){
-  if(!poll || !poll.enabled) return { txt: "Bez ankete", open: false };
-  const open = Date.now() < poll.endsAt;
-  return { txt: open ? "Anketa otvorena" : "Anketa zatvorena", open };
-}
-function hasVoted(poll, username){
-  if(!poll || !poll.enabled) return false;
-  return (poll.votesYes||[]).includes(username) || (poll.votesNo||[]).includes(username);
-}
 function forumMatches(p, q){
   const hay = `${p.title} ${p.body}`;
   return includesQuery(hay, q);
@@ -4489,13 +4465,7 @@ function renderForum(bid, q){
     meta.className = "badge";
     meta.textContent = fmtDateTime(p.createdAt);
 
-    const pol = document.createElement("span");
-    pol.className = "badge";
-    const st = pollStatus(p.poll);
-    pol.textContent = st.txt;
-
     right.appendChild(meta);
-    right.appendChild(pol);
 
     top.appendChild(left);
     top.appendChild(right);
@@ -4836,39 +4806,11 @@ function resetProposalForm(){
   forumError.style.display = "none";
   pTitle.value = "";
   pBody.value = "";
-  pPoll.value = "ne";
-  pDays.value = 7;
 }
 function forumInit(bid){
   if(!forumList) return;
   renderForum(bid, CURRENT_QUERY);
   resetProposalForm();
-}
-function vote(bid, proposalId, dir){
-  const items = loadProposals(bid);
-  const idx = items.findIndex(x => x.id === proposalId);
-  if(idx === -1) return;
-
-  const p = items[idx];
-  if(!p.poll || !p.poll.enabled) return;
-
-  const st = pollStatus(p.poll);
-  if(!st.open) return;
-
-  if(!CURRENT_SESSION || CURRENT_SESSION.role !== "stanar") return;
-  if(hasVoted(p.poll, CURRENT_SESSION.username)) return;
-
-  p.poll.votesYes = p.poll.votesYes || [];
-  p.poll.votesNo = p.poll.votesNo || [];
-
-  if(dir === "yes") p.poll.votesYes.push(CURRENT_SESSION.username);
-  else p.poll.votesNo.push(CURRENT_SESSION.username);
-
-  items[idx] = p;
-  saveProposals(bid, items);
-  renderForum(bid, CURRENT_QUERY);
-  renderSearchDropdown(CURRENT_QUERY);
-  updateHomeSummary();
 }
 if(createProposalBtn){
   createProposalBtn.addEventListener("click", () => {
@@ -4889,8 +4831,6 @@ if(createProposalBtn){
 
     const title = (pTitle.value||"").trim();
     const body = (pBody.value||"").trim();
-    const pollOn = (pPoll.value === "da");
-    const days = Math.max(1, Math.min(30, Number(pDays.value||7)));
 
     if(!title || !body){
       forumError.textContent = "Greška: popuni naslov i opis.";
@@ -4903,8 +4843,7 @@ if(createProposalBtn){
       createdAt: Date.now(),
       title,
       body,
-      createdBy: CURRENT_SESSION.username,
-      poll: pollOn ? { enabled: true, endsAt: Date.now() + 1000*60*60*24*days, votesYes: [], votesNo: [] } : { enabled:false }
+      createdBy: CURRENT_SESSION.username
     };
 
     const items = loadProposals(bid);
