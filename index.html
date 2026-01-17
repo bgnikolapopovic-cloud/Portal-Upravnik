@@ -3344,6 +3344,13 @@ function totalFilesSizeBytes(fileList){
 function bytesToMB(bytes){
   return (Number(bytes || 0) / (1024 * 1024));
 }
+  / ✅ NAPLATA UPLOADA: minimum 0.5MB po fajlu
+const MIN_UPLOAD_MB = 0.5;
+
+function billableMBFromBytes(bytes){
+  const real = bytesToMB(bytes);
+  return Math.max(MIN_UPLOAD_MB, real);
+}
 function monthFromDateStr(dateStr){
   // očekuje "YYYY-MM-DD" → vraća "YYYY-MM"
   if(!dateStr || typeof dateStr !== "string") return "";
@@ -3352,13 +3359,21 @@ function monthFromDateStr(dateStr){
 function sumDocs(docs){
   let files = 0;
   let bytes = 0;
+  let billMB = 0; // ✅ naplativi MB
+
   (docs || []).forEach(d => {
     files += 1;
+
     // mi čuvamo sizeKB u objektu
     const kb = Number(d.sizeKB || 0);
-    bytes += kb * 1024;
+    const b = kb * 1024;
+    bytes += b;
+
+    // ✅ svaka datoteka minimum 0.5MB
+    billMB += billableMBFromBytes(b);
   });
-  return { files, bytes };
+
+  return { files, bytes, billMB };
 }
 
 function calcMonthlyUploads(bid, monthYYYYMM){
@@ -3369,10 +3384,13 @@ function calcMonthlyUploads(bid, monthYYYYMM){
   let finEntries = finInMonth.length;
   let finFiles = 0;
   let finBytes = 0;
+  let finBillMB = 0;
+
   finInMonth.forEach(it => {
     const s = sumDocs(it.docs || []);
     finFiles += s.files;
     finBytes += s.bytes;
+    finBillMB += (s.billMB || 0);
   });
 
   // Oglasna
@@ -3382,18 +3400,21 @@ function calcMonthlyUploads(bid, monthYYYYMM){
   let brdEntries = brdInMonth.length;
   let brdFiles = 0;
   let brdBytes = 0;
+  let brdBillMB = 0;
+
   brdInMonth.forEach(p => {
     const s = sumDocs(p.docs || []);
     brdFiles += s.files;
     brdBytes += s.bytes;
+    brdBillMB += (s.billMB || 0);
   });
 
   const totalFiles = finFiles + brdFiles;
-  const totalMB = bytesToMB(finBytes + brdBytes);
+  const totalMB = finBillMB + brdBillMB; // ✅ naplativi MB
 
   return {
-    finEntries, finFiles, finMB: bytesToMB(finBytes),
-    brdEntries, brdFiles, brdMB: bytesToMB(brdBytes),
+    finEntries, finFiles, finMB: finBillMB,
+    brdEntries, brdFiles, brdMB: brdBillMB,
     totalFiles, totalMB
   };
 }
