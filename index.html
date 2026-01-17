@@ -4075,15 +4075,21 @@ if (CURRENT_SESSION && CURRENT_SESSION.role === "upravnik") {
   del.type = "button";
   del.textContent = "Obriši";
 
-  del.addEventListener("click", () => {
-    if (!confirm("Da li ste sigurni da želite da obrišete objavu?")) return;
-
-    const next = loadBoardPosts(bid).filter(x => x.id !== post.id);
-    saveBoardPosts(bid, next);
-    renderBoard(bid, CURRENT_QUERY);
-    renderSearchDropdown(CURRENT_QUERY);
-    updateHomeSummary();
+  del.addEventListener("click", async () => {
+  const ok = await showConfirm({
+    title: "Brisanje objave",
+    text: "Da li ste sigurni da želite da obrišete ovu objavu sa oglasne table? Ova radnja je trajna.",
+    okText: "Obriši"
   });
+  if(!ok) return;
+
+  const next = loadBoardPosts(bid).filter(x => x.id !== post.id);
+  saveBoardPosts(bid, next);
+  renderBoard(bid, CURRENT_QUERY);
+  renderSearchDropdown(CURRENT_QUERY);
+  updateHomeSummary();
+});
+
 
   actions.appendChild(del);
   top.appendChild(actions);
