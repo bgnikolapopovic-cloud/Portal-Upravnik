@@ -4431,6 +4431,14 @@ function fmtDateTime(ms){
   const d = new Date(ms);
   return d.toLocaleString("sr-RS");
 }
+  function daysLeftUntil(ms){
+  const diff = Number(ms || 0) - Date.now();
+  return Math.max(0, Math.ceil(diff / (1000*60*60*24)));
+}
+function fmtDateOnly(ms){
+  if(!ms) return "";
+  return new Date(ms).toLocaleDateString("sr-RS");
+}
 function forumMatches(p, q){
   const hay = `${p.title} ${p.body}`;
   return includesQuery(hay, q);
@@ -4769,15 +4777,17 @@ if(createProposalBtn){
       return;
     }
 
-    const proposal = {
+    const now = Date.now();
+
+const proposal = {
   id: cryptoRandom(),
-  createdAt: Date.now(),
-  expiresAt: Date.now() + 1000 * 60 * 60 * 24 * 30, // ⏱ 30 dana
+  createdAt: now,
+  expiresAt: now + 1000 * 60 * 60 * 24 * 30, // 30 dana
   title,
   body,
   createdBy: CURRENT_SESSION.username
 };
-    const items = loadProposals(bid);
+   const items = loadProposals(bid);
     items.push(proposal);
     saveProposals(bid, items);
 
