@@ -2321,7 +2321,30 @@ body.mode-portal.page-home .pageHeader{
 
 </div>
 
+<!-- ✅ CONFIRM MODAL (custom, mobile-friendly) -->
+<div class="cModal" id="cModal" style="display:none;">
+  <div class="cModalOverlay" id="cModalOverlay"></div>
+
+  <div class="cModalCard" role="dialog" aria-modal="true"
+       aria-labelledby="cTitle" aria-describedby="cText">
+    <div class="cModalHead">
+      <div class="cModalTitle" id="cTitle">Potvrda</div>
+      <button class="cModalX" id="cModalX" type="button" aria-label="Zatvori">✕</button>
+    </div>
+
+    <div class="cModalBody">
+      <div class="cModalText" id="cText">Da li ste sigurni?</div>
+    </div>
+
+    <div class="cModalActions">
+      <button class="btn btnGhost" id="cCancel" type="button">Otkaži</button>
+      <button class="btn btnPrimary cDanger" id="cOk" type="button">Obriši</button>
+    </div>
+  </div>
+</div>
+  
 <script>
+  
 /* =========================================================
    PRINCIP RADA (front-only priprema)
    - svaka zgrada je "tenant" (nezavisna stambena zajednica)
@@ -5111,31 +5134,6 @@ function renderUserBadge(){
   // samo za proveru
   console.log("Supabase connected:", supabaseClient);
 </script>
-
-<!-- ✅ CONFIRM MODAL (custom, mobile-friendly) -->
-<div class="cModal" id="cModal" style="display:none;">
-  <div class="cModalOverlay" id="cModalOverlay"></div>
-
-  <div class="cModalCard" role="dialog" aria-modal="true" aria-labelledby="cTitle" aria-describedby="cText">
-    <div class="cModalHead">
-      <div class="cModalTitle" id="cTitle">Potvrda</div>
-      <button class="cModalX" id="cModalX" type="button" aria-label="Zatvori">✕</button>
-    </div>
-
-    <div class="cModalBody">
-      <div class="cModalText" id="cText">Da li ste sigurni?</div>
-    </div>
-
-    <div class="cModalActions">
-      <button class="btn btnGhost" id="cCancel" type="button">Otkaži</button>
-      <button class="btn btnPrimary cDanger" id="cOk" type="button">Obriši</button>
-    </div>
-  </div>
-</div>
-
-  
-</body>
-</html>
 
 
 
