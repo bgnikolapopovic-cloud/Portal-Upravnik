@@ -1653,6 +1653,111 @@ body.mode-portal.page-home .pageHeader{
   opacity: .85;
 }
 
+/* =========================
+   DUGOVANJA (ADMIN GRID)
+========================= */
+.duesToolbar{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+
+.duesToolbar .field{ margin-top:0; }
+.duesToolbar input, .duesToolbar select{
+  height:36px;
+  border-radius:12px;
+  padding:6px 10px;
+  border:1px solid rgba(15,23,42,.14);
+  background:rgba(248,250,252,.88);
+  font-weight:800;
+  font-size:13px;
+}
+
+.duesGrid{
+  margin-top:12px;
+  display:grid;
+  gap:10px;
+}
+
+.duesRow{
+  display:grid;
+  grid-template-columns: 140px 1fr 1fr 1fr auto; /* korisnik | uplaceno | obaveza | saldo | akcija */
+  gap:12px;
+  align-items:center;
+
+  background: rgba(15, 23, 42, .18);
+  border: 1px solid rgba(15, 23, 42, .22);
+  box-shadow: 0 10px 26px rgba(2, 6, 23, .10);
+  border-radius: 18px;
+  padding: 12px 14px;
+}
+
+.duesUser{
+  font-weight: 900;
+  font-size: 16px;
+  letter-spacing:.3px;
+}
+
+.duesMeta{
+  font-weight:800;
+  color: rgba(15,23,42,.80);
+  font-size: 12px;
+  opacity:.85;
+}
+
+.duesBadges{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+.duesBadge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 10px;
+  border-radius:999px;
+  font-weight:900;
+  font-size:12px;
+  border:1px solid rgba(15,23,42,.14);
+  background: rgba(241,245,249,.75);
+  white-space:nowrap;
+}
+
+/* saldo status boje (isti sistem kao kod tebe) */
+.duesBadge.status-dug{ 
+  color:#dc2626; background:rgba(220,38,38,.12); border-color:rgba(220,38,38,.35);
+}
+.duesBadge.status-obaveza{
+  color:#ca8a04; background:rgba(250,204,21,.18); border-color:rgba(202,138,4,.35);
+}
+.duesBadge.status-uplaceno{
+  color:#16a34a; background:rgba(22,163,74,.15); border-color:rgba(22,163,74,.35);
+}
+
+.duesActions{
+  display:flex;
+  justify-content:flex-end;
+}
+
+.duesActions .btn{
+  flex:unset;
+  padding:10px 14px;
+  border-radius:14px;
+}
+
+/* responsive */
+@media (max-width: 920px){
+  .duesRow{
+    grid-template-columns: 1fr; 
+  }
+  .duesBadges{ justify-content:flex-start; }
+  .duesActions{ justify-content:flex-start; }
+}
+
   
 </style>
 </head>
@@ -2053,7 +2158,34 @@ body.mode-portal.page-home .pageHeader{
     </div>
   </div>
 
-  <ul class="boardList" id="duesList" style="margin-top:12px;"></ul>
+  <!-- ===== Dugovanja stanara: toolbar + grid ===== -->
+<div class="duesToolbar">
+  <div class="field" style="min-width:220px;">
+    <label for="duesSearch">Pretraga stanara</label>
+    <input id="duesSearch" type="text" placeholder="npr. BM25-002">
+  </div>
+
+  <div class="field" style="min-width:220px;">
+    <label for="duesFilter">Filter</label>
+    <select id="duesFilter">
+      <option value="svi">Svi</option>
+      <option value="dug">Samo dug</option>
+      <option value="nula">Samo 0</option>
+      <option value="pretplata">Samo pretplata</option>
+    </select>
+  </div>
+
+  <div class="field" style="min-width:220px;">
+    <label for="duesSort">Sortiranje</label>
+    <select id="duesSort">
+      <option value="user-asc">Korisnik A–Z</option>
+      <option value="saldo-asc">Najveći dug</option>
+      <option value="saldo-desc">Najveća pretplata</option>
+    </select>
+  </div>
+</div>
+
+<div class="duesGrid" id="duesGrid"></div>
 
   <div id="duesPayWrap" style="display:none; margin-top:14px;">
     <div class="badge" id="duesPayTitle">Uplata</div>
@@ -2735,8 +2867,7 @@ const editOpeningBalanceBtn = document.getElementById("editOpeningBalanceBtn");
 const monthlyFeeInput = document.getElementById("monthlyFeeInput");
 const duesStartMonth = document.getElementById("duesStartMonth");
 const saveDuesSettingsBtn = document.getElementById("saveDuesSettingsBtn");
-const duesList = document.getElementById("duesList");
-
+const duesGrid = document.getElementById("duesGrid");
 const duesPayWrap = document.getElementById("duesPayWrap");
 const duesPayTitle = document.getElementById("duesPayTitle");
 const duesPayDate = document.getElementById("duesPayDate");
@@ -4452,7 +4583,7 @@ function renderDuesAdmin(){
   if(!bid) return;
   if(CURRENT_SESSION?.role !== "upravnik") return;
 
-  if(!monthlyFeeInput || !duesStartMonth || !saveDuesSettingsBtn || !duesList) return;
+  if(!monthlyFeeInput || !duesStartMonth || !saveDuesSettingsBtn || !duesGrid) return;
 
   const dues = loadDues(bid);
 
@@ -4469,46 +4600,6 @@ function renderDuesAdmin(){
     renderDuesAdmin();
   };
 
-  const residents = listResidentsForBuilding(bid);
-  duesList.innerHTML = "";
-
-  residents.forEach(username => {
-    const r = computeUserDue(bid, username);
-    const dug = Math.max(0, -r.saldo);
-    const pret = Math.max(0, r.saldo);
-
-    const li = document.createElement("li");
-    li.innerHTML = `
-      <div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; align-items:center;">
-        <div><b>${username}</b></div>
-        <div style="display:flex; gap:8px; flex-wrap:wrap;">
-          <span class="badge">Uplaćeno: ${formatRSD(r.paid)} RSD</span>
-          <span class="badge">Obaveza: ${formatRSD(r.expected)} RSD</span>
-          <span class="badge">${dug>0 ? ("DUG: "+formatRSD(dug)) : (pret>0 ? ("PRETPLATA: "+formatRSD(pret)) : "0,00")}</span>
-        </div>
-      </div>
-      <div class="smallText" style="margin-top:8px;">
-  Obračun od ${formatDateDMY(r.start)} • ${r.months} meseci
-</div>
-    `;
-
-    const actions = document.createElement("div");
-    actions.style.marginTop = "10px";
-    actions.style.display = "flex";
-    actions.style.gap = "10px";
-    actions.style.flexWrap = "wrap";
-
-    const btnPay = document.createElement("button");
-    btnPay.className = "btn btnGhost";
-    btnPay.type = "button";
-    btnPay.textContent = "Dodaj uplatu + PDF";
-    btnPay.onclick = () => openDuesPay(username, r.fee);
-
-    actions.appendChild(btnPay);
-    li.appendChild(actions);
-
-    duesList.appendChild(li);
-  });
 }
 
 function openDuesPay(username, suggested){
