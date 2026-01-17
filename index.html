@@ -2878,6 +2878,11 @@ const duesPaySaveBtn = document.getElementById("duesPaySaveBtn");
 const duesPayCancelBtn = document.getElementById("duesPayCancelBtn");
 const duesPayError = document.getElementById("duesPayError");
 
+  // ✅ dues toolbar (search/filter/sort)
+const duesSearch = document.getElementById("duesSearch");
+const duesFilter = document.getElementById("duesFilter");
+const duesSort   = document.getElementById("duesSort");
+
   // stanar – moj dug / pretplata
 const tenantDuesBox = document.getElementById("tenantDuesBox");
 const tPaid = document.getElementById("tPaid");
@@ -4578,6 +4583,12 @@ function renderForum(bid, q){
 
 let DUES_ACTIVE_USER = null;
 
+function saldoClass(s){
+  if(s < 0) return "status-dug";
+  if(s === 0) return "status-obaveza";
+  return "status-uplaceno";
+}
+
 function renderDuesAdmin(){
   const bid = activeBid();
   if(!bid) return;
@@ -4587,19 +4598,148 @@ function renderDuesAdmin(){
 
   const dues = loadDues(bid);
 
+  // podešavanja (mesečna obaveza + start mesec)
   monthlyFeeInput.value = String(Number(dues.monthlyFee || 2000));
   duesStartMonth.value = dues.startMonth || ymNow();
 
   saveDuesSettingsBtn.onclick = () => {
     const fee = Number(monthlyFeeInput.value || 0);
-    const sm = String(duesStartMonth.value || "").trim();
+    const sm  = String(duesStartMonth.value || "").trim();
+
     const obj = loadDues(bid);
     obj.monthlyFee = Number.isFinite(fee) ? fee : 0;
     if(sm) obj.startMonth = sm;
+
     saveDues(bid, obj);
     renderDuesAdmin();
   };
 
+  // ===== lista stanara =====
+  let users = listResidentsForBuilding(bid).map(u => {
+    const r = computeUserDue(bid, u);
+
+    // normalizuj saldo na “tačno 0” (da ne bude -0.000001)
+    const saldo = Math.abs(r.saldo) < 0.0001 ? 0 : r.saldo;
+
+    return {
+      username: u,
+      paid: r.paid,
+      expected: r.expected,
+      saldo
+    };
+  });
+
+  // ===== pretraga =====
+  const q = (duesSearch?.value || "").trim();
+  if(q){
+    const nq = normalizeText(q);
+    users = users.filter(x => normalizeText(x.username).includes(nq));
+  }
+
+  // ===== filter =====
+  const f = duesFilter?.value || "svi";
+  if(f === "dug") users = users.filter(x => x.saldo < 0);
+  if(f === "nula") users = users.filter(x => x.saldo === 0);
+  if(f === "pretplata") users = users.filter(x => x.saldo > 0);
+
+  // ===== sortiranje =====
+  const srt = duesSort?.value || "user-asc";
+  users.sort((a,b) => {
+    if(srt === "user-asc") return (a.username||"").localeCompare(b.username||"");
+    if(srt === "saldo-asc") return (a.saldo - b.saldo);   // najviše duga (najmanji saldo) prvo
+    if(srt === "saldo-desc") return (b.saldo - a.saldo);  // najviše pretplate prvo
+    return 0;
+  });
+
+  // ===== render =====
+  duesGrid.innerHTML = "";
+
+  if(!users.length){
+    const empty = document.createElement("div");
+    empty.className = "smallText";
+    empty.style.marginTop = "10px";
+    empty.innerHTML = `<span class="badge">Nema rezultata</span>`;
+    duesGrid.appendChild(empty);
+    return;
+  }
+
+  users.forEach(u => {
+    const row = document.createElement("div");
+    row.className = "duesRow";
+
+    const left = document.createElement("div");
+    left.innerHTML = `
+      <div class="duesUser">${u.username}</div>
+      <div class="duesMeta">Pregled za aktivnu zgradu</div>
+    `;
+
+    const paid = document.createElement("div");
+    paid.className = "duesBadges";
+    paid.style.justifyContent = "flex-start";
+    paid.innerHTML = `
+      <span class="duesBadge status-uplaceno">Uplaćeno: <b>${formatRSD(u.paid)}</b> RSD</span>
+    `;
+
+    const exp = document.createElement("div");
+    exp.className = "duesBadges";
+    exp.style.justifyContent = "flex-start";
+    exp.innerHTML = `
+      <span class="duesBadge status-obaveza">Obaveza: <b>${formatRSD(u.expected)}</b> RSD</span>
+    `;
+
+    const sal = document.createElement("div");
+    sal.className = "duesBadges";
+    sal.style.justifyContent = "flex-start";
+
+    const salBadge = document.createElement("span");
+    salBadge.className = `duesBadge ${saldoClass(u.saldo)}`;
+
+    if(u.saldo < 0){
+      salBadge.textContent = `Potraživanje SZ: ${formatRSD(-u.saldo)} RSD`;
+    }else if(u.saldo === 0){
+      salBadge.textContent = `Potraživanje SZ: 0,00 RSD`;
+    }else{
+      salBadge.textContent = `Potraživanje SZ: +${formatRSD(u.saldo)} RSD`;
+    }
+
+    sal.appendChild(salBadge);
+
+    const actions = document.createElement("div");
+    actions.className = "duesActions";
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "btn btnGhost";
+    btn.textContent = "Uplata";
+
+    // sugestija: ako je dug, predloži “razliku do nule”; ako nije, predloži mesečnu obavezu
+    const suggested = u.saldo < 0 ? Math.ceil((-u.saldo)) : Number(loadDues(bid).monthlyFee || 0);
+
+    btn.addEventListener("click", () => openDuesPay(u.username, suggested));
+    actions.appendChild(btn);
+
+    row.appendChild(left);
+    row.appendChild(paid);
+    row.appendChild(exp);
+    row.appendChild(sal);
+    row.appendChild(actions);
+
+    duesGrid.appendChild(row);
+  });
+
+  // ===== listeners (jednom) =====
+  if(duesSearch && !duesSearch.dataset.bound){
+    duesSearch.addEventListener("input", renderDuesAdmin);
+    duesSearch.dataset.bound = "1";
+  }
+  if(duesFilter && !duesFilter.dataset.bound){
+    duesFilter.addEventListener("change", renderDuesAdmin);
+    duesFilter.dataset.bound = "1";
+  }
+  if(duesSort && !duesSort.dataset.bound){
+    duesSort.addEventListener("change", renderDuesAdmin);
+    duesSort.dataset.bound = "1";
+  }
 }
 
 function openDuesPay(username, suggested){
@@ -5025,7 +5165,7 @@ function refreshAllModules(){
   if(!bid) return;
 
   financeInit(bid);
-  renderDuesAdmin(bid);
+  renderDuesAdmin();
   forumInit(bid);
   boardInit(bid);
 renderDuesTenant(bid);
