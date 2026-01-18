@@ -1625,20 +1625,20 @@ body.mode-portal.page-home .pageHeader{
   .statsCard[style*="grid-column"]{ grid-column:auto !important; }
 }
 
-/* =========================
-   FINANSIJE — UNOSI (SVETLIJE KAO OGLASNA)
-========================= */
+/* =================================================
+   FINANSIJE — UNOSI (SVETLO, KAO DUGOVANJA STANARA)
+================================================= */
 
 .finWrap input,
 .finWrap select,
 .finWrap textarea{
-  background: rgba(255,255,255,.97); /* nijansu svetlije od oglasne */
+  background: rgba(255,255,255,.97);
   border: 1px solid rgba(15,23,42,.14);
   color: rgba(15,23,42,.92);
   border-radius: 14px;
 }
 
-/* hover / fokus da ostane elegantno */
+/* fokus / hover */
 .finWrap input:focus,
 .finWrap select:focus,
 .finWrap textarea:focus{
@@ -1654,9 +1654,9 @@ body.mode-portal.page-home .pageHeader{
   cursor: not-allowed;
 }
 
-  /* =========================
+/* =================================================
    PROFI LIST ITEM UI (Finansije + Oglasna)
-========================= */
+================================================= */
 
 .itemHead{
   display:flex;
@@ -1667,7 +1667,7 @@ body.mode-portal.page-home .pageHeader{
 
 .itemLeft{
   flex:1;
-  min-width:0; /* da ne gura dugmad */
+  min-width:0;
 }
 
 .itemMeta{
@@ -1677,6 +1677,7 @@ body.mode-portal.page-home .pageHeader{
   align-items:center;
 }
 
+/* pill / badge */
 .pill{
   display:inline-flex;
   align-items:center;
@@ -1691,6 +1692,7 @@ body.mode-portal.page-home .pageHeader{
   white-space:nowrap;
 }
 
+/* tip */
 .pill.type-rashod{
   color:#b91c1c;
   background: rgba(220,38,38,.12);
@@ -1702,29 +1704,20 @@ body.mode-portal.page-home .pageHeader{
   border-color: rgba(22,163,74,.28);
 }
 
-.itemTitle{
-  margin-top:8px;
-  font-weight:900;
-  color: rgba(15,23,42,.92);
-  line-height:1.25;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-}
-
+/* opis */
 .itemDesc{
   margin-top:6px;
   font-weight:800;
   color: rgba(15,23,42,.70);
   line-height:1.35;
 
-  /* 2 linije max */
   display:-webkit-box;
   -webkit-line-clamp:2;
   -webkit-box-orient:vertical;
   overflow:hidden;
 }
 
+/* iznos (price-tag) */
 .itemAmount{
   flex:0 0 auto;
   padding:8px 12px;
@@ -1736,7 +1729,6 @@ body.mode-portal.page-home .pageHeader{
   color: rgba(15,23,42,.92);
 }
 
-/* malo jače istakni rashod/prihod iznos */
 .itemAmount.rashod{
   border-color: rgba(220,38,38,.25);
 }
@@ -1744,11 +1736,12 @@ body.mode-portal.page-home .pageHeader{
   border-color: rgba(22,163,74,.22);
 }
 
-/* mobile: iznos ide ispod meta */
+/* mobile */
 @media (max-width: 640px){
   .itemHead{ flex-direction:column; }
   .itemAmount{ align-self:flex-start; }
 }
+
   
 </style>
 </head>
