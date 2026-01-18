@@ -2186,7 +2186,7 @@ body.mode-portal.page-home .pageHeader{
         <input id="duesPayNote" type="text" placeholder="npr. januar 2026 / dug / korekcija">
       </div>
     </div>
-
+    
     <div class="field" style="margin-top:10px;">
       <label for="duesPayDocs">PDF potvrde (više fajlova, max 10MB)</label>
       <input id="duesPayDocs" type="file" multiple accept="application/pdf">
@@ -2198,9 +2198,50 @@ body.mode-portal.page-home .pageHeader{
     </div>
 
     <div class="error" id="duesPayError" style="display:none;"></div>
-  </div>
-</div>
+</div> <!-- /duesPayWrap -->
 
+</div> <!-- /smallText (upravnik) -->
+
+</div><!-- /finDuesWrap -->
+
+
+          <!-- ✅ IZMJENA / KOREKCIJA (UPRAVNIK / ADMIN) -->
+<div id="duesAdjWrap" style="display:none; margin-top:14px;">
+  <div class="badge" id="duesAdjTitle">Izmena</div>
+
+  <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end;">
+    <div class="half field">
+      <label for="duesAdjDate">Datum izmene</label>
+      <input id="duesAdjDate" type="date">
+    </div>
+
+    <div class="half field">
+      <label for="duesAdjKind">Akcija</label>
+      <select id="duesAdjKind">
+        <option value="plus">Povećaj iznos</option>
+        <option value="minus">Smanji iznos</option>
+      </select>
+    </div>
+
+    <div class="half field">
+      <label for="duesAdjAmount">Iznos (RSD)</label>
+      <input id="duesAdjAmount" type="number" step="0.01">
+    </div>
+
+    <div class="grow field">
+      <label for="duesAdjNote">Razlog</label>
+      <input id="duesAdjNote" type="text" placeholder="npr. korekcija / greška u uplati">
+    </div>
+  </div>
+
+  <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
+    <button class="btn btnPrimary" id="duesAdjSaveBtn" type="button" style="flex:unset;">Sačuvaj izmenu</button>
+    <button class="btn btnGhost" id="duesAdjCancelBtn" type="button" style="flex:unset;">Otkaži</button>
+  </div>
+
+  <div class="error" id="duesAdjError" style="display:none;"></div>
+</div>
+            
 </div><!-- /finDuesWrap -->
             
           <!-- ✅ STANAR: moj dug / pretplata (read-only) -->
@@ -2844,6 +2885,97 @@ const duesPayDocs = document.getElementById("duesPayDocs");
 const duesPaySaveBtn = document.getElementById("duesPaySaveBtn");
 const duesPayCancelBtn = document.getElementById("duesPayCancelBtn");
 const duesPayError = document.getElementById("duesPayError");
+
+  // ✅ dues adjust (Izmena) DOM
+const duesAdjWrap   = document.getElementById("duesAdjWrap");
+const duesAdjTitle  = document.getElementById("duesAdjTitle");
+const duesAdjDate   = document.getElementById("duesAdjDate");
+const duesAdjKind   = document.getElementById("duesAdjKind");
+const duesAdjAmount = document.getElementById("duesAdjAmount");
+const duesAdjNote   = document.getElementById("duesAdjNote");
+const duesAdjSaveBtn= document.getElementById("duesAdjSaveBtn");
+const duesAdjCancelBtn = document.getElementById("duesAdjCancelBtn");
+const duesAdjError  = document.getElementById("duesAdjError");
+
+function canAdjustDues(){
+  const r = (CURRENT_SESSION?.role || "").toLowerCase();
+  return r === "upravnik" || r === "admin" || r === "administrator";
+}
+
+function openDuesAdjust(username){
+  if(!canAdjustDues()) return alert("Nemate dozvolu.");
+
+  DUES_ACTIVE_USER = username; // koristimo isti “active user”
+
+  if(!duesAdjWrap || !duesAdjTitle || !duesAdjDate || !duesAdjKind || !duesAdjAmount) return;
+
+  const d = new Date();
+  duesAdjTitle.textContent = `Izmena: ${username}`;
+  duesAdjDate.value = d.toISOString().slice(0,10);
+  duesAdjKind.value = "plus";
+  duesAdjAmount.value = "";
+  if(duesAdjNote) duesAdjNote.value = "";
+  if(duesAdjError){ duesAdjError.style.display="none"; duesAdjError.textContent=""; }
+
+  // sakrij uplatu ako je otvorena, da ne zbunjuje
+  if(duesPayWrap) duesPayWrap.style.display = "none";
+
+  duesAdjWrap.style.display = "block";
+  duesAdjWrap.scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+function cancelDuesAdjust(){
+  if(duesAdjWrap) duesAdjWrap.style.display = "none";
+  DUES_ACTIVE_USER = null;
+}
+
+function saveDuesAdjust(){
+  const bid = activeBid();
+  if(!bid) return;
+  if(!canAdjustDues()) return;
+
+  if(!DUES_ACTIVE_USER) return;
+
+  const date = (duesAdjDate?.value || "").trim();
+  const kind = (duesAdjKind?.value || "plus");
+  const amtRaw = Number((duesAdjAmount?.value || "").trim());
+  const note = (duesAdjNote?.value || "").trim();
+
+  if(!date || !Number.isFinite(amtRaw) || amtRaw <= 0){
+    if(duesAdjError){
+      duesAdjError.textContent = "Greška: datum i iznos (veći od 0) su obavezni.";
+      duesAdjError.style.display = "block";
+    }
+    return;
+  }
+  if(note.length < 3){
+    if(duesAdjError){
+      duesAdjError.textContent = "Greška: razlog je obavezan (min 3 karaktera).";
+      duesAdjError.style.display = "block";
+    }
+    return;
+  }
+
+  const delta = (kind === "minus") ? -Math.abs(amtRaw) : Math.abs(amtRaw);
+
+  addDuesPayment(bid, DUES_ACTIVE_USER, {
+    id: cryptoRandom(),
+    createdAt: Date.now(),
+    date,
+    amount: delta,
+    note: `IZMENA: ${note}`,
+    docs: [] // za izmenu ne uploadujemo, ostavi prazno
+  });
+
+  if(duesAdjWrap) duesAdjWrap.style.display = "none";
+  DUES_ACTIVE_USER = null;
+
+  renderDuesAdmin();
+}
+
+if(duesAdjSaveBtn) duesAdjSaveBtn.addEventListener("click", saveDuesAdjust);
+if(duesAdjCancelBtn) duesAdjCancelBtn.addEventListener("click", cancelDuesAdjust);
+
 
   // ✅ dues toolbar (search/filter/sort)
 const duesSearch = document.getElementById("duesSearch");
@@ -4640,6 +4772,17 @@ function renderDuesAdmin(){
 
     btn.addEventListener("click", () => openDuesPay(u.username, suggested));
     actions.appendChild(btn);
+
+    const edit = document.createElement("button");
+edit.type = "button";
+edit.className = "btn btnGhost";
+edit.textContent = "Izmena";
+
+// (opciono) zabrani ako nije upravnik/admin
+edit.disabled = !canAdjustDues();
+
+edit.addEventListener("click", () => openDuesAdjust(u.username));
+actions.appendChild(edit);
 
     row.appendChild(left);
     row.appendChild(paid);
