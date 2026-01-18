@@ -1463,9 +1463,14 @@ body.mode-portal.page-home .pageHeader{
   box-shadow: 0 10px 26px rgba(2, 6, 23, .10);
   border-radius: 18px;
   padding: 12px 14px;
-  .duesRow:hover{
-  background: rgba(15, 23, 42, .22);
+
+  /* bitno za hover */
+  transition: background .12s ease, transform .12s ease;
 }
+
+.duesRow:hover{
+  background: rgba(15, 23, 42, .22);
+  transform: translateY(-1px);
 }
 
 .duesUser{
