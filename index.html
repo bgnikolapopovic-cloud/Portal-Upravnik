@@ -1587,17 +1587,23 @@ body.mode-portal.page-home .pageHeader{
 }
   /* =================================================
    UNOSI — ISTA NIJANSA KAO DUGOVANJA (toolbar)
-   (finansije + oglasna + forum predlog)
+   (finansije + oglasna + forum + uplata dugovanja)
 ================================================= */
 
 #financeFormWrap .field input,
 #financeFormWrap .field select,
 #financeFormWrap .field textarea,
+
 #boardFormWrap .field input,
 #boardFormWrap .field select,
 #boardFormWrap .field textarea,
+
 #forumCreateWrap .field input,
-#forumCreateWrap .field textarea{
+#forumCreateWrap .field textarea,
+
+#duesPayWrap .field input,
+#duesPayWrap .field select,
+#duesPayWrap .field textarea{
   background: rgba(248,250,252,.88);
   border: 1px solid rgba(15,23,42,.14);
   color: rgba(15,23,42,.92);
@@ -1608,11 +1614,17 @@ body.mode-portal.page-home .pageHeader{
 #financeFormWrap .field input:focus,
 #financeFormWrap .field select:focus,
 #financeFormWrap .field textarea:focus,
+
 #boardFormWrap .field input:focus,
 #boardFormWrap .field select:focus,
 #boardFormWrap .field textarea:focus,
+
 #forumCreateWrap .field input:focus,
-#forumCreateWrap .field textarea:focus{
+#forumCreateWrap .field textarea:focus,
+
+#duesPayWrap .field input:focus,
+#duesPayWrap .field select:focus,
+#duesPayWrap .field textarea:focus{
   outline: none;
   background: rgba(248,250,252,.94);
   border-color: rgba(15,23,42,.25);
@@ -1625,7 +1637,6 @@ body.mode-portal.page-home .pageHeader{
   opacity: .85;
   cursor: not-allowed;
 }
-
 
 /* =================================================
    PROFI LIST ITEM UI (Finansije + Oglasna)
