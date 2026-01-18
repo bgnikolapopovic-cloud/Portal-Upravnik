@@ -1654,6 +1654,101 @@ body.mode-portal.page-home .pageHeader{
   cursor: not-allowed;
 }
 
+  /* =========================
+   PROFI LIST ITEM UI (Finansije + Oglasna)
+========================= */
+
+.itemHead{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.itemLeft{
+  flex:1;
+  min-width:0; /* da ne gura dugmad */
+}
+
+.itemMeta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  align-items:center;
+}
+
+.pill{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 10px;
+  border-radius:999px;
+  font-weight:900;
+  font-size:12px;
+  border:1px solid rgba(15,23,42,.14);
+  background: rgba(255,255,255,.55);
+  color: rgba(15,23,42,.88);
+  white-space:nowrap;
+}
+
+.pill.type-rashod{
+  color:#b91c1c;
+  background: rgba(220,38,38,.12);
+  border-color: rgba(220,38,38,.30);
+}
+.pill.type-prihod{
+  color:#166534;
+  background: rgba(22,163,74,.12);
+  border-color: rgba(22,163,74,.28);
+}
+
+.itemTitle{
+  margin-top:8px;
+  font-weight:900;
+  color: rgba(15,23,42,.92);
+  line-height:1.25;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.itemDesc{
+  margin-top:6px;
+  font-weight:800;
+  color: rgba(15,23,42,.70);
+  line-height:1.35;
+
+  /* 2 linije max */
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+
+.itemAmount{
+  flex:0 0 auto;
+  padding:8px 12px;
+  border-radius:14px;
+  font-weight:900;
+  white-space:nowrap;
+  border:1px solid rgba(15,23,42,.14);
+  background: rgba(255,255,255,.62);
+  color: rgba(15,23,42,.92);
+}
+
+/* malo jače istakni rashod/prihod iznos */
+.itemAmount.rashod{
+  border-color: rgba(220,38,38,.25);
+}
+.itemAmount.prihod{
+  border-color: rgba(22,163,74,.22);
+}
+
+/* mobile: iznos ide ispod meta */
+@media (max-width: 640px){
+  .itemHead{ flex-direction:column; }
+  .itemAmount{ align-self:flex-start; }
+}
   
 </style>
 </head>
@@ -3630,8 +3725,28 @@ li.classList.add("finCard");
 
   const title = document.createElement("div");
   title.className = "finRowTitle";
-  title.innerHTML =
-  `${escapeHTML(item.date)} — ${item.type === "rashod" ? "Rashod" : "Prihod"} — ${escapeHTML(item.category)}${escapeHTML(firmPart)} — "<span class="finDesc">${escapeHTML(item.desc)}</span>" — ${escapeHTML(formatRSD(item.amount))} RSD`;
+  const dmy = formatDateDMY(item.date);
+const typeLabel = (item.type === "rashod") ? "Rashod" : "Prihod";
+const typeClass = (item.type === "rashod") ? "type-rashod" : "type-prihod";
+
+title.innerHTML = `
+  <div class="itemHead">
+    <div class="itemLeft">
+      <div class="itemMeta">
+        <span class="pill">${escapeHTML(dmy)}</span>
+        <span class="pill ${typeClass}">${escapeHTML(typeLabel)}</span>
+        <span class="pill">${escapeHTML(item.category)}</span>
+        ${item.firm ? `<span class="pill">${escapeHTML(item.firm)}</span>` : ``}
+      </div>
+
+      <div class="itemDesc">${escapeHTML(item.desc || "")}</div>
+    </div>
+
+    <div class="itemAmount ${item.type === "rashod" ? "rashod" : "prihod"}">
+      ${escapeHTML(formatRSD(item.amount))} RSD
+    </div>
+  </div>
+`;
 
   top.appendChild(title);
 
@@ -4107,7 +4222,21 @@ top.className = "finRowTop"; // koristi isti CSS kao finansije
 
 const title = document.createElement("div");
 title.className = "finRowTitle";
-title.textContent = `${post.date} — ${post.title}${post.desc ? " — " + post.desc : ""}`;
+const dmy = formatDateDMY(post.date);
+
+title.innerHTML = `
+  <div class="itemHead">
+    <div class="itemLeft">
+      <div class="itemMeta">
+        <span class="pill">${escapeHTML(dmy)}</span>
+        <span class="pill">${escapeHTML(post.title || "")}</span>
+      </div>
+
+      ${post.desc ? `<div class="itemDesc">${escapeHTML(post.desc)}</div>` : ``}
+    </div>
+  </div>
+`;
+
 
 top.appendChild(title);
 
