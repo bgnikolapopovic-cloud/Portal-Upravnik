@@ -1585,35 +1585,47 @@ body.mode-portal.page-home .pageHeader{
   .statsGrid{ grid-template-columns: 1fr; }
   .statsCard[style*="grid-column"]{ grid-column:auto !important; }
 }
-
-/* =================================================
-   FINANSIJE — UNOSI (SVETLO, KAO DUGOVANJA STANARA)
+  /* =================================================
+   UNOSI — ISTA NIJANSA KAO DUGOVANJA (toolbar)
+   (finansije + oglasna + forum predlog)
 ================================================= */
 
-.finWrap input,
-.finWrap select,
-.finWrap textarea{
-  background: rgba(255,255,255,.97);
+#financeFormWrap .field input,
+#financeFormWrap .field select,
+#financeFormWrap .field textarea,
+#boardFormWrap .field input,
+#boardFormWrap .field select,
+#boardFormWrap .field textarea,
+#forumCreateWrap .field input,
+#forumCreateWrap .field textarea{
+  background: rgba(248,250,252,.88);
   border: 1px solid rgba(15,23,42,.14);
   color: rgba(15,23,42,.92);
   border-radius: 14px;
 }
 
-/* fokus / hover */
-.finWrap input:focus,
-.finWrap select:focus,
-.finWrap textarea:focus{
+/* fokus */
+#financeFormWrap .field input:focus,
+#financeFormWrap .field select:focus,
+#financeFormWrap .field textarea:focus,
+#boardFormWrap .field input:focus,
+#boardFormWrap .field select:focus,
+#boardFormWrap .field textarea:focus,
+#forumCreateWrap .field input:focus,
+#forumCreateWrap .field textarea:focus{
   outline: none;
-  background: rgba(255,255,255,1);
+  background: rgba(248,250,252,.94);
   border-color: rgba(15,23,42,.25);
+  box-shadow: 0 0 0 4px rgba(15,23,42,.06);
 }
 
 /* disabled / readonly */
-.finWrap input[readonly],
-.finWrap input:disabled{
+#financeFormWrap .field input[readonly],
+#financeFormWrap .field input:disabled{
   opacity: .85;
   cursor: not-allowed;
 }
+
 
 /* =================================================
    PROFI LIST ITEM UI (Finansije + Oglasna)
