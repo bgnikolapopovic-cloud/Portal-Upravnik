@@ -5263,7 +5263,7 @@ function updateHomeSummary(){
     const unread = (CURRENT_SESSION?.role === "stanar") && !isRead(bid, "fin", it.id);
 
     homeLastChange.innerHTML =
-      `Poslednja promena: ${it.type === "rashod" ? "Rashod" : "Prihod"} - ${it.category} (${it.date})` +
+      `Poslednja promena: ${it.type === "rashod" ? "Rashod" : "Prihod"} - ${it.category} (${formatDateDMY(it.date)})` +
       (unread ? ` <span class="unreadBadge">NOVO</span>` : ``);
 
     homeLastChange.dataset.page = "finansije";
@@ -5283,7 +5283,7 @@ function updateHomeSummary(){
     const unread = (CURRENT_SESSION?.role === "stanar") && !isRead(bid, "brd", p.id);
 
     homePinned.innerHTML =
-      `Istaknuto: ${p.title} (${p.date})` +
+      `Istaknuto: ${p.title} (${formatDateDMY(p.date)})` +
       (unread ? ` <span class="unreadBadge">NOVO</span>` : ``);
 
     homePinned.dataset.page = "oglasna";
