@@ -1237,17 +1237,6 @@ body.mode-portal.page-home .pageHeader{
   }
 }
 
-  /* ===== Finansije: potamni karticu svake unete stavke ===== */
-.finCard{
-  background: rgba(15, 23, 42, .18);   /* potamnjenje */
-  border: 1px solid rgba(15, 23, 42, .22);
-  box-shadow: 0 10px 26px rgba(2, 6, 23, .10);
-  border-radius: 18px;
-  padding: 14px 16px;
-  margin: 12px 0;
-  backdrop-filter: blur(6px); /* ako koristis glass efekat */
-}
-
 /* malo “uredi” razmake unutar kartice (opciono) */
 .finCard .row,
 .finCard .finRow,
@@ -1263,19 +1252,6 @@ body.mode-portal.page-home .pageHeader{
   border: 1px solid rgba(15,23,42,.12);
   border-radius: 14px;
   padding: 8px 10px;
-}
-
-/* ===== FINANSIJE: stvarno potamni svaku stavku ===== */
-#financeList li.finCard{
-  background: rgba(15, 23, 42, .32) !important;
-  border: 1px solid rgba(15, 23, 42, .30) !important;
-  box-shadow: 0 14px 32px rgba(2, 6, 23, .28) !important;
-  border-radius: 18px;
-  padding: 14px 16px;
-  margin: 14px 0;
-}
-#financeList li.finCard:hover{
-  background: rgba(15,23,42,.38) !important;
 }
 
   /* Početno stanje – labela manja i diskretnija */
@@ -1316,21 +1292,6 @@ body.mode-portal.page-home .pageHeader{
 [data-role="upravnik"] .fRow .grow,
 [data-role="admin"] .fRow .grow{
   gap: 6px;
-}
-
-/* =========================================
-   OGLASNA TABLA – ista kartica kao finansije
-   ========================================= */
-
-#boardList li,
-#boardPosts li,
-.boardList#boardList li{
-  background: rgba(15, 23, 42, .32);
-  border: 1px solid rgba(15, 23, 42, .30);
-  box-shadow: 0 14px 32px rgba(2, 6, 23, .28);
-  border-radius: 18px;
-  padding: 14px 16px;
-  margin: 14px 0;
 }
 
 .finDesc{
@@ -1676,9 +1637,7 @@ body.mode-portal.page-home .pageHeader{
   gap:8px;
   align-items:center;
 }
-
-/* pill / badge */
-.pill{
+.itemMeta .pill{
   display:inline-flex;
   align-items:center;
   gap:6px;
@@ -1692,13 +1651,13 @@ body.mode-portal.page-home .pageHeader{
   white-space:nowrap;
 }
 
-/* tip */
-.pill.type-rashod{
+.itemMeta .pill.type-rashod{
   color:#b91c1c;
   background: rgba(220,38,38,.12);
   border-color: rgba(220,38,38,.30);
 }
-.pill.type-prihod{
+
+.itemMeta .pill.type-prihod{
   color:#166534;
   background: rgba(22,163,74,.12);
   border-color: rgba(22,163,74,.28);
