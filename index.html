@@ -1739,6 +1739,25 @@ gap: 10px;
   .itemAmount{ align-self:flex-start; }
 }
 
+  #regList li{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.lawPdfLink{
+  padding:6px 12px;
+  border-radius:10px;
+  background:#eef2ff;
+  color:#1e3a8a;
+  font-weight:600;
+  text-decoration:none;
+}
+
+.lawPdfLink:hover{
+  background:#e0e7ff;
+}
   
 </style>
 </head>
@@ -2364,11 +2383,21 @@ gap: 10px;
           <div class="smallText" data-role="admin">
             Admin: placeholder (upload/izmena regulativa).
           </div>
-
+            
           <ul class="boardList" id="regList">
-            <li>Zakon o stanovanju i održavanju zgrada (PDF)</li>
-            <li>Pravilnik o upravljanju stambenim zajednicama (PDF)</li>
-          </ul>
+  <li>
+    Zakon o stanovanju i održavanju zgrada
+    <a
+      href="Zakon_o_stanovanju_i_odrzavanju_zgrada.pdf"
+      target="_blank"
+      class="lawPdfLink"
+    >
+      PDF
+    </a>
+  </li>
+
+  <li>Pravilnik o upravljanju stambenim zajednicama (PDF)</li>
+</ul>
         </section>
       </section>
 
