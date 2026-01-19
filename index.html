@@ -4138,18 +4138,22 @@ function renderAdminBuildingMenu(){
     btn.textContent = opt.title;
 
     btn.addEventListener("click", () => {
-      // 1) label pored Admin
-      if(adminActiveBuilding) adminActiveBuilding.textContent = opt.title;
+  // 1) label pored Admin
+  if(adminActiveBuilding) adminActiveBuilding.textContent = opt.title;
 
-      // 2) sinhronizuj sa postojećim select-om u toolbaru
-      if(uplAdminBuilding){
-        uplAdminBuilding.value = opt.id;
-        uplAdminBuilding.dispatchEvent(new Event("change", { bubbles:true }));
-      }
+  // 2) otvori admin content (da se odmah vidi rezultat)
+  if(adminContent) adminContent.classList.remove("hidden");
+  if(adminToggle) adminToggle.classList.add("open");
 
-      // 3) zatvori meni
-      adminBuildingMenu.classList.add("hidden");
-    });
+  // 3) sinhronizuj sa postojećim select-om u toolbaru
+  if(uplAdminBuilding){
+    uplAdminBuilding.value = opt.id;
+    uplAdminBuilding.dispatchEvent(new Event("change", { bubbles:true }));
+  }
+
+  // 4) zatvori meni
+  adminBuildingMenu.classList.add("hidden");
+});
 
     adminBuildingMenu.appendChild(btn);
   });
