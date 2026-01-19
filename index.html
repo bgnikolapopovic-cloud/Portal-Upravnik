@@ -3678,10 +3678,6 @@ if(name === "finansije" && CURRENT_SESSION?.role === "upravnik"){
 if(name === "statistika"){
   initAdminFinanceUploads(); // ✅ admin blok sada živi u statistici
 }
-
-if(name === "statistika"){
-  renderAdminUploadsAll();
-}
   
   closeS();
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -3909,49 +3905,7 @@ function calcMonthlyUploads(bid, monthYYYYMM){
     totalFiles, totalMB
   };
 }
-  
-/* ===============================
-   ADMIN — Upload svih stambenih zajednica (grid)
-   =============================== */
-function renderAdminUploadsAll(){
-  // samo admin
-  if(CURRENT_SESSION?.role !== "admin") return;
-  if(!uplAdminGrid) return;
 
-  // mesec uzimamo iz istog pickera koji koristi statistika (hidden #uplMonthPick)
-  const month = (uplMonthPick?.value || "").trim();
-  if(!month){
-    uplAdminGrid.innerHTML = `<div class="smallText"><span class="badge">Izaberi mesec i godinu</span></div>`;
-    return;
-  }
-
-  const pick = (uplAdminBuilding?.value || "all");
-const bids = (pick === "all")
-  ? (BUILDINGS || []).map(b => b.id)
-  : [pick];
-
-  // napravi rezultate po zgradi
-  const singleBuilding = (bids.length === 1);
-  let rows = bids.map(bid => {
-    const b = getBuildingById(bid);
-    const r = calcMonthlyUploads(bid, month);
-
-    return {
-      bid,
-      title: b?.title || bid,
-
-      finEntries: Number(r.finEntries || 0),
-      finFiles:   Number(r.finFiles || 0),
-      finMB:      Number(r.finMB || 0),
-
-      brdEntries: Number(r.brdEntries || 0),
-      brdFiles:   Number(r.brdFiles || 0),
-      brdMB:      Number(r.brdMB || 0),
-
-      totalFiles: Number(r.totalFiles || 0),
-      totalMB:    Number(r.totalMB || 0)
-    };
-  });
 // ===== 3) SINGLE BUILDING → KARTICA =====
 if (singleBuilding) {
   const row = rows[0];
@@ -4085,67 +4039,17 @@ if (singleBuilding && rows.length) {
     uplAdminGrid.appendChild(row);
   });
 }
-
   
-/* ===============================
-   ADMIN – upload pregled (listeneri)
-   =============================== */
-
-// promena meseca (admin statistika)
-if (uplMonthPickAdmin) {
-  uplMonthPickAdmin.addEventListener("change", () => {
-    renderAdminUploadsAll();
-  });
-}
-
-// pretraga zgrada
-if (uplAdminSearch) {
-  uplAdminSearch.addEventListener("input", () => {
-    renderAdminUploadsAll();
-  });
-}
-
-// sortiranje
-if (uplAdminSort) {
-  uplAdminSort.addEventListener("change", () => {
-    renderAdminUploadsAll();
-  });
-}
-
-  /* ===============================
-   ADMIN — listeneri za grid (pretraga/sort/mesec)
-   =============================== */
-
-// 1) kada klikneš "Primeni" u month pickeru, hidden #uplMonthPick dispatchuje "change"
-// zato ovde hvatamo change i osvežavamo admin grid
+/ ✅ kada klikneš "Primeni" u month pickeru → osveži novi admin prikaz (ako je admin)
 if(uplMonthPick && !uplMonthPick.dataset.adminBound){
   uplMonthPick.addEventListener("change", () => {
-    renderAdminUploadsAll();
+    if(CURRENT_SESSION?.role === "admin"){
+      initAdminFinanceUploads();
+    }
   });
   uplMonthPick.dataset.adminBound = "1";
 }
 
-// 2) pretraga zgrada (input)
-if(uplAdminSearch && !uplAdminSearch.dataset.bound){
-  uplAdminSearch.addEventListener("input", () => {
-    renderAdminUploadsAll();
-  });
-  uplAdminSearch.dataset.bound = "1";
-}
-
-// 3) sortiranje (select)
-if(uplAdminSort && !uplAdminSort.dataset.bound){
-  uplAdminSort.addEventListener("change", () => {
-    renderAdminUploadsAll();
-  });
-  uplAdminSort.dataset.bound = "1";
-}
-if(uplAdminBuilding && !uplAdminBuilding.dataset.bound){
-  uplAdminBuilding.addEventListener("change", () => {
-    renderAdminUploadsAll();
-  });
-  uplAdminBuilding.dataset.bound = "1";
-}
   // ===== ADMIN TOGGLE (klik bilo gde na bar) =====
 const adminToggle  = document.getElementById("adminToggle");
 const adminContent = document.getElementById("adminContent");
@@ -5881,7 +5785,6 @@ renderDuesTenant(bid);
 // ✅ MESEČNI UPLOAD: osveži badge-ove
   updateMonthlyUploadUI(false);
   updateMonthlyUploadUI(true);
-  renderAdminUploadsAll();
 }
 
 /* ===== home summary ===== */
