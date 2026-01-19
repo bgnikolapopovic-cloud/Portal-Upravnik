@@ -5900,15 +5900,6 @@ function updateHomeSummary(){
 
   // inicijalno pokreni odmah
   updateHiddenAndTrigger();
-
-  // Osveži i admin grid kada se promeni mesec
-  uplMonthPick.addEventListener("change", () => {
-    updateMonthlyUploadUI(false);     // obična statistika
-    if (CURRENT_SESSION?.role === "admin") {
-      renderAdminUploadsAll();        // admin deo sa svim zgradama
-    }
-  });
-
 })();
 
   /* =========================
