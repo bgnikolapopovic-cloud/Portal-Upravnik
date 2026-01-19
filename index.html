@@ -2053,47 +2053,7 @@ gap: 10px;
   <button class="btn btnGhost" id="finTabDues">Dugovanja stanara</button>
 </div>
 
-       <div id="finEntriesWrap">   
-
-<!-- ================= ADMIN: potrošnja upload-a (SVE ZGRADE) ================= -->
-<div data-role="admin" style="margin-top:14px;">
-
-  <div class="badge">Admin — Potrošnja upload-a po zgradama</div>
-
-  <!-- pretraga + totals -->
-  <div class="duesToolbar" style="margin-top:12px;">
-    <div class="field" style="min-width:260px;">
-      <label for="uplAdminSearchFin">Pretraga zgrade</label>
-      <input
-        id="uplAdminSearchFin"
-        type="text"
-        placeholder="npr. Bore, BM25, NC28, Nedeljka..."
-      >
-      <div class="smallText" style="margin-top:6px; opacity:.8;">
-        Ukucaj adresu i izaberi zgradu
-      </div>
-    </div>
-
-    <div class="duesBadges" style="margin-left:auto;">
-      <span class="duesBadge">
-        Ukupno fajlova: <b id="uplAdminTotalFilesFin">0</b>
-      </span>
-      <span class="duesBadge">
-        Ukupno MB: <b id="uplAdminTotalMBFin">0.00</b>
-      </span>
-    </div>
-  </div>
-
-  <!-- dropdown lista zgrada -->
-  <div class="adminTopWrap" style="margin-top:10px;">
-    <div id="adminBuildingMenuFin" class="adminMenu hidden"></div>
-  </div>
-
-  <!-- rezultat -->
-  <div class="duesGrid" id="uplAdminGridFin" style="margin-top:12px;"></div>
-</div>
-<!-- ================= /ADMIN ================= -->
-
+       <div id="finEntriesWrap">  
          
 <!-- FIN HEADER CONTROLS (filter/sort) -->
 <div class="fRow" style="margin-top:12px; gap:10px; align-items:flex-end;">
@@ -2563,6 +2523,45 @@ gap: 10px;
 <section class="page" id="page-statistika">
   <section class="card">
     <h3>Statistika</h3>
+
+    <!-- ================= ADMIN: potrošnja upload-a (SVE ZGRADE) ================= -->
+<div data-role="admin" style="margin-top:14px;">
+
+  <div class="badge">Admin — Potrošnja upload-a po zgradama</div>
+
+  <!-- pretraga + totals -->
+  <div class="duesToolbar" style="margin-top:12px;">
+    <div class="field" style="min-width:260px;">
+      <label for="uplAdminSearchFin">Pretraga zgrade</label>
+      <input
+        id="uplAdminSearchFin"
+        type="text"
+        placeholder="npr. Bore, BM25, NC28, Nedeljka..."
+      >
+      <div class="smallText" style="margin-top:6px; opacity:.8;">
+        Ukucaj adresu i izaberi zgradu
+      </div>
+    </div>
+
+    <div class="duesBadges" style="margin-left:auto;">
+      <span class="duesBadge">
+        Ukupno fajlova: <b id="uplAdminTotalFilesFin">0</b>
+      </span>
+      <span class="duesBadge">
+        Ukupno MB: <b id="uplAdminTotalMBFin">0.00</b>
+      </span>
+    </div>
+  </div>
+
+  <!-- dropdown lista zgrada -->
+  <div class="adminTopWrap" style="margin-top:10px;">
+    <div id="adminBuildingMenuFin" class="adminMenu hidden"></div>
+  </div>
+
+  <!-- rezultat -->
+  <div class="duesGrid" id="uplAdminGridFin" style="margin-top:12px;"></div>
+</div>
+<!-- ================= /ADMIN ================= -->
 
 <div data-role="upravnik" style="margin-top:12px;">
   <div class="half field" style="margin-top:0; min-width:220px;">
@@ -3674,7 +3673,10 @@ if(name === "finansije" && CURRENT_SESSION?.role === "upravnik"){
 
   if(name === "finansije"){
   renderTenantFinanceHeaderBadge(activeBid());
-  initAdminFinanceUploads(); // ✅ pokreni admin pretragu u Finansijama
+}
+
+if(name === "statistika"){
+  initAdminFinanceUploads(); // ✅ admin blok sada živi u statistici
 }
 
 if(name === "statistika"){
