@@ -2240,12 +2240,9 @@ gap: 10px;
     <div class="error" id="duesPayError" style="display:none;"></div>
 </div> <!-- /duesPayWrap -->
 
-</div> <!-- /smallText (upravnik) -->
+</div>
 
-</div><!-- /finDuesWrap -->
-
-
-          <!-- ✅ IZMJENA / KOREKCIJA (UPRAVNIK / ADMIN) -->
+  <!-- ✅ IZMJENA / KOREKCIJA (UPRAVNIK / ADMIN) -->
 <div id="duesAdjWrap" style="display:none; margin-top:14px;">
   <div class="badge" id="duesAdjTitle">Izmena</div>
 
@@ -2799,7 +2796,11 @@ const loginBtn = document.getElementById("loginBtn");
 const errEl = document.getElementById("loginError");
 const togglePass = document.getElementById("togglePass");
 const remember = document.getElementById("remember");
-
+const bsLogoutBtn = document.getElementById("bsLogoutBtn");
+  const openingBalanceInputAdmin = document.getElementById("openingBalanceInputAdmin");
+const saveOpeningBalanceBtnAdmin = document.getElementById("saveOpeningBalanceBtnAdmin");
+const editOpeningBalanceBtnAdmin = document.getElementById("editOpeningBalanceBtnAdmin");
+  
   /* =========================
    REMEMBER USER+PASS (login autofill)
 ========================= */
@@ -3241,7 +3242,7 @@ function applyRoleUI(role){
   // Ostali: samo svoje
   el.style.display = (need === role) ? "" : "none";
 });
-
+}
 /* ===== building context UI ===== */
 function setActiveBuilding(bid){
   if(!CURRENT_SESSION) return;
