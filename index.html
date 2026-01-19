@@ -4185,35 +4185,32 @@ function setText(el, val){
   el.textContent = String(val);
 }
 
-function updateMonthlyUploadUI(isAdmin){
+function updateMonthlyUploadUI(isAdmin) {
   const bid = activeBid();
-  if(!bid) return;
+  if (!bid) return;
 
-  const picker = isAdmin ? uplMonthPickAdmin : uplMonthPick;
-  if(!picker) return;
-
-  // ako nije izabran mesec, postavi trenutni
-  if(!picker.value){
+  const picker = uplMonthPick;  
+  if (!picker.value) {
     const now = new Date();
     const yyyy = now.getFullYear();
-    const mm = String(now.getMonth()+1).padStart(2,"0");
+    const mm = String(now.getMonth() + 1).padStart(2, "0");
     picker.value = `${yyyy}-${mm}`;
   }
 
   const m = picker.value; // "YYYY-MM"
   const r = calcMonthlyUploads(bid, m);
 
-  if(isAdmin){
-    setText(uplFinEntriesA, r.finEntries);
-    setText(uplFinFilesA, r.finFiles);
-    setText(uplFinMBA, r.finMB.toFixed(2));
+  setText(uplFinEntries, r.finEntries);
+  setText(uplFinFiles, r.finFiles);
+  setText(uplFinMB, r.finMB.toFixed(2));
 
-    setText(uplBrdEntriesA, r.brdEntries);
-    setText(uplBrdFilesA, r.brdFiles);
-    setText(uplBrdMBA, r.brdMB.toFixed(2));
+  setText(uplBrdEntries, r.brdEntries);
+  setText(uplBrdFiles, r.brdFiles);
+  setText(uplBrdMB, r.brdMB.toFixed(2));
 
-    setText(uplTotalFilesA, r.totalFiles);
-    setText(uplTotalMBA, r.totalMB.toFixed(2));
+  setText(uplTotalFiles, r.totalFiles);
+  setText(uplTotalMB, r.totalMB.toFixed(2));
+}
   }else{
     setText(uplFinEntries, r.finEntries);
     setText(uplFinFiles, r.finFiles);
@@ -5903,6 +5900,15 @@ function updateHomeSummary(){
 
   // inicijalno pokreni odmah
   updateHiddenAndTrigger();
+
+  // Osveži i admin grid kada se promeni mesec
+  uplMonthPick.addEventListener("change", () => {
+    updateMonthlyUploadUI(false);     // obična statistika
+    if (CURRENT_SESSION?.role === "admin") {
+      renderAdminUploadsAll();        // admin deo sa svim zgradama
+    }
+  });
+
 })();
 
   /* =========================
