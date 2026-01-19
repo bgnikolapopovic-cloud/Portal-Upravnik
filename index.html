@@ -3906,34 +3906,6 @@ function calcMonthlyUploads(bid, monthYYYYMM){
   };
 }
 
-// ===== 3) SINGLE BUILDING → KARTICA =====
-if (singleBuilding) {
-  const row = rows[0];
-
-  uplAdminGrid.innerHTML = `
-    <div class="adminCard">
-      <div class="adminCardTitle">${row.title}</div>
-
-      <div class="adminCardRow">
-        <span>Finansije</span>
-        <b>${row.finMB.toFixed(2)} MB</b>
-      </div>
-
-      <div class="adminCardRow">
-        <span>Oglasna tabla</span>
-        <b>${row.brdMB.toFixed(2)} MB</b>
-      </div>
-
-      <div class="adminCardRow total">
-        <span>UKUPNO</span>
-        <b>${row.totalMB.toFixed(2)} MB</b>
-      </div>
-    </div>
-  `;
-  return;
-}
-
-  
 // ===== D) single building → kartica =====
 if (singleBuilding && rows.length) {
   const row = rows[0];
