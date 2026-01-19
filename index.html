@@ -1792,6 +1792,78 @@ gap: 10px;
     grid-template-columns: 1fr;
   }
 }
+
+/* ===== ADMIN DROPDOWN (PRO LOOK) ===== */
+.adminTopWrap{
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.adminToggle{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 12px;
+  border-radius:14px;
+  background: rgba(255,255,255,.65);
+  border: 1px solid rgba(15,23,42,.14);
+  backdrop-filter: blur(10px);
+  cursor:pointer;
+  user-select:none;
+}
+
+#adminToggleLabel{
+  font-weight:900;
+}
+
+#adminActiveBuilding{
+  font-weight:700;
+  opacity:.8;
+}
+
+.adminArrow{
+  margin-left:auto;
+  font-size:16px;
+  padding:6px 10px;
+  border-radius:12px;
+  border:1px solid rgba(15,23,42,.12);
+  background: rgba(255,255,255,.6);
+}
+
+/* dropdown panel */
+.adminMenu{
+  position:absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: min(520px, 100%);
+  background: rgba(255,255,255,.92);
+  border: 1px solid rgba(15,23,42,.14);
+  border-radius: 14px;
+  box-shadow: 0 18px 40px rgba(2,6,23,.14);
+  padding: 8px;
+  z-index: 9999;
+}
+
+.adminMenuItem{
+  width: 100%;
+  display: block;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.adminMenuItem:hover{
+  background: rgba(15,23,42,.06);
+  border-color: rgba(15,23,42,.10);
+}
+
+.hidden{ display:none; }
+
   
 </style>
 </head>
@@ -2520,14 +2592,15 @@ gap: 10px;
   </div>
     <!-- ✅ ADMIN: pregled upload-a za SVE stambene zajednice -->
 <!-- ===== ADMIN TOGGLE HEADER ===== -->
-<div id="adminToggle" class="adminToggle">
-  <span id="adminToggleLabel">Admin</span>
-  <span id="adminActiveBuilding">Sve zgrade</span>
-  <span id="adminArrowBtn" class="adminArrow">▸</span>
-</div>
+<div class="adminTopWrap">
+  <div id="adminToggle" class="adminToggle">
+    <span id="adminToggleLabel">Admin</span>
+    <span id="adminActiveBuilding">Sve zgrade</span>
+    <span id="adminArrowBtn" class="adminArrow">▸</span>
+  </div>
 
-    
-<div id="adminBuildingMenu" class="adminMenu hidden"></div>
+  <div id="adminBuildingMenu" class="adminMenu hidden"></div>
+</div>
     <div id="adminContent" class="adminContent hidden">
   <div data-role="admin" style="margin-top:18px;">
   <div class="badge">Admin — Upload svih stambenih zajednica</div>
@@ -4090,7 +4163,16 @@ if(adminArrowBtn && adminBuildingMenu && !adminArrowBtn.dataset.bound){
   });
   adminArrowBtn.dataset.bound = "1";
 }
+// zatvori dropdown klikom van
+document.addEventListener("click", (e) => {
+  if(!adminBuildingMenu) return;
+  if(adminBuildingMenu.classList.contains("hidden")) return;
 
+  const wrap = document.querySelector(".adminTopWrap");
+  if(wrap && wrap.contains(e.target)) return;
+
+  adminBuildingMenu.classList.add("hidden");
+});
 // init
 renderAdminBuildingMenu();
 
