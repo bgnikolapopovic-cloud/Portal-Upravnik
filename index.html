@@ -2055,6 +2055,46 @@ gap: 10px;
 
        <div id="finEntriesWrap">   
 
+<!-- ================= ADMIN: potrošnja upload-a (SVE ZGRADE) ================= -->
+<div data-role="admin" style="margin-top:14px;">
+
+  <div class="badge">Admin — Potrošnja upload-a po zgradama</div>
+
+  <!-- pretraga + totals -->
+  <div class="duesToolbar" style="margin-top:12px;">
+    <div class="field" style="min-width:260px;">
+      <label for="uplAdminSearchFin">Pretraga zgrade</label>
+      <input
+        id="uplAdminSearchFin"
+        type="text"
+        placeholder="npr. Bore, BM25, NC28, Nedeljka..."
+      >
+      <div class="smallText" style="margin-top:6px; opacity:.8;">
+        Ukucaj adresu i izaberi zgradu
+      </div>
+    </div>
+
+    <div class="duesBadges" style="margin-left:auto;">
+      <span class="duesBadge">
+        Ukupno fajlova: <b id="uplAdminTotalFilesFin">0</b>
+      </span>
+      <span class="duesBadge">
+        Ukupno MB: <b id="uplAdminTotalMBFin">0.00</b>
+      </span>
+    </div>
+  </div>
+
+  <!-- dropdown lista zgrada -->
+  <div class="adminTopWrap" style="margin-top:10px;">
+    <div id="adminBuildingMenuFin" class="adminMenu hidden"></div>
+  </div>
+
+  <!-- rezultat -->
+  <div class="duesGrid" id="uplAdminGridFin" style="margin-top:12px;"></div>
+</div>
+<!-- ================= /ADMIN ================= -->
+
+         
 <!-- FIN HEADER CONTROLS (filter/sort) -->
 <div class="fRow" style="margin-top:12px; gap:10px; align-items:flex-end;">
   <div class="half field" style="margin-top:0;">
@@ -3634,6 +3674,7 @@ if(name === "finansije" && CURRENT_SESSION?.role === "upravnik"){
 
   if(name === "finansije"){
   renderTenantFinanceHeaderBadge(activeBid());
+  initAdminFinanceUploads(); // ✅ pokreni admin pretragu u Finansijama
 }
 
 if(name === "statistika"){
@@ -4181,7 +4222,119 @@ document.addEventListener("click", (e) => {
 // init (pozovi jednom, van funkcije)
 renderAdminBuildingMenu();
 
+/* ===============================
+   ADMIN (FINANSIJE) — brza pretraga po zgradi
+   =============================== */
+function initAdminFinanceUploads(){
+  const input = document.getElementById("uplAdminSearchFin");
+  const grid  = document.getElementById("uplAdminGridFin");
+  const totF  = document.getElementById("uplAdminTotalFilesFin");
+  const totMB = document.getElementById("uplAdminTotalMBFin");
 
+  if(CURRENT_SESSION?.role !== "admin") return;
+  if(!input || !grid) return;
+
+  function ymNowYYYYMM(){
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`;
+  }
+  function getMonth(){
+    const m = (uplMonthPick?.value || "").trim();
+    return m || ymNowYYYYMM();
+  }
+  function renderEmpty(){
+    grid.innerHTML = `<div class="smallText"><span class="badge">Ukucaj adresu da izabereš zgradu</span></div>`;
+    if(totF) totF.textContent = "0";
+    if(totMB) totMB.textContent = "0.00";
+  }
+
+  function renderForQuery(q){
+    const qq = (q || "").trim();
+    if(!qq) return renderEmpty();
+
+    const nq = normalizeText(qq);
+    const month = getMonth();
+
+    const rows = (BUILDINGS || [])
+      .filter(b => normalizeText(b.title + " " + b.id).includes(nq))
+      .map(b => {
+        const r = calcMonthlyUploads(b.id, month);
+        return {
+          id: b.id,
+          title: b.title,
+          finMB: Number(r.finMB || 0),
+          brdMB: Number(r.brdMB || 0),
+          files: Number(r.totalFiles || 0),
+          mb: Number(r.totalMB || 0)
+        };
+      });
+
+    grid.innerHTML = "";
+
+    if(!rows.length){
+      grid.innerHTML = `<div class="smallText"><span class="badge">Nema rezultata</span></div>`;
+      if(totF) totF.textContent = "0";
+      if(totMB) totMB.textContent = "0.00";
+      return;
+    }
+
+    let sumFiles = 0;
+    let sumMB = 0;
+
+    rows.forEach(r => {
+      sumFiles += r.files;
+      sumMB += r.mb;
+
+      const el = document.createElement("div");
+      el.className = "adminCard";
+      el.style.cursor = "pointer";
+
+      el.innerHTML = `
+        <div class="adminCardTitle">${escapeHTML(r.title)}</div>
+
+        <div class="adminCardRow">
+          <span>Finansije</span>
+          <b>${r.finMB.toFixed(2)} MB</b>
+        </div>
+
+        <div class="adminCardRow">
+          <span>Oglasna tabla</span>
+          <b>${r.brdMB.toFixed(2)} MB</b>
+        </div>
+
+        <div class="adminCardRow total">
+          <span>UKUPNO</span>
+          <b>${r.mb.toFixed(2)} MB</b>
+        </div>
+
+        <div class="smallText" style="margin-top:10px; opacity:.75;">
+          Mesec: ${escapeHTML(month)}
+        </div>
+      `;
+
+      el.addEventListener("click", () => {
+        if(totF) totF.textContent = String(r.files);
+        if(totMB) totMB.textContent = r.mb.toFixed(2);
+        grid.innerHTML = "";
+        grid.appendChild(el);
+      });
+
+      grid.appendChild(el);
+    });
+
+    if(totF) totF.textContent = String(sumFiles);
+    if(totMB) totMB.textContent = sumMB.toFixed(2);
+  }
+
+  if(!input.dataset.bound){
+    input.addEventListener("input", () => renderForQuery(input.value));
+    input.dataset.bound = "1";
+  }
+
+  renderEmpty();
+}
+
+  
 function setText(el, val){
   if(!el) return;
   el.textContent = String(val);
