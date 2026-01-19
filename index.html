@@ -2753,14 +2753,6 @@ if (r.saldo < 0) {
 
 
 tPeriod.textContent = `Obračun od ${formatDateDMY(r.start)} • ${r.months} meseci`;
-
-
-// ✅ OVDE ubaciš ovo da se donji prikaz sakrije (uplaceno/obaveza/dug)
-if(CURRENT_SESSION?.role === "stanar"){
-  if(tenantDuesBox){
-    tenantDuesBox.style.display = "none";
-  }
-}
 }
 
 /* ✅ OVDE LEPIŠ */
@@ -2877,7 +2869,6 @@ if(finTabEntries && finTabDues){
 
   
 const buildingPickList = document.getElementById("buildingPickList");
-const bsLogoutBtn = document.getElementById("bsLogoutBtn");
 
 const userPill = document.getElementById("userPill");
 const buildingPill = document.getElementById("buildingPill");
@@ -3167,6 +3158,11 @@ function includesQuery(text, q){
   if(!q) return true;
   return normalizeText(text).includes(normalizeText(q));
 }
+  function canManage(){
+  const r = (CURRENT_SESSION?.role || "").toLowerCase();
+  return r === "upravnik" || r === "admin" || r === "administrator";
+}
+
 function cryptoRandom(){
   return "id_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
 }
@@ -3227,8 +3223,17 @@ togglePass.addEventListener("click", () => {
 
 function applyRoleUI(role){
   const roleEls = document.querySelectorAll("[data-role]");
+
   roleEls.forEach(el => {
     const need = el.getAttribute("data-role");
+
+    // Admin vidi i admin i upravnik blokove
+    if(role === "admin"){
+      el.style.display = (need === "admin" || need === "upravnik") ? "" : "none";
+      return;
+    }
+
+    // Ostali: samo svoje
     el.style.display = (need === role) ? "" : "none";
   });
 }
@@ -3922,14 +3927,14 @@ title.innerHTML = `
 
   top.appendChild(title);
 
-  if(CURRENT_SESSION && CURRENT_SESSION.role === "upravnik"){
-    const actions = document.createElement("div");
-    actions.className = "finRowActions";
+if(CURRENT_SESSION && canManage()){
+  const actions = document.createElement("div");
+  actions.className = "finRowActions";
 
-    const edit = document.createElement("button");
-    edit.className = "finActBtn";
-    edit.type = "button";
-    edit.textContent = "Izmeni";
+  const edit = document.createElement("button");
+  edit.className = "finActBtn";
+  edit.type = "button";
+  edit.textContent = "Izmeni";
     edit.disabled = !canEdit(item);
     edit.addEventListener("click", () => {
       if(!canEdit(item)) return alert("Izmena je moguća samo u roku od 30 dana.");
@@ -4203,14 +4208,13 @@ if(saveFinanceBtn){
       return;
     }
 
-    if(!CURRENT_SESSION || CURRENT_SESSION.role !== "upravnik"){
-      if(financeError){
-        financeError.textContent = "Nemate dozvolu.";
-        financeError.style.display = "block";
-      }
-      return;
-    }
-
+    if(!CURRENT_SESSION || !canManage()){
+  if(financeError){
+    financeError.textContent = "Nemate dozvolu.";
+    financeError.style.display = "block";
+  }
+  return;
+}
     const date = (fDate.value||"").trim();
     const type = fType.value;
     const category = fCategory.value;
@@ -4697,11 +4701,11 @@ function saldoClass(s){
 
 function renderDuesAdmin(){
   const bid = activeBid();
-  if(!bid) return;
-  if(CURRENT_SESSION?.role !== "upravnik") return;
+if(!bid) return;
 
-  if(!monthlyFeeInput || !duesStartMonth || !saveDuesSettingsBtn || !duesGrid) return;
+if(!canManage()) return;
 
+if(!monthlyFeeInput || !duesStartMonth || !saveDuesSettingsBtn || !duesGrid) return;
   const dues = loadDues(bid);
 
   // podešavanja (mesečna obaveza + start mesec)
@@ -4879,7 +4883,9 @@ function openDuesPay(username, suggested){
 async function saveDuesPay(){
   const bid = activeBid();
   if(!bid) return;
-  if(CURRENT_SESSION?.role !== "upravnik") return;
+
+  // ✅ upravnik + admin smeju
+  if(!CURRENT_SESSION || !canManage()) return;
 
   if(!DUES_ACTIVE_USER) return;
 
