@@ -1779,6 +1779,91 @@ gap: 10px;
   transform: translateY(-1px);
 }
 
+  /* =========================
+   ADMIN UPLOAD GRID (kao Dugovanja)
+========================= */
+.uplRow{
+  /* isto kao duesRow, ali drugačije kolone */
+  grid-template-columns: 260px 1fr 1fr 1fr; /* zgrada | finansije | oglasna | ukupno */
+}
+
+@media (max-width: 920px){
+  .uplRow{
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== ADMIN DROPDOWN (PRO LOOK) ===== */
+.adminTopWrap{
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.adminToggle{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 12px;
+  border-radius:14px;
+  background: rgba(255,255,255,.65);
+  border: 1px solid rgba(15,23,42,.14);
+  backdrop-filter: blur(10px);
+  cursor:pointer;
+  user-select:none;
+}
+
+#adminToggleLabel{
+  font-weight:900;
+}
+
+#adminActiveBuilding{
+  font-weight:700;
+  opacity:.8;
+}
+
+.adminArrow{
+  margin-left:auto;
+  font-size:16px;
+  padding:6px 10px;
+  border-radius:12px;
+  border:1px solid rgba(15,23,42,.12);
+  background: rgba(255,255,255,.6);
+}
+
+/* dropdown panel */
+.adminMenu{
+  position:absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: min(520px, 100%);
+  background: rgba(255,255,255,.92);
+  border: 1px solid rgba(15,23,42,.14);
+  border-radius: 14px;
+  box-shadow: 0 18px 40px rgba(2,6,23,.14);
+  padding: 8px;
+  z-index: 9999;
+}
+
+.adminMenuItem{
+  width: 100%;
+  display: block;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.adminMenuItem:hover{
+  background: rgba(15,23,42,.06);
+  border-color: rgba(15,23,42,.10);
+}
+
+.hidden{ display:none; }
+
   
 </style>
 </head>
@@ -2503,13 +2588,63 @@ gap: 10px;
         <div class="statRow"><span class="k">Ukupno fajlova</span><span class="v" id="uplTotalFiles">0</span></div>
         <div class="statRow"><span class="k">Ukupno MB</span><span class="v" id="uplTotalMB">0.00</span></div>
       </div>
+   </div>
+  </div>
+    <!-- ✅ ADMIN: pregled upload-a za SVE stambene zajednice -->
+<!-- ===== ADMIN TOGGLE HEADER ===== -->
+<div class="adminTopWrap">
+  <div id="adminToggle" class="adminToggle">
+    <span id="adminToggleLabel">Admin</span>
+    <span id="adminActiveBuilding">Sve zgrade</span>
+    <span id="adminArrowBtn" class="adminArrow">▸</span>
+  </div>
+
+  <div id="adminBuildingMenu" class="adminMenu hidden"></div>
+</div>
+    <div id="adminContent" class="adminContent hidden">
+  <div data-role="admin" style="margin-top:18px;">
+  <div class="badge">Admin — Upload svih stambenih zajednica</div>
+
+  <!-- toolbar (kao dugovanja) -->
+  <div class="duesToolbar" style="margin-top:12px;">
+
+  <!-- PRETRAGA -->
+  <div class="field" style="min-width:240px;">
+    <label for="uplAdminSearch">Pretraga zgrade</label>
+    <input id="uplAdminSearch" type="text" placeholder="npr. Bore, BM25, NC28">
+  </div>
+
+  <!-- ZGRADA (NOVO) -->
+  <div class="field" style="min-width:240px;">
+    <label for="uplAdminBuilding">Zgrada</label>
+    <select id="uplAdminBuilding">
+      <option value="all">Sve zgrade</option>
+    </select>
+  </div>
+
+  <!-- SORT -->
+  <div class="field" style="min-width:240px;">
+      <label for="uplAdminSort">Sortiranje</label>
+      <select id="uplAdminSort">
+        <option value="mb-desc">Najviše MB</option>
+        <option value="mb-asc">Najmanje MB</option>
+        <option value="name-asc">Zgrada A–Z</option>
+      </select>
+    </div>
+
+    <div class="duesBadges" style="margin-left:auto;">
+      <span class="duesBadge">
+        Ukupno fajlova: <b id="uplAdminTotalFiles">0</b>
+      </span>
+      <span class="duesBadge">
+        Ukupno MB: <b id="uplAdminTotalMB">0.00</b>
+      </span>
     </div>
   </div>
+
+  <!-- grid -->
+  <div class="duesGrid" id="uplAdminGrid" style="margin-top:12px;"></div>
 </div>
-
-  </section>
-</section>
-
       
     </div>
   </main>
@@ -2800,6 +2935,12 @@ const bsLogoutBtn = document.getElementById("bsLogoutBtn");
   const openingBalanceInputAdmin = document.getElementById("openingBalanceInputAdmin");
 const saveOpeningBalanceBtnAdmin = document.getElementById("saveOpeningBalanceBtnAdmin");
 const editOpeningBalanceBtnAdmin = document.getElementById("editOpeningBalanceBtnAdmin");
+  const uplAdminGrid = document.getElementById("uplAdminGrid");
+const uplAdminSearch = document.getElementById("uplAdminSearch");
+const uplAdminSort = document.getElementById("uplAdminSort");
+const uplAdminBuilding = document.getElementById("uplAdminBuilding");
+  const uplAdminTotalFiles = document.getElementById("uplAdminTotalFiles");
+const uplAdminTotalMB = document.getElementById("uplAdminTotalMB");
   
   /* =========================
    REMEMBER USER+PASS (login autofill)
@@ -3492,8 +3633,12 @@ if(name === "finansije" && CURRENT_SESSION?.role === "upravnik"){
   });
 
   if(name === "finansije"){
-    renderTenantFinanceHeaderBadge(activeBid());
-  }
+  renderTenantFinanceHeaderBadge(activeBid());
+}
+
+if(name === "statistika"){
+  renderAdminUploadsAll();
+}
   
   closeS();
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -3679,6 +3824,7 @@ function sumDocs(docs){
 }
 
 function calcMonthlyUploads(bid, monthYYYYMM){
+  
   // Finansije
   const finAll = loadItems(bid) || [];
   const finInMonth = finAll.filter(it => monthFromDateStr(it.date) === monthYYYYMM);
@@ -3720,6 +3866,321 @@ function calcMonthlyUploads(bid, monthYYYYMM){
     totalFiles, totalMB
   };
 }
+  
+/* ===============================
+   ADMIN — Upload svih stambenih zajednica (grid)
+   =============================== */
+function renderAdminUploadsAll(){
+  // samo admin
+  if(CURRENT_SESSION?.role !== "admin") return;
+  if(!uplAdminGrid) return;
+
+  // mesec uzimamo iz istog pickera koji koristi statistika (hidden #uplMonthPick)
+  const month = (uplMonthPick?.value || "").trim();
+  if(!month){
+    uplAdminGrid.innerHTML = `<div class="smallText"><span class="badge">Izaberi mesec i godinu</span></div>`;
+    return;
+  }
+
+  const pick = (uplAdminBuilding?.value || "all");
+const bids = (pick === "all")
+  ? (BUILDINGS || []).map(b => b.id)
+  : [pick];
+
+  // napravi rezultate po zgradi
+  const singleBuilding = (bids.length === 1);
+  let rows = bids.map(bid => {
+    const b = getBuildingById(bid);
+    const r = calcMonthlyUploads(bid, month);
+
+    return {
+      bid,
+      title: b?.title || bid,
+
+      finEntries: Number(r.finEntries || 0),
+      finFiles:   Number(r.finFiles || 0),
+      finMB:      Number(r.finMB || 0),
+
+      brdEntries: Number(r.brdEntries || 0),
+      brdFiles:   Number(r.brdFiles || 0),
+      brdMB:      Number(r.brdMB || 0),
+
+      totalFiles: Number(r.totalFiles || 0),
+      totalMB:    Number(r.totalMB || 0)
+    };
+  });
+// ===== 3) SINGLE BUILDING → KARTICA =====
+if (singleBuilding) {
+  const row = rows[0];
+
+  uplAdminGrid.innerHTML = `
+    <div class="adminCard">
+      <div class="adminCardTitle">${row.title}</div>
+
+      <div class="adminCardRow">
+        <span>Finansije</span>
+        <b>${row.finMB.toFixed(2)} MB</b>
+      </div>
+
+      <div class="adminCardRow">
+        <span>Oglasna tabla</span>
+        <b>${row.brdMB.toFixed(2)} MB</b>
+      </div>
+
+      <div class="adminCardRow total">
+        <span>UKUPNO</span>
+        <b>${row.totalMB.toFixed(2)} MB</b>
+      </div>
+    </div>
+  `;
+  return;
+}
+
+  
+// ===== D) single building → kartica =====
+if (singleBuilding && rows.length) {
+  const row = rows[0];
+
+  uplAdminGrid.innerHTML = `
+    <div class="card" style="max-width:520px;">
+      <div class="cardTitle">${row.title}</div>
+
+      <div class="kv">
+        <span>Finansije</span>
+        <b>${row.finMB.toFixed(2)} MB</b>
+      </div>
+
+      <div class="kv">
+        <span>Oglasna tabla</span>
+        <b>${row.brdMB.toFixed(2)} MB</b>
+      </div>
+
+      <div class="kv total">
+        <span>UKUPNO</span>
+        <b>${row.totalMB.toFixed(2)} MB</b>
+      </div>
+    </div>
+  `;
+  return;
+}
+
+  // pretraga (po nazivu i ID-u zgrade)
+  const q = (uplAdminSearch?.value || "").trim();
+  if(q){
+    const nq = normalizeText(q);
+    rows = rows.filter(x => normalizeText((x.title || "") + " " + (x.bid || "")).includes(nq));
+  }
+
+  // sortiranje
+  const s = (uplAdminSort?.value || "mb-desc");
+  rows.sort((a,b) => {
+    if(s === "mb-desc") return (b.totalMB - a.totalMB);
+    if(s === "mb-asc")  return (a.totalMB - b.totalMB);
+    if(s === "name-asc") return String(a.title||"").localeCompare(String(b.title||""));
+    return 0;
+  });
+
+  // totals (posle filtera)
+  const totals = rows.reduce((acc, x) => {
+    acc.files += Number(x.totalFiles || 0);
+    acc.mb    += Number(x.totalMB || 0);
+    return acc;
+  }, { files: 0, mb: 0 });
+
+  if(uplAdminTotalFiles) uplAdminTotalFiles.textContent = String(totals.files);
+  if(uplAdminTotalMB)    uplAdminTotalMB.textContent    = totals.mb.toFixed(2);
+
+  // render
+  uplAdminGrid.innerHTML = "";
+
+  if(!rows.length){
+    uplAdminGrid.innerHTML = `<div class="smallText"><span class="badge">Nema rezultata</span></div>`;
+    return;
+  }
+
+  rows.forEach(x => {
+    const row = document.createElement("div");
+    row.className = "duesRow uplRow"; // isti look kao dugovanja
+
+    const left = document.createElement("div");
+    left.innerHTML = `
+      <div class="duesUser">${escapeHTML(x.title)}</div>
+      <div class="duesMeta">${escapeHTML(x.bid)} • Mesec: ${escapeHTML(month)}</div>
+    `;
+
+    const fin = document.createElement("div");
+    fin.className = "duesBadges";
+    fin.style.justifyContent = "flex-start";
+    fin.innerHTML = `
+      <span class="duesBadge">Fin unosa: <b>${x.finEntries}</b></span>
+      <span class="duesBadge">Fin fajlova: <b>${x.finFiles}</b></span>
+      <span class="duesBadge">Fin MB: <b>${x.finMB.toFixed(2)}</b></span>
+    `;
+
+    const brd = document.createElement("div");
+    brd.className = "duesBadges";
+    brd.style.justifyContent = "flex-start";
+    brd.innerHTML = `
+      <span class="duesBadge">Ogl objava: <b>${x.brdEntries}</b></span>
+      <span class="duesBadge">Ogl fajlova: <b>${x.brdFiles}</b></span>
+      <span class="duesBadge">Ogl MB: <b>${x.brdMB.toFixed(2)}</b></span>
+    `;
+
+    const tot = document.createElement("div");
+    tot.className = "duesBadges";
+    tot.style.justifyContent = "flex-start";
+    tot.innerHTML = `
+      <span class="duesBadge"><b>Ukupno fajlova:</b> ${x.totalFiles}</span>
+      <span class="duesBadge"><b>Ukupno MB:</b> ${x.totalMB.toFixed(2)}</span>
+    `;
+
+    row.appendChild(left);
+    row.appendChild(fin);
+    row.appendChild(brd);
+    row.appendChild(tot);
+
+    uplAdminGrid.appendChild(row);
+  });
+}
+
+  
+/* ===============================
+   ADMIN – upload pregled (listeneri)
+   =============================== */
+
+// promena meseca (admin statistika)
+if (uplMonthPickAdmin) {
+  uplMonthPickAdmin.addEventListener("change", () => {
+    renderAdminUploadsAll();
+  });
+}
+
+// pretraga zgrada
+if (uplAdminSearch) {
+  uplAdminSearch.addEventListener("input", () => {
+    renderAdminUploadsAll();
+  });
+}
+
+// sortiranje
+if (uplAdminSort) {
+  uplAdminSort.addEventListener("change", () => {
+    renderAdminUploadsAll();
+  });
+}
+
+  /* ===============================
+   ADMIN — listeneri za grid (pretraga/sort/mesec)
+   =============================== */
+
+// 1) kada klikneš "Primeni" u month pickeru, hidden #uplMonthPick dispatchuje "change"
+// zato ovde hvatamo change i osvežavamo admin grid
+if(uplMonthPick && !uplMonthPick.dataset.adminBound){
+  uplMonthPick.addEventListener("change", () => {
+    renderAdminUploadsAll();
+  });
+  uplMonthPick.dataset.adminBound = "1";
+}
+
+// 2) pretraga zgrada (input)
+if(uplAdminSearch && !uplAdminSearch.dataset.bound){
+  uplAdminSearch.addEventListener("input", () => {
+    renderAdminUploadsAll();
+  });
+  uplAdminSearch.dataset.bound = "1";
+}
+
+// 3) sortiranje (select)
+if(uplAdminSort && !uplAdminSort.dataset.bound){
+  uplAdminSort.addEventListener("change", () => {
+    renderAdminUploadsAll();
+  });
+  uplAdminSort.dataset.bound = "1";
+}
+if(uplAdminBuilding && !uplAdminBuilding.dataset.bound){
+  uplAdminBuilding.addEventListener("change", () => {
+    renderAdminUploadsAll();
+  });
+  uplAdminBuilding.dataset.bound = "1";
+}
+  // ===== ADMIN TOGGLE (klik bilo gde na bar) =====
+const adminToggle  = document.getElementById("adminToggle");
+const adminContent = document.getElementById("adminContent");
+const adminArrowBtn = document.getElementById("adminArrowBtn");
+
+if(adminToggle && adminContent && !adminToggle.dataset.bound){
+  adminToggle.addEventListener("click", (e) => {
+    // strelica je samo za dropdown zgrada
+    if(e.target === adminArrowBtn) return;
+
+    adminContent.classList.toggle("hidden");
+    adminToggle.classList.toggle("open");
+  });
+  adminToggle.dataset.bound = "1";
+}
+// ===== ADMIN BUILDING MENU (dropdown pored Admin) =====
+const adminActiveBuilding = document.getElementById("adminActiveBuilding");
+const adminBuildingMenu   = document.getElementById("adminBuildingMenu");
+
+function renderAdminBuildingMenu(){
+  if(!adminBuildingMenu) return;
+
+  const options = [
+    { id: "all", title: "Sve zgrade" },
+    ...(BUILDINGS || []).map(b => ({ id: b.id, title: b.title }))
+  ];
+
+  adminBuildingMenu.innerHTML = "";
+
+  options.forEach(opt => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "adminMenuItem";
+    btn.textContent = opt.title;
+
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation(); // ⬅️ KLJUČNO
+
+      // 1) label pored Admin
+      if(adminActiveBuilding) adminActiveBuilding.textContent = opt.title;
+
+      // 2) otvori admin content
+      if(adminContent) adminContent.classList.remove("hidden");
+      if(adminToggle) adminToggle.classList.add("open");
+
+      // 3) sinhronizuj sa select-om u toolbaru
+      if(uplAdminBuilding){
+        uplAdminBuilding.value = opt.id;
+        uplAdminBuilding.dispatchEvent(new Event("change", { bubbles:true }));
+      }
+
+      // 4) zatvori dropdown
+      adminBuildingMenu.classList.add("hidden");
+    });
+
+    adminBuildingMenu.appendChild(btn);
+  });
+
+// klik na adminToggle: otvori/zatvori meni zgrada (ne diramo adminContent ovde)
+if(adminArrowBtn && adminBuildingMenu && !adminArrowBtn.dataset.bound){
+  adminArrowBtn.addEventListener("click", (e) => {
+    e.stopPropagation(); // da klik na strelicu ne aktivira druge klikove
+    adminBuildingMenu.classList.toggle("hidden");
+  });
+  adminArrowBtn.dataset.bound = "1";
+}
+// zatvori dropdown klikom van
+document.addEventListener("click", (e) => {
+  if(!adminBuildingMenu) return;
+  if(adminBuildingMenu.classList.contains("hidden")) return;
+
+  const wrap = document.querySelector(".adminTopWrap");
+  if(wrap && wrap.contains(e.target)) return;
+
+  adminBuildingMenu.classList.add("hidden");
+});
+// init
+renderAdminBuildingMenu();
 
 function setText(el, val){
   if(!el) return;
@@ -3730,43 +4191,29 @@ function updateMonthlyUploadUI(isAdmin){
   const bid = activeBid();
   if(!bid) return;
 
-  const picker = isAdmin ? uplMonthPickAdmin : uplMonthPick;
+  const picker = uplMonthPick;
   if(!picker) return;
 
-  // ako nije izabran mesec, postavi trenutni
   if(!picker.value){
     const now = new Date();
     const yyyy = now.getFullYear();
-    const mm = String(now.getMonth()+1).padStart(2,"0");
+    const mm = String(now.getMonth() + 1).padStart(2, "0");
     picker.value = `${yyyy}-${mm}`;
   }
 
   const m = picker.value; // "YYYY-MM"
   const r = calcMonthlyUploads(bid, m);
 
-  if(isAdmin){
-    setText(uplFinEntriesA, r.finEntries);
-    setText(uplFinFilesA, r.finFiles);
-    setText(uplFinMBA, r.finMB.toFixed(2));
+  setText(uplFinEntries, r.finEntries);
+  setText(uplFinFiles, r.finFiles);
+  setText(uplFinMB, r.finMB.toFixed(2));
 
-    setText(uplBrdEntriesA, r.brdEntries);
-    setText(uplBrdFilesA, r.brdFiles);
-    setText(uplBrdMBA, r.brdMB.toFixed(2));
+  setText(uplBrdEntries, r.brdEntries);
+  setText(uplBrdFiles, r.brdFiles);
+  setText(uplBrdMB, r.brdMB.toFixed(2));
 
-    setText(uplTotalFilesA, r.totalFiles);
-    setText(uplTotalMBA, r.totalMB.toFixed(2));
-  }else{
-    setText(uplFinEntries, r.finEntries);
-    setText(uplFinFiles, r.finFiles);
-    setText(uplFinMB, r.finMB.toFixed(2));
-
-    setText(uplBrdEntries, r.brdEntries);
-    setText(uplBrdFiles, r.brdFiles);
-    setText(uplBrdMB, r.brdMB.toFixed(2));
-
-    setText(uplTotalFiles, r.totalFiles);
-    setText(uplTotalMB, r.totalMB.toFixed(2));
-  }
+  setText(uplTotalFiles, r.totalFiles);
+  setText(uplTotalMB, r.totalMB.toFixed(2));
 }
 
 /* listenersi */
@@ -4728,7 +5175,7 @@ if(!monthlyFeeInput || !duesStartMonth || !saveDuesSettingsBtn || !duesGrid) ret
     saveDues(bid, obj);
     renderDuesAdmin();
   };
-
+  
   // ===== lista stanara =====
   let users = listResidentsForBuilding(bid).map(u => {
     const r = computeUserDue(bid, u);
@@ -5279,6 +5726,7 @@ renderDuesTenant(bid);
 // ✅ MESEČNI UPLOAD: osveži badge-ove
   updateMonthlyUploadUI(false);
   updateMonthlyUploadUI(true);
+  renderAdminUploadsAll();
 }
 
 /* ===== home summary ===== */
