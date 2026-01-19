@@ -2519,7 +2519,17 @@ gap: 10px;
    </div>
   </div>
     <!-- ✅ ADMIN: pregled upload-a za SVE stambene zajednice -->
-<div data-role="admin" style="margin-top:18px;">
+<!-- ===== ADMIN TOGGLE HEADER ===== -->
+<div id="adminToggle" class="adminToggle">
+  <span id="adminToggleLabel">Admin</span>
+  <span id="adminActiveBuilding">Sve zgrade</span>
+  <span id="adminArrowBtn" class="adminArrow">▸</span>
+</div>
+
+    
+<div id="adminBuildingMenu" class="adminMenu hidden"></div>
+    <div id="adminContent" class="adminContent hidden">
+  <div data-role="admin" style="margin-top:18px;">
   <div class="badge">Admin — Upload svih stambenih zajednica</div>
 
   <!-- toolbar (kao dugovanja) -->
@@ -3826,6 +3836,35 @@ const bids = (pick === "all")
       totalMB:    Number(r.totalMB || 0)
     };
   });
+// ===== 3) SINGLE BUILDING → KARTICA =====
+const singleBuilding = (rows.length === 1);
+
+if (singleBuilding) {
+  const row = rows[0];
+
+  uplAdminGrid.innerHTML = `
+    <div class="adminCard">
+      <div class="adminCardTitle">${row.title}</div>
+
+      <div class="adminCardRow">
+        <span>Finansije</span>
+        <b>${row.finMB.toFixed(2)} MB</b>
+      </div>
+
+      <div class="adminCardRow">
+        <span>Oglasna tabla</span>
+        <b>${row.brdMB.toFixed(2)} MB</b>
+      </div>
+
+      <div class="adminCardRow total">
+        <span>UKUPNO</span>
+        <b>${row.totalMB.toFixed(2)} MB</b>
+      </div>
+    </div>
+  `;
+  return;
+}
+
   
 // ===== D) single building → kartica =====
 if (singleBuilding && rows.length) {
@@ -3991,8 +4030,72 @@ if(uplAdminBuilding && !uplAdminBuilding.dataset.bound){
   uplAdminBuilding.addEventListener("change", () => {
     renderAdminUploadsAll();
   });
+  uplAdminBuilding.dataset.bound = "1";
 }
-  
+  // ===== ADMIN TOGGLE =====
+const adminToggle  = document.getElementById("adminToggle");
+const adminContent = document.getElementById("adminContent");
+
+const adminToggleLabel = document.getElementById("adminToggleLabel");
+const adminArrowBtn    = document.getElementById("adminArrowBtn");
+
+if (adminToggleLabel && adminContent && !adminToggleLabel.dataset.bound) {
+  adminToggleLabel.addEventListener("click", () => {
+    adminContent.classList.toggle("hidden");
+    adminToggle.classList.toggle("open");
+  });
+  adminToggleLabel.dataset.bound = "1";
+}
+// ===== ADMIN BUILDING MENU (dropdown pored Admin) =====
+const adminActiveBuilding = document.getElementById("adminActiveBuilding");
+const adminBuildingMenu   = document.getElementById("adminBuildingMenu");
+
+function renderAdminBuildingMenu(){
+  if(!adminBuildingMenu) return;
+
+  const options = [
+    { id: "all", title: "Sve zgrade" },
+    ...(BUILDINGS || []).map(b => ({ id: b.id, title: b.title }))
+  ];
+
+  adminBuildingMenu.innerHTML = "";
+
+  options.forEach(opt => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "adminMenuItem";
+    btn.textContent = opt.title;
+
+    btn.addEventListener("click", () => {
+      // 1) label pored Admin
+      if(adminActiveBuilding) adminActiveBuilding.textContent = opt.title;
+
+      // 2) sinhronizuj sa postojećim select-om u toolbaru
+      if(uplAdminBuilding){
+        uplAdminBuilding.value = opt.id;
+        uplAdminBuilding.dispatchEvent(new Event("change", { bubbles:true }));
+      }
+
+      // 3) zatvori meni
+      adminBuildingMenu.classList.add("hidden");
+    });
+
+    adminBuildingMenu.appendChild(btn);
+  });
+}
+
+// klik na adminToggle: otvori/zatvori meni zgrada (ne diramo adminContent ovde)
+if(adminArrowBtn && adminBuildingMenu && !adminArrowBtn.dataset.bound){
+  adminArrowBtn.addEventListener("click", (e) => {
+    e.stopPropagation(); // da klik na strelicu ne aktivira druge klikove
+    adminBuildingMenu.classList.toggle("hidden");
+  });
+  adminArrowBtn.dataset.bound = "1";
+}
+
+// init
+renderAdminBuildingMenu();
+
 function setText(el, val){
   if(!el) return;
   el.textContent = String(val);
