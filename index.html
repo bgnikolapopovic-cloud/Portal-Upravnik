@@ -1892,8 +1892,7 @@ gap: 10px;
       <a href="#" data-page="kontakt">Kontakt službe</a>
 
 <!-- ✅ STATISTIKA (samo upravnik/admin) -->
-<a href="#" data-page="statistika" data-role="upravnik">Statistika</a>
-<a href="#" data-page="statistika" data-role="admin">Statistika</a>
+<a href="#" data-page="statistika" data-role="manage">Statistika</a>
 
 <!-- ✅ ODJAVA (uvek poslednja) -->
 <a href="#" id="sidebarLogout" class="logoutItem">Odjava</a>
@@ -3225,18 +3224,23 @@ function applyRoleUI(role){
   const roleEls = document.querySelectorAll("[data-role]");
 
   roleEls.forEach(el => {
-    const need = el.getAttribute("data-role");
+  const need = el.getAttribute("data-role");
 
-    // Admin vidi i admin i upravnik blokove
-    if(role === "admin"){
-      el.style.display = (need === "admin" || need === "upravnik") ? "" : "none";
-      return;
-    }
+  // ✅ manage = upravnik ili admin
+  if(need === "manage"){
+    el.style.display = (role === "upravnik" || role === "admin") ? "" : "none";
+    return;
+  }
 
-    // Ostali: samo svoje
-    el.style.display = (need === role) ? "" : "none";
-  });
-}
+  // Admin vidi i admin i upravnik blokove
+  if(role === "admin"){
+    el.style.display = (need === "admin" || need === "upravnik") ? "" : "none";
+    return;
+  }
+
+  // Ostali: samo svoje
+  el.style.display = (need === role) ? "" : "none";
+});
 
 /* ===== building context UI ===== */
 function setActiveBuilding(bid){
