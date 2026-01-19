@@ -2524,12 +2524,23 @@ gap: 10px;
 
   <!-- toolbar (kao dugovanja) -->
   <div class="duesToolbar" style="margin-top:12px;">
-    <div class="field" style="min-width:240px;">
-      <label for="uplAdminSearch">Pretraga zgrade</label>
-      <input id="uplAdminSearch" type="text" placeholder="npr. Bore, BM25, NC28...">
-    </div>
 
-    <div class="field" style="min-width:240px;">
+  <!-- PRETRAGA -->
+  <div class="field" style="min-width:240px;">
+    <label for="uplAdminSearch">Pretraga zgrade</label>
+    <input id="uplAdminSearch" type="text" placeholder="npr. Bore, BM25, NC28">
+  </div>
+
+  <!-- ZGRADA (NOVO) -->
+  <div class="field" style="min-width:240px;">
+    <label for="uplAdminBuilding">Zgrada</label>
+    <select id="uplAdminBuilding">
+      <option value="all">Sve zgrade</option>
+    </select>
+  </div>
+
+  <!-- SORT -->
+  <div class="field" style="min-width:240px;">
       <label for="uplAdminSort">Sortiranje</label>
       <select id="uplAdminSort">
         <option value="mb-desc">Najviše MB</option>
@@ -2844,7 +2855,8 @@ const editOpeningBalanceBtnAdmin = document.getElementById("editOpeningBalanceBt
   const uplAdminGrid = document.getElementById("uplAdminGrid");
 const uplAdminSearch = document.getElementById("uplAdminSearch");
 const uplAdminSort = document.getElementById("uplAdminSort");
-const uplAdminTotalFiles = document.getElementById("uplAdminTotalFiles");
+const uplAdminBuilding = document.getElementById("uplAdminBuilding");
+  const uplAdminTotalFiles = document.getElementById("uplAdminTotalFiles");
 const uplAdminTotalMB = document.getElementById("uplAdminTotalMB");
   
   /* =========================
@@ -3787,10 +3799,13 @@ function renderAdminUploadsAll(){
     return;
   }
 
-  // uzmi SVE zgrade
-  const bids = (BUILDINGS || []).map(b => b.id);
+  const pick = (uplAdminBuilding?.value || "all");
+const bids = (pick === "all")
+  ? (BUILDINGS || []).map(b => b.id)
+  : [pick];
 
   // napravi rezultate po zgradi
+  const singleBuilding = (bids.length === 1);
   let rows = bids.map(bid => {
     const b = getBuildingById(bid);
     const r = calcMonthlyUploads(bid, month);
@@ -3811,6 +3826,33 @@ function renderAdminUploadsAll(){
       totalMB:    Number(r.totalMB || 0)
     };
   });
+  
+// ===== D) single building → kartica =====
+if (singleBuilding && rows.length) {
+  const row = rows[0];
+
+  uplAdminGrid.innerHTML = `
+    <div class="card" style="max-width:520px;">
+      <div class="cardTitle">${row.title}</div>
+
+      <div class="kv">
+        <span>Finansije</span>
+        <b>${row.finMB.toFixed(2)} MB</b>
+      </div>
+
+      <div class="kv">
+        <span>Oglasna tabla</span>
+        <b>${row.brdMB.toFixed(2)} MB</b>
+      </div>
+
+      <div class="kv total">
+        <span>UKUPNO</span>
+        <b>${row.totalMB.toFixed(2)} MB</b>
+      </div>
+    </div>
+  `;
+  return;
+}
 
   // pretraga (po nazivu i ID-u zgrade)
   const q = (uplAdminSearch?.value || "").trim();
@@ -3945,7 +3987,11 @@ if(uplAdminSort && !uplAdminSort.dataset.bound){
   });
   uplAdminSort.dataset.bound = "1";
 }
-
+if(uplAdminBuilding && !uplAdminBuilding.dataset.bound){
+  uplAdminBuilding.addEventListener("change", () => {
+    renderAdminUploadsAll();
+  });
+}
   
 function setText(el, val){
   if(!el) return;
