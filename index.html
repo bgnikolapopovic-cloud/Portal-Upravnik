@@ -3922,34 +3922,57 @@ function initAdminFinanceUploads(){
       el.style.cursor = "pointer";
 
       el.innerHTML = `
-        <div class="adminCardTitle">${escapeHTML(r.title)}</div>
+  <div class="adminCardTitle">${escapeHTML(r.title)}</div>
 
-        <div class="adminCardRow">
-          <span>Finansije</span>
-          <b>${r.finMB.toFixed(2)} MB</b>
-        </div>
+  <div class="adminCardRow adminGoFin" style="cursor:pointer;">
+    <span>Finansije</span>
+    <b>${r.finMB.toFixed(2)} MB</b>
+  </div>
 
-        <div class="adminCardRow">
-          <span>Oglasna tabla</span>
-          <b>${r.brdMB.toFixed(2)} MB</b>
-        </div>
+  <div class="adminCardRow adminGoBrd" style="cursor:pointer;">
+    <span>Oglasna tabla</span>
+    <b>${r.brdMB.toFixed(2)} MB</b>
+  </div>
 
-        <div class="adminCardRow total">
-          <span>UKUPNO</span>
-          <b>${r.mb.toFixed(2)} MB</b>
-        </div>
+  <div class="adminCardRow total adminSetOnly" style="cursor:pointer;">
+    <span>UKUPNO</span>
+    <b>${r.mb.toFixed(2)} MB</b>
+  </div>
 
-        <div class="smallText" style="margin-top:10px; opacity:.75;">
-          Mesec: ${escapeHTML(month)}
-        </div>
-      `;
+  <div class="smallText" style="margin-top:10px; opacity:.75;">
+    Mesec: ${escapeHTML(month)}
+  </div>
+`;
+      
+// FINANSIJE → vodi na finansije
+el.querySelector(".adminGoFin").addEventListener("click", () => {
+  setActiveBuilding(r.id);
+  input.value = r.title;
+  updateMonthlyUploadUI(false);
+  showPage("finansije");
+});
 
-      el.addEventListener("click", () => {
-        if(totF) totF.textContent = String(r.files);
-        if(totMB) totMB.textContent = r.mb.toFixed(2);
-        grid.innerHTML = "";
-        grid.appendChild(el);
-      });
+// OGLASNA → vodi na oglasnu
+el.querySelector(".adminGoBrd").addEventListener("click", () => {
+  setActiveBuilding(r.id);
+  input.value = r.title;
+  updateMonthlyUploadUI(false);
+  showPage("oglasna");
+});
+
+// UKUPNO → samo setuje zgradu (ostaje u statistici)
+el.querySelector(".adminSetOnly").addEventListener("click", () => {
+  setActiveBuilding(r.id);
+  input.value = r.title;
+  updateMonthlyUploadUI(false);
+});
+
+  // ✅ 4) osveži donju statistiku (Fin/Ogl/Ukupno) na Statistici
+  updateMonthlyUploadUI(false);
+
+  // ✅ 5) prebaci odmah na Finansije
+  showPage("finansije");
+});
 
       grid.appendChild(el);
     });
