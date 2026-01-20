@@ -3914,85 +3914,80 @@ function initAdminFinanceUploads(){
     let sumMB = 0;
 
     rows.forEach(r => {
-  sumFiles += r.files;
-  sumMB += r.mb;
+      sumFiles += r.files;
+      sumMB += r.mb;
 
-  const el = document.createElement("div");
-  el.className = "adminCard";
-  el.style.cursor = "pointer";
+      const el = document.createElement("div");
+      el.className = "adminCard";
+      el.style.cursor = "pointer";
 
-  el.innerHTML = `
-    <div class="adminCardTitle">${escapeHTML(r.title)}</div>
+      el.innerHTML = `
+        <div class="adminCardTitle">${escapeHTML(r.title)}</div>
 
-    <div class="adminCardRow adminGoFin" style="cursor:pointer;">
-      <span>Finansije</span>
-      <b>${r.finMB.toFixed(2)} MB</b>
-    </div>
+        <div class="adminCardRow adminGoFin" style="cursor:pointer;">
+          <span>Finansije</span>
+          <b>${r.finMB.toFixed(2)} MB</b>
+        </div>
 
-    <div class="adminCardRow adminGoBrd" style="cursor:pointer;">
-      <span>Oglasna tabla</span>
-      <b>${r.brdMB.toFixed(2)} MB</b>
-    </div>
+        <div class="adminCardRow adminGoBrd" style="cursor:pointer;">
+          <span>Oglasna tabla</span>
+          <b>${r.brdMB.toFixed(2)} MB</b>
+        </div>
 
-    <div class="adminCardRow total adminSetOnly" style="cursor:pointer;">
-      <span>UKUPNO</span>
-      <b>${r.mb.toFixed(2)} MB</b>
-    </div>
+        <div class="adminCardRow total adminSetOnly" style="cursor:pointer;">
+          <span>UKUPNO</span>
+          <b>${r.mb.toFixed(2)} MB</b>
+        </div>
 
-    <div class="smallText" style="margin-top:10px; opacity:.75;">
-      Mesec: ${escapeHTML(month)}
-    </div>
-  `;
+        <div class="smallText" style="margin-top:10px; opacity:.75;">
+          Mesec: ${escapeHTML(month)}
+        </div>
+      `;
 
-  // FINANSIJE → vodi na finansije
-  el.querySelector(".adminGoFin")?.addEventListener("click", (e) => {
-    e.stopPropagation();
-    setActiveBuilding(r.id);
-    input.value = r.title;
-    updateMonthlyUploadUI(false);
-    showPage("finansije");
-  });
+      el.querySelector(".adminGoFin")?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        setActiveBuilding(r.id);
+        input.value = r.title;
+        updateMonthlyUploadUI(false);
+        showPage("finansije");
+      });
 
-  // OGLASNA → vodi na oglasnu
-  el.querySelector(".adminGoBrd")?.addEventListener("click", (e) => {
-    e.stopPropagation();
-    setActiveBuilding(r.id);
-    input.value = r.title;
-    updateMonthlyUploadUI(false);
-    showPage("oglasna");
-  });
+      el.querySelector(".adminGoBrd")?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        setActiveBuilding(r.id);
+        input.value = r.title;
+        updateMonthlyUploadUI(false);
+        showPage("oglasna");
+      });
 
-  // UKUPNO → samo setuje zgradu (ostaje u statistici)
-  el.querySelector(".adminSetOnly")?.addEventListener("click", (e) => {
-    e.stopPropagation();
-    setActiveBuilding(r.id);
-    input.value = r.title;
-    updateMonthlyUploadUI(false);
-  });
+      el.querySelector(".adminSetOnly")?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        setActiveBuilding(r.id);
+        input.value = r.title;
+        updateMonthlyUploadUI(false);
+      });
 
-  // klik na celu karticu: izaberi zgradu i prikaži samo tu karticu
-  el.addEventListener("click", () => {
-    setActiveBuilding(r.id);
-    input.value = r.title;
-    updateMonthlyUploadUI(false);
+      el.addEventListener("click", () => {
+        setActiveBuilding(r.id);
+        input.value = r.title;
+        updateMonthlyUploadUI(false);
+        grid.innerHTML = "";
+        grid.appendChild(el);
+      });
 
-    grid.innerHTML = "";
-    grid.appendChild(el);
-  });
+      grid.appendChild(el);
+    });
 
-  // ✅ normalan prikaz (lista kartica)
-  grid.appendChild(el);
-});
-
-if(totF) totF.textContent = String(sumFiles);
-if(totMB) totMB.textContent = sumMB.toFixed(2);
+    if(totF) totF.textContent = String(sumFiles);
+    if(totMB) totMB.textContent = sumMB.toFixed(2);
+  }
 
   if(!input.dataset.bound){
     input.addEventListener("input", () => renderForQuery(input.value));
     input.dataset.bound = "1";
   }
 
-  renderEmpty();
+  renderEmpty(); // ✅ samo jednom, na startu
 }
   }
   
