@@ -5745,6 +5745,68 @@ function renderUserBadge(){
   el.textContent = CURRENT_SESSION.username || "";
 }
 
+  // ================= ADMIN STATISTIKA: zatvaranje dropdowna klikom van =================
+document.addEventListener("click", (e) => {
+  const wrap = document.querySelector("#page-statistika .adminTopWrap");
+  const menu = document.getElementById("adminBuildingMenuFin");
+  const input = document.getElementById("uplAdminSearchFin");
+
+  if(!menu) return;
+
+  // klik unutar inputa ili dropdowna -> ne zatvaramo
+  if(
+    (wrap && wrap.contains(e.target)) ||
+    (input && input.contains(e.target)) ||
+    menu.contains(e.target)
+  ) return;
+
+  // klik van -> zatvori
+  menu.classList.add("hidden");
+});
+
+// ================= ADMIN STATISTIKA: otvori/sakrij dropdown po unosu =================
+(() => {
+  const input = document.getElementById("uplAdminSearchFin");
+  const menu  = document.getElementById("adminBuildingMenuFin");
+  if(!input || !menu) return;
+
+  // kad klikneš u input: ako već ima nešto ukucano, prikaži listu
+  input.addEventListener("focus", () => {
+    if(input.value.trim().length) menu.classList.remove("hidden");
+  });
+
+  // dok kucaš: ako ima teksta -> pokaži, ako je prazno -> sakrij
+  input.addEventListener("input", () => {
+    const q = input.value.trim();
+    if(q.length){
+      menu.classList.remove("hidden");
+      // tvoja funkcija koja renderuje/filteruje zgrade
+      // ako se kod tebe zove drugačije, zameni ovu liniju:
+      if(typeof renderForQuery === "function") renderForQuery(q);
+    }else{
+      menu.classList.add("hidden");
+    }
+  });
+})();
+
+// ================= ADMIN STATISTIKA: klik na "Otvori" -> zatvori dropdown =================
+(() => {
+  const menu  = document.getElementById("adminBuildingMenuFin");
+  const input = document.getElementById("uplAdminSearchFin");
+  if(!menu) return;
+
+  menu.addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    if(!btn) return;
+
+    // Ako je klik na bilo koji button u meniju (npr. "Otvori"), zatvori dropdown
+    menu.classList.add("hidden");
+
+    // (opciono) skini fokus sa inputa da se ne otvori odmah opet
+    if(input) input.blur();
+  });
+})();
+
   
 </script>
 
