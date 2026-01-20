@@ -1864,6 +1864,18 @@ gap: 10px;
 
 .hidden{ display:none; }
 
+
+.adminNavBtn{
+  margin-left:auto;
+  padding:6px 10px;
+  border-radius:10px;
+  border:1px solid rgba(15,23,42,.14);
+  background:rgba(248,250,252,.92);
+  cursor:pointer;
+  font-weight:700;
+  font-size:12px;
+}
+
   
 </style>
 </head>
@@ -3924,15 +3936,17 @@ function initAdminFinanceUploads(){
       el.innerHTML = `
         <div class="adminCardTitle">${escapeHTML(r.title)}</div>
 
-        <div class="adminCardRow adminGoFin" style="cursor:pointer;">
-          <span>Finansije</span>
-          <b>${r.finMB.toFixed(2)} MB</b>
-        </div>
+        <div class="adminCardRow">
+  <span>Finansije</span>
+  <b>${r.finMB.toFixed(2)} MB</b>
+  <button type="button" class="adminNavBtn adminGoFin">Otvori</button>
+</div>
 
-        <div class="adminCardRow adminGoBrd" style="cursor:pointer;">
-          <span>Oglasna tabla</span>
-          <b>${r.brdMB.toFixed(2)} MB</b>
-        </div>
+<div class="adminCardRow">
+  <span>Oglasna tabla</span>
+  <b>${r.brdMB.toFixed(2)} MB</b>
+  <button type="button" class="adminNavBtn adminGoBrd">Otvori</button>
+</div>
 
         <div class="adminCardRow total adminSetOnly" style="cursor:pointer;">
           <span>UKUPNO</span>
