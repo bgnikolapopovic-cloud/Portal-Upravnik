@@ -2629,63 +2629,7 @@ gap: 10px;
       </div>
    </div>
   </div>
-    <!-- ✅ ADMIN: pregled upload-a za SVE stambene zajednice -->
-<!-- ===== ADMIN TOGGLE HEADER ===== -->
-<div class="adminTopWrap">
-  <div id="adminToggle" class="adminToggle">
-    <span id="adminToggleLabel">Admin</span>
-    <span id="adminActiveBuilding">Sve zgrade</span>
-    <span id="adminArrowBtn" class="adminArrow">▸</span>
-  </div>
-
-  <div id="adminBuildingMenu" class="adminMenu hidden"></div>
-</div>
-    <div id="adminContent" class="adminContent hidden">
-  <div data-role="admin" style="margin-top:18px;">
-  <div class="badge">Admin — Upload svih stambenih zajednica</div>
-
-  <!-- toolbar (kao dugovanja) -->
-  <div class="duesToolbar" style="margin-top:12px;">
-
-  <!-- PRETRAGA -->
-  <div class="field" style="min-width:240px;">
-    <label for="uplAdminSearch">Pretraga zgrade</label>
-    <input id="uplAdminSearch" type="text" placeholder="npr. Bore, BM25, NC28">
-  </div>
-
-  <!-- ZGRADA (NOVO) -->
-  <div class="field" style="min-width:240px;">
-    <label for="uplAdminBuilding">Zgrada</label>
-    <select id="uplAdminBuilding">
-      <option value="all">Sve zgrade</option>
-    </select>
-  </div>
-
-  <!-- SORT -->
-  <div class="field" style="min-width:240px;">
-      <label for="uplAdminSort">Sortiranje</label>
-      <select id="uplAdminSort">
-        <option value="mb-desc">Najviše MB</option>
-        <option value="mb-asc">Najmanje MB</option>
-        <option value="name-asc">Zgrada A–Z</option>
-      </select>
-    </div>
-
-    <div class="duesBadges" style="margin-left:auto;">
-      <span class="duesBadge">
-        Ukupno fajlova: <b id="uplAdminTotalFiles">0</b>
-      </span>
-      <span class="duesBadge">
-        Ukupno MB: <b id="uplAdminTotalMB">0.00</b>
-      </span>
-    </div>
-  </div>
-
-  <!-- grid -->
-  <div class="duesGrid" id="uplAdminGrid" style="margin-top:12px;"></div>
-</div>
-      
-    </div>
+    
   </main>
 
 </div>
@@ -2974,12 +2918,6 @@ const bsLogoutBtn = document.getElementById("bsLogoutBtn");
   const openingBalanceInputAdmin = document.getElementById("openingBalanceInputAdmin");
 const saveOpeningBalanceBtnAdmin = document.getElementById("saveOpeningBalanceBtnAdmin");
 const editOpeningBalanceBtnAdmin = document.getElementById("editOpeningBalanceBtnAdmin");
-  const uplAdminGrid = document.getElementById("uplAdminGrid");
-const uplAdminSearch = document.getElementById("uplAdminSearch");
-const uplAdminSort = document.getElementById("uplAdminSort");
-const uplAdminBuilding = document.getElementById("uplAdminBuilding");
-  const uplAdminTotalFiles = document.getElementById("uplAdminTotalFiles");
-const uplAdminTotalMB = document.getElementById("uplAdminTotalMB");
   
   /* =========================
    REMEMBER USER+PASS (login autofill)
@@ -3915,84 +3853,6 @@ if(uplMonthPick && !uplMonthPick.dataset.adminBound){
   });
   uplMonthPick.dataset.adminBound = "1";
 }
-
-  // ===== ADMIN TOGGLE (klik bilo gde na bar) =====
-const adminToggle  = document.getElementById("adminToggle");
-const adminContent = document.getElementById("adminContent");
-const adminArrowBtn = document.getElementById("adminArrowBtn");
-
-if(adminToggle && adminContent && !adminToggle.dataset.bound){
-  adminToggle.addEventListener("click", (e) => {
-    // strelica je samo za dropdown zgrada
-    if(e.target === adminArrowBtn) return;
-
-    adminContent.classList.toggle("hidden");
-    adminToggle.classList.toggle("open");
-  });
-  adminToggle.dataset.bound = "1";
-}
-// ===== ADMIN BUILDING MENU (dropdown pored Admin) =====
-const adminActiveBuilding = document.getElementById("adminActiveBuilding");
-const adminBuildingMenu   = document.getElementById("adminBuildingMenu");
-
-function renderAdminBuildingMenu(){
-  if(!adminBuildingMenu) return;
-
-  const options = [
-    { id: "all", title: "Sve zgrade" },
-    ...(BUILDINGS || []).map(b => ({ id: b.id, title: b.title }))
-  ];
-
-  adminBuildingMenu.innerHTML = "";
-
-  options.forEach(opt => {
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "adminMenuItem";
-    btn.textContent = opt.title;
-
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation();
-
-      if(adminActiveBuilding) adminActiveBuilding.textContent = opt.title;
-
-      if(adminContent) adminContent.classList.remove("hidden");
-      if(adminToggle) adminToggle.classList.add("open");
-
-      if(uplAdminBuilding){
-        uplAdminBuilding.value = opt.id;
-        uplAdminBuilding.dispatchEvent(new Event("change", { bubbles:true }));
-      }
-
-      adminBuildingMenu.classList.add("hidden");
-    });
-
-    adminBuildingMenu.appendChild(btn);
-  });
-} // ✅ OVO TI JE FALILO (zatvaranje funkcije)
-
-// klik na strelicu: otvori/zatvori meni zgrada
-if(adminArrowBtn && adminBuildingMenu && !adminArrowBtn.dataset.bound){
-  adminArrowBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    adminBuildingMenu.classList.toggle("hidden");
-  });
-  adminArrowBtn.dataset.bound = "1";
-}
-
-// zatvori dropdown klikom van
-document.addEventListener("click", (e) => {
-  if(!adminBuildingMenu) return;
-  if(adminBuildingMenu.classList.contains("hidden")) return;
-
-  const wrap = document.querySelector(".adminTopWrap");
-  if(wrap && wrap.contains(e.target)) return;
-
-  adminBuildingMenu.classList.add("hidden");
-});
-
-// init (pozovi jednom, van funkcije)
-renderAdminBuildingMenu();
 
 /* ===============================
    ADMIN (FINANSIJE) — brza pretraga po zgradi
