@@ -3968,13 +3968,10 @@ function initAdminFinanceUploads(){
       });
 
       el.addEventListener("click", () => {
-        setActiveBuilding(r.id);
-        input.value = r.title;
-        updateMonthlyUploadUI(false);
-        grid.innerHTML = "";
-        grid.appendChild(el);
-      });
-
+  setActiveBuilding(r.id);
+  input.value = r.title;
+  updateMonthlyUploadUI(false); 
+});
       grid.appendChild(el);
     });
 
