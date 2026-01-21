@@ -2124,8 +2124,66 @@ gap: 10px;
         </div>
       </div>
 
+<!-- ADMIN: forma za dodavanje stana (kao za zgradu) -->
+<div id="adminAddUnitForm" style="display:none; margin-top:12px;">
+  <div class="fRow" style="gap:10px; align-items:flex-end; flex-wrap:wrap;">
+    <div class="field" style="min-width:160px;">
+      <label>Šifra zgrade</label>
+      <input id="adminUnitBCode" type="text" disabled>
+    </div>
+
+    <div class="field" style="min-width:320px; flex:1;">
+      <label>Adresa</label>
+      <input id="adminUnitAddr" type="text" disabled>
+    </div>
+
+    <div class="field" style="min-width:260px; flex:1;">
+      <label>Ime i prezime vlasnika</label>
+      <input id="adminUnitOwner" type="text" placeholder="npr. Marko Marković">
+    </div>
+
+    <div class="field" style="min-width:180px;">
+      <label>Novi ID stana</label>
+      <input id="adminUnitCode" type="text" placeholder="npr. BM25-026">
+    </div>
+
+    <button class="btn btnPrimary" type="button" id="adminSaveUnitBtn">Sačuvaj</button>
+    <button class="btn btnGhost" type="button" id="adminCancelUnitBtn">Odustani</button>
+  </div>
+
+  <div class="smallText" style="opacity:.75; margin-top:8px;">
+    ID stana se predlaže automatski, možeš ga ručno izmeniti.
+  </div>
+</div>
+      
       <div id="adminUnitsList" class="list" style="margin-top:10px;"></div>
     </div>
+
+<!-- ADMIN: detalji stana (otvara se klikom na red) -->
+<div id="adminUnitDetails" style="display:none; margin-top:12px;">
+  <div class="badge" id="audTitle">Stan</div>
+
+  <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+    <div class="field" style="min-width:180px;">
+      <label>ID stana</label>
+      <input id="audUnitCode" type="text" disabled>
+    </div>
+
+    <div class="field" style="min-width:260px; flex:1;">
+      <label>Ime i prezime vlasnika</label>
+      <input id="audOwner" type="text" placeholder="npr. Marko Marković">
+    </div>
+
+    <button class="btn btnPrimary" type="button" id="audSaveBtn">Sačuvaj</button>
+    <button class="btn btnGhost" type="button" id="audCloseBtn">Zatvori</button>
+    <button class="btn btnGhost" type="button" id="audDeleteBtn">Obriši</button>
+  </div>
+
+  <div class="smallText" style="opacity:.7; margin-top:6px;">
+    Ovde menjaš samo vlasnika za izabrani stan.
+  </div>
+</div>
+    
           <div class="fRow" data-role="upravnik" style="margin-top:12px; gap:10px;">
   <button class="btn btnPrimary" id="finTabEntries">Finansijske promene</button>
   <button class="btn btnGhost" id="finTabDues">Dugovanja stanara</button>
@@ -5424,8 +5482,24 @@ function renderAdminUnits(bid){
   const wrap = document.getElementById("adminUnitsWrap");
   const list = document.getElementById("adminUnitsList");
   const addBtn = document.getElementById("adminAddUnitBtn");
-  if(!wrap || !list || !addBtn) return;
-
+  const form = document.getElementById("adminAddUnitForm");
+const bCodeI = document.getElementById("adminUnitBCode");
+const addrI  = document.getElementById("adminUnitAddr");
+const ownerI = document.getElementById("adminUnitOwner");
+const unitI  = document.getElementById("adminUnitCode");
+const saveBtn = document.getElementById("adminSaveUnitBtn");
+const cancelBtn = document.getElementById("adminCancelUnitBtn");
+  const det = document.getElementById("adminUnitDetails");
+const audTitle = document.getElementById("audTitle");
+const audUnitCode = document.getElementById("audUnitCode");
+const audOwner = document.getElementById("audOwner");
+const audSaveBtn = document.getElementById("audSaveBtn");
+const audCloseBtn = document.getElementById("audCloseBtn");
+const audDeleteBtn = document.getElementById("audDeleteBtn");
+  
+if(!wrap || !list || !addBtn || !form || !bCodeI || !addrI || !ownerI || !unitI || !saveBtn || !cancelBtn ||
+   !det || !audTitle || !audUnitCode || !audOwner || !audSaveBtn || !audCloseBtn || !audDeleteBtn) return;
+ 
   if(CURRENT_SESSION?.role !== "admin"){
     wrap.style.display = "none";
     return;
@@ -5443,79 +5517,133 @@ function renderAdminUnits(bid){
     }
 
     rows
-      .slice()
-      .sort((a,b) => String(a.unitCode).localeCompare(String(b.unitCode)))
-      .forEach(u => {
-        const row = document.createElement("div");
-        row.className = "fRow";
-        row.style.display = "flex";
-        row.style.gap = "10px";
-        row.style.alignItems = "center";
-        row.style.justifyContent = "space-between";
+  .slice()
+  .sort((a,b) => String(a.unitCode).localeCompare(String(b.unitCode)))
+  .forEach(u => {
+    const row = document.createElement("div");
+    row.className = "fRow";
+    row.style.display = "flex";
+    row.style.gap = "10px";
+    row.style.alignItems = "center";
+    row.style.justifyContent = "space-between";
 
-        const left = document.createElement("div");
-        left.innerHTML = `
-          <div style="font-weight:900">${escapeHTML(u.unitCode)}</div>
-          <div class="smallText" style="opacity:.75">
-            Vlasnik: <b>${escapeHTML(u.ownerFullName || "—")}</b>
-            ${u.active===false ? " • (deaktiviran)" : ""}
-          </div>
-        `;
+    // ⬅ 4.3: klik na red otvara detalje stana
+    row.style.cursor = "pointer";
+    row.addEventListener("click", () => {
+      form.style.display = "none";
+      det.style.display = "block";
+      audTitle.textContent = `Stan: ${u.unitCode}`;
+      audUnitCode.value = u.unitCode;
+      audOwner.value = u.ownerFullName || "";
+      audOwner.focus();
+    });
 
-        const actions = document.createElement("div");
-        actions.style.display = "flex";
-        actions.style.gap = "8px";
+    const left = document.createElement("div");
+    left.innerHTML = `
+      <div style="font-weight:900">${escapeHTML(u.unitCode)}</div>
+      <div class="smallText" style="opacity:.75">
+        Vlasnik: <b>${escapeHTML(u.ownerFullName || "—")}</b>
+      </div>
+    `;
 
-        const editName = document.createElement("button");
-        editName.type = "button";
-        editName.className = "btn btnGhost";
-        editName.textContent = "Ime";
-        editName.addEventListener("click", () => {
-          const val = prompt(`Ime i prezime vlasnika za ${u.unitCode}:`, u.ownerFullName || "");
-          if(val === null) return;
-          upsertUnitDB(bid, { unitCode: u.unitCode, ownerFullName: val.trim(), active: u.active!==false });
-          redraw();
-        });
+    const actions = document.createElement("div");
+    actions.style.display = "flex";
+    actions.style.gap = "8px";
 
-        const toggle = document.createElement("button");
-        toggle.type = "button";
-        toggle.className = "btn btnGhost";
-        toggle.textContent = (u.active===false) ? "Aktiviraj" : "Deaktiviraj";
-        toggle.addEventListener("click", () => {
-          upsertUnitDB(bid, { unitCode: u.unitCode, active: !(u.active===false) });
-          redraw();
-        });
+    const del = document.createElement("button");
+    del.type = "button";
+    del.className = "btn btnGhost";
+    del.textContent = "Obriši";
+    del.addEventListener("click", (e) => {
+      e.stopPropagation(); // da klik na Obriši ne otvara detalje
+      if(!confirm(`Obrisati ${u.unitCode}?`)) return;
+      deleteUnitDB(bid, u.unitCode);
+      redraw();
+    });
 
-        const del = document.createElement("button");
-        del.type = "button";
-        del.className = "btn btnGhost";
-        del.textContent = "Obriši";
-        del.addEventListener("click", () => {
-          if(!confirm(`Obrisati ${u.unitCode}?`)) return;
-          deleteUnitDB(bid, u.unitCode);
-          redraw();
-        });
+    actions.appendChild(del);
 
-        actions.appendChild(editName);
-        actions.appendChild(toggle);
-        actions.appendChild(del);
+    row.appendChild(left);
+    row.appendChild(actions);
+    list.appendChild(row);
+  });
+}
+  
+  addBtn.onclick = () => {
+  // ako su otvoreni detalji, sakrij ih
+  det.style.display = "none";
 
-        row.appendChild(left);
-        row.appendChild(actions);
-        list.appendChild(row);
-      });
+  const building = BUILDINGS.find(b => b.id === bid);
+  if(!building) return;
+
+  const bcode = building.id.replace("b_","").toUpperCase(); // BM25
+  const addr = `${building.street || ""} ${building.number || ""}`.trim();
+
+  bCodeI.value = bcode;
+  addrI.value = (building.title || addr || "");
+  ownerI.value = "";
+  unitI.value = nextUnitCodeDB(bid) || `${bcode}-001`;
+
+  form.style.display = "block";
+  ownerI.focus();
+};
+
+cancelBtn.onclick = () => {
+  form.style.display = "none";
+};
+
+saveBtn.onclick = () => {
+  const unitCode = (unitI.value || "").trim().toUpperCase();
+  const ownerFullName = (ownerI.value || "").trim();
+
+  if(!unitCode || !ownerFullName){
+    alert("Popuni: Ime i prezime + ID stana.");
+    return;
   }
 
-  addBtn.onclick = () => {
-    const code = nextUnitCodeDB(bid);
-    if(!code) return;
-    upsertUnitDB(bid, { unitCode: code, active: true, ownerFullName: "" });
-    redraw();
-  };
+  const rows = loadUnitsDB(bid);
+  if(rows.some(x => String(x.unitCode).toUpperCase() === unitCode)){
+    alert("Taj ID stana već postoji.");
+    return;
+  }
 
+  upsertUnitDB(bid, { unitCode, ownerFullName, active: true });
+  form.style.display = "none";
   redraw();
-}
+};
 
+// 4.4 — dugmad u detaljima stana
+audCloseBtn.onclick = () => {
+  det.style.display = "none";
+};
+
+audSaveBtn.onclick = () => {
+  const unitCode = (audUnitCode.value || "").trim().toUpperCase();
+  const ownerFullName = (audOwner.value || "").trim();
+
+  if(!unitCode) return;
+  if(!ownerFullName){
+    alert("Unesi ime i prezime vlasnika.");
+    return;
+  }
+
+  upsertUnitDB(bid, { unitCode, ownerFullName, active: true });
+  det.style.display = "none";
+  redraw();
+};
+
+audDeleteBtn.onclick = () => {
+  const unitCode = (audUnitCode.value || "").trim().toUpperCase();
+  if(!unitCode) return;
+
+  if(!confirm(`Obrisati ${unitCode}?`)) return;
+  deleteUnitDB(bid, unitCode);
+  det.style.display = "none";
+  redraw();
+};
+
+redraw();
+  
   /* ================= ADMIN: UPRAVLJANJE ZGRADAMA ================= */
 function renderAdminBuildings(){
   const wrap = document.getElementById("adminBuildingsWrap");
