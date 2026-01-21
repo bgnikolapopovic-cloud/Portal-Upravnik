@@ -5083,17 +5083,24 @@ if(poll?.enabled){
   const iVotedDa = poll.da.includes(user);
   const iVotedNe = poll.ne.includes(user);
 
+  const daCount = poll.da.length;
+  const neCount = poll.ne.length;
+  const totalVotes = daCount + neCount;
+
+  const daPct = totalVotes ? Math.round((daCount / totalVotes) * 100) : 0;
+  const nePct = totalVotes ? (100 - daPct) : 0;
+
   const btnDa = document.createElement("button");
   btnDa.type = "button";
   btnDa.className = "btn btnGhost";
-  btnDa.textContent = `DA (${poll.da.length})`;
+  btnDa.textContent = `DA (${daCount})`;
   btnDa.disabled = ended || (CURRENT_SESSION?.role !== "stanar");
   if(iVotedDa) btnDa.style.boxShadow = "0 0 0 4px rgba(22,163,74,.18)";
 
   const btnNe = document.createElement("button");
   btnNe.type = "button";
   btnNe.className = "btn btnGhost";
-  btnNe.textContent = `NE (${poll.ne.length})`;
+  btnNe.textContent = `NE (${neCount})`;
   btnNe.disabled = ended || (CURRENT_SESSION?.role !== "stanar");
   if(iVotedNe) btnNe.style.boxShadow = "0 0 0 4px rgba(220,38,38,.18)";
 
@@ -5104,12 +5111,53 @@ if(poll?.enabled){
   status.className = "smallText";
   status.style.opacity = ".75";
   status.textContent = ended
-    ? "Glasanje je zatvoreno."
+    ? "Glasanje je završeno."
     : "Klikni DA ili NE (možeš promeniti glas).";
 
   wrap.appendChild(btnDa);
   wrap.appendChild(btnNe);
   wrap.appendChild(status);
+
+  // ✅ PROFI: procenat + progress bar
+  const meterWrap = document.createElement("div");
+  meterWrap.style.width = "100%";
+  meterWrap.style.marginTop = "6px";
+
+  const pctRow = document.createElement("div");
+  pctRow.className = "smallText";
+  pctRow.style.opacity = ".75";
+  pctRow.style.display = "flex";
+  pctRow.style.justifyContent = "space-between";
+  pctRow.style.gap = "10px";
+  pctRow.textContent = totalVotes
+    ? `DA ${daPct}% • NE ${nePct}% • Ukupno: ${totalVotes}`
+    : "Još nema glasova.";
+
+  const bar = document.createElement("div");
+  bar.style.height = "10px";
+  bar.style.borderRadius = "999px";
+  bar.style.overflow = "hidden";
+  bar.style.border = "1px solid rgba(15,23,42,.14)";
+  bar.style.background = "rgba(15,23,42,.08)";
+  bar.style.display = "flex";
+
+  const fillDa = document.createElement("div");
+  fillDa.style.height = "100%";
+  fillDa.style.width = `${daPct}%`;
+  fillDa.style.background = "rgba(22,163,74,.55)";
+
+  const fillNe = document.createElement("div");
+  fillNe.style.height = "100%";
+  fillNe.style.width = `${nePct}%`;
+  fillNe.style.background = "rgba(220,38,38,.55)";
+
+  bar.appendChild(fillDa);
+  bar.appendChild(fillNe);
+
+  meterWrap.appendChild(pctRow);
+  meterWrap.appendChild(bar);
+
+  wrap.appendChild(meterWrap);
 
   li.appendChild(wrap);
 }
