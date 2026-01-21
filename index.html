@@ -5643,6 +5643,7 @@ audDeleteBtn.onclick = () => {
 };
 
 redraw();
+  }
   
   /* ================= ADMIN: UPRAVLJANJE ZGRADAMA ================= */
 function renderAdminBuildings(){
@@ -5721,7 +5722,7 @@ function renderAdminBuildings(){
       list.appendChild(row);
     });
   }
-
+  
   btn.onclick = () => {
     try{
       const code   = (codeI?.value || "").trim();
