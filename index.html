@@ -1909,6 +1909,22 @@ gap: 10px;
 .pollSep{
   opacity:.6;
 }
+
+/* ===== VLASNICI STANOVA ===== */
+.unitOwnerRow{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+.unitOwnerRow .unitCode{
+  min-width:90px;
+  font-weight:600;
+}
+
+.unitOwnerRow input{
+  flex:1;
+}
   
 </style>
 </head>
@@ -2335,6 +2351,20 @@ gap: 10px;
   </div>
 </div>
 
+<!-- ===== VLASNICI STANOVA (samo upravnik/admin) ===== -->
+<div id="unitOwnersWrap" style="display:none; margin-top:16px;">
+  <div class="badge">Vlasnici stanova (vidljivo samo upravniku i adminu)</div>
+
+  <div class="fRow" style="margin-top:10px;">
+    <div class="smallText" style="opacity:.75">
+      Unesi ime i prezime vlasnika za svaki stan. Podaci nisu vidljivi stanarima.
+    </div>
+  </div>
+
+  <div id="unitOwnersTable" class="list" style="margin-top:10px;"></div>
+</div>
+
+  
 <div class="duesGrid" id="duesGrid"></div>
 
   <div id="duesPayWrap" style="display:none; margin-top:14px;">
@@ -4259,6 +4289,12 @@ title.innerHTML = `
         <span class="pill ${typeClass}">${escapeHTML(typeLabel)}</span>
         <span class="pill">${escapeHTML(item.category)}</span>
         ${item.firm ? `<span class="pill">${escapeHTML(item.firm)}</span>` : ``}
+
+        ${
+          (CURRENT_SESSION?.role === "upravnik" || CURRENT_SESSION?.role === "admin")
+            ? `<span class="pill">${escapeHTML(getUnitLabel(activeBid(), item.user || item.unit || item.createdBy || ""))}</span>`
+            : ``
+        }
       </div>
 
       <div class="itemDesc">${escapeHTML(item.desc || "")}</div>
@@ -4751,6 +4787,12 @@ title.innerHTML = `
       <div class="itemMeta">
         <span class="pill">${escapeHTML(dmy)}</span>
         <span class="pill">${escapeHTML(post.title || "")}</span>
+
+        ${
+          (CURRENT_SESSION?.role === "upravnik" || CURRENT_SESSION?.role === "admin")
+            ? `<span class="pill">${escapeHTML(getUnitLabel(activeBid(), post.createdBy || ""))}</span>`
+            : ``
+        }
       </div>
 
       ${post.desc ? `<div class="itemDesc">${escapeHTML(post.desc)}</div>` : ``}
@@ -5025,6 +5067,89 @@ function getVoteStats(poll){
   };
 }
 
+/* ================= VLASNICI STANOVA ================= */
+
+function kUnits(bid){
+  return `units_${bid}`;
+}
+
+function loadUnits(bid){
+  try{
+    return JSON.parse(localStorage.getItem(kUnits(bid))) || {};
+  }catch{
+    return {};
+  }
+}
+
+function saveUnits(bid, data){
+  localStorage.setItem(kUnits(bid), JSON.stringify(data));
+}
+
+function renderUnitOwners(bid){
+  const wrap = document.getElementById("unitOwnersWrap");
+  const table = document.getElementById("unitOwnersTable");
+  if(!wrap || !table) return;
+
+  // samo upravnik i admin
+  if(!(CURRENT_SESSION?.role === "upravnik" || CURRENT_SESSION?.role === "admin")){
+    wrap.style.display = "none";
+    return;
+  }
+
+  wrap.style.display = "block";
+  table.innerHTML = "";
+
+  const units = loadUnits(bid);
+  const building = BUILDINGS.find(b => b.id === bid);
+  if(!building) return;
+
+  for(let i = 1; i <= building.units; i++){
+    const code = `${building.id.toUpperCase().replace("B_","")}-${String(i).padStart(3,"0")}`;
+
+    const row = document.createElement("div");
+    row.className = "unitOwnerRow fRow";
+
+    const label = document.createElement("div");
+    label.className = "unitCode";
+    label.textContent = code;
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.placeholder = "Ime i prezime vlasnika";
+    input.value = units[code]?.fullName || "";
+
+    input.addEventListener("change", () => {
+      const data = loadUnits(bid);
+      if(input.value.trim()){
+        data[code] = { fullName: input.value.trim() };
+      }else{
+        delete data[code];
+      }
+      saveUnits(bid, data);
+    });
+
+    row.appendChild(label);
+    row.appendChild(input);
+    table.appendChild(row);
+  }
+}
+
+/* ===== HELPER: PRIKAZ STANA + IME (SAMO UPRAVNIK / ADMIN) ===== */
+function getUnitLabel(bid, unitCode){
+  const isPrivileged =
+    CURRENT_SESSION?.role === "upravnik" ||
+    CURRENT_SESSION?.role === "admin";
+
+  // stanar uvek vidi samo oznaku stana
+  if(!isPrivileged) return unitCode;
+
+  const units = loadUnits(bid);
+  const name = units[unitCode]?.fullName;
+
+  // upravnik/admin vidi i ime ako postoji
+  return name ? `${unitCode} (${name})` : unitCode;
+}
+  
 function voteOnProposal(bid, proposalId, choice){ // "da" | "ne"
   if(!bid || !proposalId) return;
 
@@ -5286,10 +5411,15 @@ if(!monthlyFeeInput || !duesStartMonth || !saveDuesSettingsBtn || !duesGrid) ret
     row.className = "duesRow";
 
     const left = document.createElement("div");
-    left.innerHTML = `
-      <div class="duesUser">${u.username}</div>
-      <div class="duesMeta">Pregled za aktivnu zgradu</div>
-    `;
+
+const unitLabel = (CURRENT_SESSION?.role === "upravnik" || CURRENT_SESSION?.role === "admin")
+  ? getUnitLabel(activeBid(), u.username)
+  : u.username;
+
+left.innerHTML = `
+  <div class="duesUser">${escapeHTML(unitLabel)}</div>
+  <div class="duesMeta">Pregled za aktivnu zgradu</div>
+`;
 
     const paid = document.createElement("div");
     paid.className = "duesBadges";
@@ -5685,8 +5815,9 @@ function applySearchFilter(){
   const bid = activeBid();
   if(!bid) return;
   renderFinanceList(bid, CURRENT_QUERY);
-  renderBoard(bid, CURRENT_QUERY);
-  renderForum(bid, CURRENT_QUERY);
+renderUnitOwners(bid);
+renderBoard(bid, CURRENT_QUERY);
+renderForum(bid, CURRENT_QUERY);
 }
 function scrollToSid(sid){
   if(!sid) return;
