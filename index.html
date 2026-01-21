@@ -5090,11 +5090,11 @@ function renderUnitOwners(bid){
   const table = document.getElementById("unitOwnersTable");
   if(!wrap || !table) return;
 
-  // samo upravnik i admin
-  if(!(CURRENT_SESSION?.role === "upravnik" || CURRENT_SESSION?.role === "admin")){
-    wrap.style.display = "none";
-    return;
-  }
+  // samo ADMIN sme da unosi/menja vlasnike
+if(CURRENT_SESSION?.role !== "admin"){
+  wrap.style.display = "none";
+  return;
+}
 
   wrap.style.display = "block";
   table.innerHTML = "";
