@@ -5322,6 +5322,8 @@ if(createProposalBtn){
 
 const now = Date.now();
 
+const now = Date.now();
+
 const proposal = {
   id: cryptoRandom(),
   createdAt: now,
@@ -5330,13 +5332,15 @@ const proposal = {
   body,
   createdBy: CURRENT_SESSION.username,
 
-  // ✅ AUTOMATSKA ANKETA (bez izbora)
+  // ✅ AUTOMATSKA ANKETA (srpsko: DA / NE)
   poll: {
     enabled: true,
     endsAt: now + 1000 * 60 * 60 * 24 * 30,
-    yes: [],
-    no: []
+    da: [],
+    ne: []
   }
+};
+    
    const items = loadProposals(bid);
     items.push(proposal);
     saveProposals(bid, items);
