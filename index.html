@@ -2098,20 +2098,34 @@ gap: 10px;
       </section>
 
       <!-- FINANSIJE -->
-      <section class="page" id="page-finansije">
-        <section class="card">
-         <div class="finTitleRow">
-  <h3>Finansije</h3>
+<section class="page" id="page-finansije">
+  <section class="card">
 
-  <!-- ADMIN: Promeni zgradu (Finansije) -->
-  <div id="adminFinBuildingSwitch" data-role="admin" style="display:none;"></div>
+    <div class="finTitleRow">
+      <h3>Finansije</h3>
 
-  <!-- STANAR: Moj dug/pretplata u naslovu Finansija -->
-  <div class="finTenantBadge status-obaveza" data-role="stanar" id="finTenantBadge" style="display:none;">
-    <span id="finTenantBadgeText">0,00 RSD</span>
-  </div>
-</div>
+      <!-- ADMIN: Promeni zgradu (Finansije) -->
+      <div id="adminFinBuildingSwitch" data-role="admin" style="display:none;"></div>
 
+      <!-- STANAR: Moj dug/pretplata u naslovu Finansija -->
+      <div class="finTenantBadge status-obaveza" data-role="stanar" id="finTenantBadge" style="display:none;">
+        <span id="finTenantBadgeText">0,00 RSD</span>
+      </div>
+    </div>
+
+    <!-- ADMIN: Upravljanje stanovima -->
+    <div id="adminUnitsWrap" data-role="admin" style="display:none; margin-top:14px;">
+      <div class="badge">Upravljanje stanovima (samo admin)</div>
+
+      <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end;">
+        <button class="btn btnPrimary" type="button" id="adminAddUnitBtn">Dodaj stan</button>
+        <div class="smallText" style="opacity:.75">
+          Dodaje novi stan (npr. BM25-026). Ime vlasnika unosi admin.
+        </div>
+      </div>
+
+      <div id="adminUnitsList" class="list" style="margin-top:10px;"></div>
+    </div>
           <div class="fRow" data-role="upravnik" style="margin-top:12px; gap:10px;">
   <button class="btn btnPrimary" id="finTabEntries">Finansijske promene</button>
   <button class="btn btnGhost" id="finTabDues">Dugovanja stanara</button>
@@ -5218,7 +5232,6 @@ function bindAdminFinSwitch(){
         setActiveBuilding(b.id);
         input.value = b.title;
 
-        // ✅ ostani na finansijama + refresh
         updateMonthlyUploadUI(false);
         applySearchFilter();
         showPage("finansije");
@@ -5254,6 +5267,147 @@ function bindAdminFinSwitch(){
   renderForQuery("");
 
   host.dataset.bound = "1";
+}
+
+/* ================= UNITS DB (backend-ready) ================= */
+function kUnitsDB(bid){ return `unitsdb_${bid}`; }
+
+function loadUnitsDB(bid){
+  try{ return JSON.parse(localStorage.getItem(kUnitsDB(bid))) || []; }
+  catch{ return []; }
+}
+
+function saveUnitsDB(bid, rows){
+  localStorage.setItem(kUnitsDB(bid), JSON.stringify(rows));
+}
+
+function findUnitDB(bid, unitCode){
+  return loadUnitsDB(bid).find(x => x.unitCode === unitCode) || null;
+}
+
+function upsertUnitDB(bid, unit){
+  const rows = loadUnitsDB(bid);
+  const idx = rows.findIndex(x => x.unitCode === unit.unitCode);
+  if(idx === -1) rows.push(unit);
+  else rows[idx] = { ...rows[idx], ...unit };
+  saveUnitsDB(bid, rows);
+}
+
+function deleteUnitDB(bid, unitCode){
+  saveUnitsDB(bid, loadUnitsDB(bid).filter(x => x.unitCode !== unitCode));
+}
+
+function nextUnitCodeDB(bid){
+  const building = BUILDINGS.find(b => b.id === bid);
+  if(!building) return null;
+
+  const prefix = building.id.replace("b_","").toUpperCase(); // BM25
+  const rows = loadUnitsDB(bid);
+
+  const nums = rows.map(x => {
+    const m = String(x.unitCode||"").match(/-(\d{3})$/);
+    return m ? Number(m[1]) : null;
+  }).filter(n => Number.isFinite(n));
+
+  const next = (nums.length ? Math.max(...nums) : 0) + 1;
+  return `${prefix}-${String(next).padStart(3,"0")}`;
+}
+
+/* ================= ADMIN: UPRAVLJANJE STANOVIMA ================= */
+function renderAdminUnits(bid){
+  const wrap = document.getElementById("adminUnitsWrap");
+  const list = document.getElementById("adminUnitsList");
+  const addBtn = document.getElementById("adminAddUnitBtn");
+  if(!wrap || !list || !addBtn) return;
+
+  if(CURRENT_SESSION?.role !== "admin"){
+    wrap.style.display = "none";
+    return;
+  }
+
+  wrap.style.display = "block";
+
+  function redraw(){
+    const rows = loadUnitsDB(bid);
+    list.innerHTML = "";
+
+    if(!rows.length){
+      list.innerHTML = `<div class="smallText"><span class="badge">Nema unetih stanova</span></div>`;
+      return;
+    }
+
+    rows
+      .slice()
+      .sort((a,b) => String(a.unitCode).localeCompare(String(b.unitCode)))
+      .forEach(u => {
+        const row = document.createElement("div");
+        row.className = "fRow";
+        row.style.display = "flex";
+        row.style.gap = "10px";
+        row.style.alignItems = "center";
+        row.style.justifyContent = "space-between";
+
+        const left = document.createElement("div");
+        left.innerHTML = `
+          <div style="font-weight:900">${escapeHTML(u.unitCode)}</div>
+          <div class="smallText" style="opacity:.75">
+            Vlasnik: <b>${escapeHTML(u.ownerFullName || "—")}</b>
+            ${u.active===false ? " • (deaktiviran)" : ""}
+          </div>
+        `;
+
+        const actions = document.createElement("div");
+        actions.style.display = "flex";
+        actions.style.gap = "8px";
+
+        const editName = document.createElement("button");
+        editName.type = "button";
+        editName.className = "btn btnGhost";
+        editName.textContent = "Ime";
+        editName.addEventListener("click", () => {
+          const val = prompt(`Ime i prezime vlasnika za ${u.unitCode}:`, u.ownerFullName || "");
+          if(val === null) return;
+          upsertUnitDB(bid, { unitCode: u.unitCode, ownerFullName: val.trim(), active: u.active!==false });
+          redraw();
+        });
+
+        const toggle = document.createElement("button");
+        toggle.type = "button";
+        toggle.className = "btn btnGhost";
+        toggle.textContent = (u.active===false) ? "Aktiviraj" : "Deaktiviraj";
+        toggle.addEventListener("click", () => {
+          upsertUnitDB(bid, { unitCode: u.unitCode, active: !(u.active===false) });
+          redraw();
+        });
+
+        const del = document.createElement("button");
+        del.type = "button";
+        del.className = "btn btnGhost";
+        del.textContent = "Obriši";
+        del.addEventListener("click", () => {
+          if(!confirm(`Obrisati ${u.unitCode}?`)) return;
+          deleteUnitDB(bid, u.unitCode);
+          redraw();
+        });
+
+        actions.appendChild(editName);
+        actions.appendChild(toggle);
+        actions.appendChild(del);
+
+        row.appendChild(left);
+        row.appendChild(actions);
+        list.appendChild(row);
+      });
+  }
+
+  addBtn.onclick = () => {
+    const code = nextUnitCodeDB(bid);
+    if(!code) return;
+    upsertUnitDB(bid, { unitCode: code, active: true, ownerFullName: "" });
+    redraw();
+  };
+
+  redraw();
 }
 
   
@@ -5925,6 +6079,7 @@ function applySearchFilter(){
   renderFinanceList(bid, CURRENT_QUERY);
   renderUnitOwners(bid);
   bindAdminFinSwitch();
+  renderAdminUnits(bid);
 
   renderBoard(bid, CURRENT_QUERY);
   renderForum(bid, CURRENT_QUERY);
