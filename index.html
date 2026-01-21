@@ -2100,8 +2100,11 @@ gap: 10px;
       <!-- FINANSIJE -->
       <section class="page" id="page-finansije">
         <section class="card">
-          <div class="finTitleRow">
+         <div class="finTitleRow">
   <h3>Finansije</h3>
+
+  <!-- ADMIN: Promeni zgradu (Finansije) -->
+  <div id="adminFinBuildingSwitch" data-role="admin" style="display:none;"></div>
 
   <!-- STANAR: Moj dug/pretplata u naslovu Finansija -->
   <div class="finTenantBadge status-obaveza" data-role="stanar" id="finTenantBadge" style="display:none;">
@@ -5149,6 +5152,110 @@ function getUnitLabel(bid, unitCode){
   // upravnik/admin vidi i ime ako postoji
   return name ? `${unitCode} (${name})` : unitCode;
 }
+
+function bindAdminFinSwitch(){
+  const host = document.getElementById("adminFinBuildingSwitch");
+  if(!host) return;
+
+  // samo admin
+  if(CURRENT_SESSION?.role !== "admin"){
+    host.style.display = "none";
+    host.innerHTML = "";
+    return;
+  }
+
+  // ako je već bindovano, ne dupliraj
+  if(host.dataset.bound === "1") return;
+
+  host.style.display = "block";
+
+  // ✅ koristimo ISTI markup/klase kao na početnoj
+  host.innerHTML = `
+    <div class="adminTopWrap">
+      <button type="button" class="btn btnGhost" id="adminFinArrowBtn">
+        Promeni zgradu <span style="opacity:.7">▾</span>
+      </button>
+
+      <div class="adminBuildingMenu hidden" id="adminFinBuildingMenu" style="margin-top:10px;">
+        <div class="field">
+          <label>Pretraga zgrade</label>
+          <input type="text" id="adminFinBuildingSearch" placeholder="npr. Bore Markovića 25">
+        </div>
+
+        <div class="adminBuildingGrid" id="adminFinBuildingGrid" style="margin-top:10px;"></div>
+      </div>
+    </div>
+  `;
+
+  const adminArrowBtn = document.getElementById("adminFinArrowBtn");
+  const adminBuildingMenu = document.getElementById("adminFinBuildingMenu");
+  const input = document.getElementById("adminFinBuildingSearch");
+  const grid = document.getElementById("adminFinBuildingGrid");
+
+  function renderForQuery(q){
+    const query = (q || "").trim().toLowerCase();
+    const rows = BUILDINGS.filter(b => {
+      if(!query) return true;
+      const hay = `${b.title} ${b.street} ${b.number}`.toLowerCase();
+      return hay.includes(query);
+    });
+
+    grid.innerHTML = "";
+    if(!rows.length){
+      grid.innerHTML = `<div class="smallText"><span class="badge">Nema rezultata</span></div>`;
+      return;
+    }
+
+    rows.forEach(b => {
+      const el = document.createElement("button");
+      el.type = "button";
+      el.className = "btn btnGhost";
+      el.style.justifyContent = "flex-start";
+      el.textContent = b.title;
+
+      el.addEventListener("click", (e) => {
+        e.stopPropagation();
+        setActiveBuilding(b.id);
+        input.value = b.title;
+
+        // ✅ ostani na finansijama + refresh
+        updateMonthlyUploadUI(false);
+        applySearchFilter();
+        showPage("finansije");
+
+        adminBuildingMenu.classList.add("hidden");
+      });
+
+      grid.appendChild(el);
+    });
+  }
+
+  // toggle menu
+  adminArrowBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    adminBuildingMenu.classList.toggle("hidden");
+    if(!adminBuildingMenu.classList.contains("hidden")){
+      renderForQuery(input.value);
+    }
+  });
+
+  // input search
+  input.addEventListener("input", () => renderForQuery(input.value));
+
+  // klik van -> zatvori
+  document.addEventListener("click", (e) => {
+    if(adminBuildingMenu.classList.contains("hidden")) return;
+    const wrap = host.querySelector(".adminTopWrap");
+    if(wrap && wrap.contains(e.target)) return;
+    adminBuildingMenu.classList.add("hidden");
+  });
+
+  // init lista
+  renderForQuery("");
+
+  host.dataset.bound = "1";
+}
+
   
 function voteOnProposal(bid, proposalId, choice){ // "da" | "ne"
   if(!bid || !proposalId) return;
@@ -5814,10 +5921,13 @@ function renderSearchDropdown(q){
 function applySearchFilter(){
   const bid = activeBid();
   if(!bid) return;
+
   renderFinanceList(bid, CURRENT_QUERY);
-renderUnitOwners(bid);
-renderBoard(bid, CURRENT_QUERY);
-renderForum(bid, CURRENT_QUERY);
+  renderUnitOwners(bid);
+  bindAdminFinSwitch();
+
+  renderBoard(bid, CURRENT_QUERY);
+  renderForum(bid, CURRENT_QUERY);
 }
 function scrollToSid(sid){
   if(!sid) return;
