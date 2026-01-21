@@ -1876,6 +1876,39 @@ gap: 10px;
   font-size:12px;
 }
 
+  /* ===== FORUM – PROCENTI GLASANJA ===== */
+.pollStats{
+  font-size:13px;
+  color:var(--muted);
+}
+
+.pollBar{
+  display:flex;
+  height:8px;
+  border-radius:6px;
+  overflow:hidden;
+  background:rgba(15,23,42,.12);
+  margin-bottom:6px;
+}
+
+.pollYes{
+  background:#22c55e;
+}
+
+.pollNo{
+  background:#ef4444;
+}
+
+.pollText{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  align-items:center;
+}
+
+.pollSep{
+  opacity:.6;
+}
   
 </style>
 </head>
@@ -4932,33 +4965,40 @@ function loadProposals(bid){
         poll: { enabled: true, endsAt: Date.now() - 1000*60*60*24*1, votesYes: ["demo@x"], votesNo: [] }
       }
     ];
-    localStorage.setItem(kForum(bid), JSON.stringify(seed));
+localStorage.setItem(kForum(bid), JSON.stringify(seed));
     return seed;
   }
   try { return JSON.parse(raw) || []; } catch { return []; }
 }
+
 function saveProposals(bid, items){
   localStorage.setItem(kForum(bid), JSON.stringify(items));
 }
+
 function fmtDateTime(ms){
   const d = new Date(ms);
   return d.toLocaleString("sr-RS");
 }
-  function daysLeftUntil(ms){
+
+function daysLeftUntil(ms){
   const diff = Number(ms || 0) - Date.now();
   return Math.max(0, Math.ceil(diff / (1000*60*60*24)));
 }
+
 function fmtDateOnly(ms){
   if(!ms) return "";
   return new Date(ms).toLocaleDateString("sr-RS");
 }
+
 function forumMatches(p, q){
   const hay = `${p.title} ${p.body}`;
   return includesQuery(hay, q);
 }
-  function ensurePollSR(p){
+
+function ensurePollSR(p){
   if(!p || !p.poll) return null;
 
+  // migracija starog tipa u srpski ("da/ne")
   if(Array.isArray(p.poll.votesYes) && !Array.isArray(p.poll.da)) p.poll.da = p.poll.votesYes.slice();
   if(Array.isArray(p.poll.votesNo)  && !Array.isArray(p.poll.ne)) p.poll.ne = p.poll.votesNo.slice();
 
@@ -4968,6 +5008,21 @@ function forumMatches(p, q){
   p.poll.enabled = !!p.poll.enabled;
 
   return p.poll;
+}
+
+/* ✅ KOD 1) — PROCENTI GLASANJA */
+function getVoteStats(poll){
+  const yes = poll?.da?.length || 0;
+  const no  = poll?.ne?.length || 0;
+  const total = yes + no;
+
+  return {
+    yes,
+    no,
+    total,
+    yesPct: total ? Math.round((yes / total) * 100) : 0,
+    noPct: total ? Math.round((no / total) * 100) : 0
+  };
 }
 
 function voteOnProposal(bid, proposalId, choice){ // "da" | "ne"
@@ -5008,6 +5063,7 @@ function voteOnProposal(bid, proposalId, choice){ // "da" | "ne"
   renderSearchDropdown(CURRENT_QUERY);
   updateHomeSummary();
 }
+
 function renderForum(bid, q){
   if(!forumList) return;
   const all = loadProposals(bid).slice().sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
@@ -5067,6 +5123,7 @@ if (p.poll?.enabled) {
 
   li.appendChild(pollInfo);
 }
+
 // ✅ GLASANJE (DA / NE) – samo stanar glasa, svi vide rezultate
 const poll = ensurePollSR(p);
 if(poll?.enabled){
@@ -5107,12 +5164,37 @@ if(poll?.enabled){
     ? "Glasanje je zatvoreno."
     : "Klikni DA ili NE (možeš promeniti glas).";
 
+  // ✅ NOVO: PROCENTI + BAR (vidljivo svima)
+  const stats = getVoteStats(poll);
+
+  const statsWrap = document.createElement("div");
+  statsWrap.className = "pollStats";
+  statsWrap.style.width = "100%";         // da bar ide ispod dugmadi u novi red
+  statsWrap.style.marginTop = "6px";
+
+  statsWrap.innerHTML = `
+    <div class="pollBar">
+      <div class="pollYes" style="width:${stats.yesPct}%"></div>
+      <div class="pollNo" style="width:${stats.noPct}%"></div>
+    </div>
+
+    <div class="pollText">
+      <span>👍 Da: <b>${stats.yesPct}%</b> (${stats.yes})</span>
+      <span class="pollSep">•</span>
+      <span>👎 Ne: <b>${stats.noPct}%</b> (${stats.no})</span>
+      <span class="pollSep">•</span>
+      <span>Ukupno: ${stats.total}</span>
+    </div>
+  `;
+
   wrap.appendChild(btnDa);
   wrap.appendChild(btnNe);
   wrap.appendChild(status);
+  wrap.appendChild(statsWrap); // ✅ NOVO
 
   li.appendChild(wrap);
 }
+
 forumList.appendChild(li);
 });
 }
