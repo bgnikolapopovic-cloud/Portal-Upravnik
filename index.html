@@ -2132,6 +2132,44 @@ gap: 10px;
 </div>
 
        <div id="finEntriesWrap">  
+
+<!-- ADMIN: Upravljanje zgradama -->
+<div id="adminBuildingsWrap" data-role="admin" style="display:none; margin-top:14px;">
+  <div class="badge">Upravljanje zgradama (samo admin)</div>
+
+  <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+    <div class="field" style="min-width:160px;">
+      <label>Šifra zgrade (npr. BM25)</label>
+      <input id="adminBCode" type="text" placeholder="BM25">
+    </div>
+
+    <div class="field" style="min-width:260px; flex:1;">
+      <label>Naziv zgrade</label>
+      <input id="adminBTitle" type="text" placeholder="Bore Markovića 25">
+    </div>
+
+    <div class="field" style="min-width:220px; flex:1;">
+      <label>Ulica</label>
+      <input id="adminBStreet" type="text" placeholder="Bore Markovića">
+    </div>
+
+    <div class="field" style="min-width:120px;">
+      <label>Broj</label>
+      <input id="adminBNumber" type="text" placeholder="25">
+    </div>
+
+    <div class="field" style="min-width:120px;">
+      <label>Broj stanova</label>
+      <input id="adminBUnits" type="number" min="1" placeholder="25">
+    </div>
+
+    <button class="btn btnPrimary" type="button" id="adminAddBuildingBtn">
+      Dodaj zgradu
+    </button>
+  </div>
+
+  <div id="adminBuildingsList" class="list" style="margin-top:10px;"></div>
+</div>
          
 <!-- FIN HEADER CONTROLS (filter/sort) -->
 <div class="fRow" style="margin-top:12px; gap:10px; align-items:flex-end;">
@@ -2783,6 +2821,75 @@ const BUILDINGS = [
   }
 ];
 
+/* ================= BUILDINGS DB (admin dodaje zgrade) ================= */
+const KEY_BUILDINGS_DB = "pu_buildings_db_v1";
+
+function loadBuildingsDB(){
+  try {
+    return JSON.parse(localStorage.getItem(KEY_BUILDINGS_DB)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function saveBuildingsDB(rows){
+  localStorage.setItem(KEY_BUILDINGS_DB, JSON.stringify(rows));
+}
+
+function slugCode(code){
+  return String(code || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+}
+
+/* ubaci zgrade iz DB u runtime BUILDINGS (da rade svuda) */
+function mergeBuildingsFromDB(){
+  const rows = loadBuildingsDB();
+  rows.forEach(b => {
+    if(!b?.id) return;
+    if(!BUILDINGS.some(x => x.id === b.id)){
+      BUILDINGS.push(b);
+    }
+  });
+}
+
+/* pozovi odmah pri startu aplikacije */
+mergeBuildingsFromDB();
+
+/* Admin helper: dodaj novu zgradu (UI u sledećem koraku) */
+function adminAddBuilding({ code, title, street, number, units }){
+  const c = String(code || "").trim().toUpperCase();
+  const t = String(title || "").trim();
+  const s = String(street || "").trim();
+  const n = String(number || "").trim();
+  const u = Number(units || 0);
+
+  if(!c || !t || !s || !n || !u){
+    throw new Error("Popuni sva polja za zgradu.");
+  }
+
+  const id = `b_${slugCode(c)}`; // npr. b_bm25
+
+  // ne dozvoli duplikate
+  if(BUILDINGS.some(x => x.id === id)){
+    throw new Error("Zgrada sa tom šifrom već postoji.");
+  }
+
+  const newB = { id, code: c, title: t, street: s, number: n, units: u };
+
+  // upiši u DB
+  const db = loadBuildingsDB();
+  db.push(newB);
+  saveBuildingsDB(db);
+
+  // odmah ubaci i u runtime
+  BUILDINGS.push(newB);
+
+  return newB;
+}
+
 
 function normalizeBuildingId(id){
   return String(id || "")
@@ -2807,9 +2914,8 @@ function getBuildingById(id){
 const USERS = [
   { username: "ADMIN-001", pass: "123456", role: "admin", buildings: ["b_bm25","b_bp10","b_nč28"] },
   { username: "UPR-001",   pass: "123456", role: "upravnik", buildings: ["b_bp10","b_nč28"] },
-{ username: "UPR-002",   pass: "123456", role: "upravnik", buildings: ["b_bm25"] },
+  { username: "UPR-002",   pass: "123456", role: "upravnik", buildings: ["b_bm25"] },
 
-  
   { username: "BM25-001", pass: "2B3H1", role: "stanar", buildings: ["b_bm25"] },
   { username: "BM25-002", pass: "8K1Q9", role: "stanar", buildings: ["b_bm25"] },
   { username: "BM25-003", pass: "4Z7M2", role: "stanar", buildings: ["b_bm25"] },
@@ -2833,7 +2939,7 @@ function kFirm(bid){ return "pu_finance_firms_v3__" + bid; }
 function kForum(bid){ return "pu_forum_proposals_v2__" + bid; }
 function kBoard(bid){ return "pu_board_posts_v2__" + bid; }
 
-  function normalizeText(str){
+function normalizeText(str){
   return (str || "")
     .toLowerCase()
     .normalize("NFD")
@@ -5410,6 +5516,114 @@ function renderAdminUnits(bid){
   redraw();
 }
 
+  /* ================= ADMIN: UPRAVLJANJE ZGRADAMA ================= */
+function renderAdminBuildings(){
+  const wrap = document.getElementById("adminBuildingsWrap");
+  const list = document.getElementById("adminBuildingsList");
+  const btn  = document.getElementById("adminAddBuildingBtn");
+
+  const codeI   = document.getElementById("adminBCode");
+  const titleI  = document.getElementById("adminBTitle");
+  const streetI = document.getElementById("adminBStreet");
+  const numberI = document.getElementById("adminBNumber");
+  const unitsI  = document.getElementById("adminBUnits");
+
+  if(!wrap || !list || !btn) return;
+
+  if(CURRENT_SESSION?.role !== "admin"){
+    wrap.style.display = "none";
+    return;
+  }
+  wrap.style.display = "block";
+
+  function redraw(){
+    const rows = loadBuildingsDB();
+    list.innerHTML = "";
+
+    if(!rows.length){
+      list.innerHTML = `<div class="smallText"><span class="badge">Nema dodatih zgrada</span></div>`;
+      return;
+    }
+
+    rows.forEach(b => {
+      const row = document.createElement("div");
+      row.className = "fRow";
+      row.style.display = "flex";
+      row.style.justifyContent = "space-between";
+      row.style.alignItems = "center";
+      row.style.gap = "10px";
+
+      const left = document.createElement("div");
+      left.innerHTML = `
+        <div style="font-weight:900">${escapeHTML(b.title || "")}</div>
+        <div class="smallText" style="opacity:.75">
+          ${escapeHTML(b.street || "")} ${escapeHTML(b.number || "")}
+          • šifra: <b>${escapeHTML((b.code||"").toUpperCase())}</b>
+          • stanova: <b>${escapeHTML(String(b.units||0))}</b>
+        </div>
+      `;
+
+      const actions = document.createElement("div");
+      actions.style.display = "flex";
+      actions.style.gap = "8px";
+
+      const del = document.createElement("button");
+      del.type = "button";
+      del.className = "btn btnGhost";
+      del.textContent = "Obriši";
+      del.addEventListener("click", () => {
+        if(!confirm(`Obrisati zgradu "${b.title}"?`)) return;
+
+        // izbriši iz DB
+        const leftRows = loadBuildingsDB().filter(x => x.id !== b.id);
+        saveBuildingsDB(leftRows);
+
+        // ukloni iz runtime BUILDINGS
+        const idx = BUILDINGS.findIndex(x => x.id === b.id);
+        if(idx !== -1) BUILDINGS.splice(idx, 1);
+
+        redraw();
+        applySearchFilter();
+      });
+
+      actions.appendChild(del);
+
+      row.appendChild(left);
+      row.appendChild(actions);
+      list.appendChild(row);
+    });
+  }
+
+  btn.onclick = () => {
+    try{
+      const code   = (codeI?.value || "").trim();
+      const title  = (titleI?.value || "").trim();
+      const street = (streetI?.value || "").trim();
+      const number = (numberI?.value || "").trim();
+      const units  = Number(unitsI?.value || 0);
+
+      const newB = adminAddBuilding({ code, title, street, number, units });
+
+      // očisti polja
+      codeI.value = "";
+      titleI.value = "";
+      streetI.value = "";
+      numberI.value = "";
+      unitsI.value = "";
+
+      redraw();
+
+      // prebaci admina na novu zgradu
+      setActiveBuilding(newB.id);
+      applySearchFilter();
+      showPage("finansije");
+    }catch(err){
+      alert(err?.message || "Greška pri dodavanju zgrade.");
+    }
+  };
+
+  redraw();
+}
   
 function voteOnProposal(bid, proposalId, choice){ // "da" | "ne"
   if(!bid || !proposalId) return;
@@ -6077,9 +6291,12 @@ function applySearchFilter(){
   if(!bid) return;
 
   renderFinanceList(bid, CURRENT_QUERY);
-  renderUnitOwners(bid);
+
   bindAdminFinSwitch();
+
+  // ✅ admin panel: stanovi + zgrade
   renderAdminUnits(bid);
+  renderAdminBuildings();
 
   renderBoard(bid, CURRENT_QUERY);
   renderForum(bid, CURRENT_QUERY);
