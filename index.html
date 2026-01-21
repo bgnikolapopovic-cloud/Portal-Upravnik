@@ -4913,7 +4913,6 @@ if(saveBoardBtn){
 /* ================= FORUM ================= */
 function loadProposals(bid){
   const raw = localStorage.getItem(kForum(bid));
-
   if(!raw){
     const seed = [
       {
@@ -4922,7 +4921,6 @@ function loadProposals(bid){
         title: "Nova rasveta u hodniku",
         body: "Predlog da se zamene sijalice LED rasvetom zbog ustede.",
         createdBy: "BM25-001",
-        // seed može ostati starog tipa, migracija ispod će ga prebaciti
         poll: { enabled: true, endsAt: Date.now() + 1000*60*60*24*4, votesYes: [], votesNo: [] }
       },
       {
@@ -4934,88 +4932,141 @@ function loadProposals(bid){
         poll: { enabled: true, endsAt: Date.now() - 1000*60*60*24*1, votesYes: ["demo@x"], votesNo: [] }
       }
     ];
-
-    // ✅ odmah migriraj seed (da admin/upravnik vidi glasanje)
-    let changed = false;
-    seed.forEach(p => {
-      if(!p) return;
-      if(!p.poll){
-        const base = Number(p.createdAt || Date.now());
-        p.poll = { enabled:true, endsAt: base + 1000*60*60*24*30, da:[], ne:[] };
-        changed = true;
-      }
-      if(Array.isArray(p.poll.votesYes) && !Array.isArray(p.poll.da)){
-        p.poll.da = p.poll.votesYes.slice();
-        changed = true;
-      }
-      if(Array.isArray(p.poll.votesNo) && !Array.isArray(p.poll.ne)){
-        p.poll.ne = p.poll.votesNo.slice();
-        changed = true;
-      }
-      p.poll.da = Array.isArray(p.poll.da) ? p.poll.da : [];
-      p.poll.ne = Array.isArray(p.poll.ne) ? p.poll.ne : [];
-      p.poll.enabled = !!p.poll.enabled;
-      p.poll.endsAt = Number(p.poll.endsAt || 0);
-    });
-
     localStorage.setItem(kForum(bid), JSON.stringify(seed));
     return seed;
   }
-
-  try{
-    const items = JSON.parse(raw) || [];
-    let changed = false;
-
-    // ✅ MIGRACIJA: svi predlozi dobijaju poll + srpski ključevi da/ne
-    items.forEach(p => {
-      if(!p) return;
-
-      // ako nema poll, dodaj (30 dana od createdAt)
-      if(!p.poll){
-        const base = Number(p.createdAt || Date.now());
-        p.poll = {
-          enabled: true,
-          endsAt: base + 1000*60*60*24*30,
-          da: [],
-          ne: []
-        };
-        changed = true;
-      }
-
-      // kompatibilnost sa starim votesYes/votesNo
-      if(Array.isArray(p.poll.votesYes) && !Array.isArray(p.poll.da)){
-        p.poll.da = p.poll.votesYes.slice();
-        changed = true;
-      }
-      if(Array.isArray(p.poll.votesNo) && !Array.isArray(p.poll.ne)){
-        p.poll.ne = p.poll.votesNo.slice();
-        changed = true;
-      }
-
-      // normalizacija
-      p.poll.da = Array.isArray(p.poll.da) ? p.poll.da : [];
-      p.poll.ne = Array.isArray(p.poll.ne) ? p.poll.ne : [];
-      p.poll.enabled = !!p.poll.enabled;
-
-      // ako endsAt ne postoji, postavi ga na 30 dana od createdAt
-      if(!p.poll.endsAt){
-        const base = Number(p.createdAt || Date.now());
-        p.poll.endsAt = base + 1000*60*60*24*30;
-        changed = true;
-      }
-      p.poll.endsAt = Number(p.poll.endsAt || 0);
-    });
-
-    if(changed){
-      localStorage.setItem(kForum(bid), JSON.stringify(items));
-    }
-
-    return items;
-  }catch{
-    return [];
-  }
+  try { return JSON.parse(raw) || []; } catch { return []; }
 }
-  
+function saveProposals(bid, items){
+  localStorage.setItem(kForum(bid), JSON.stringify(items));
+}
+function fmtDateTime(ms){
+  const d = new Date(ms);
+  return d.toLocaleString("sr-RS");
+}
+  function daysLeftUntil(ms){
+  const diff = Number(ms || 0) - Date.now();
+  return Math.max(0, Math.ceil(diff / (1000*60*60*24)));
+}
+function fmtDateOnly(ms){
+  if(!ms) return "";
+  return new Date(ms).toLocaleDateString("sr-RS");
+}
+function forumMatches(p, q){
+  const hay = `${p.title} ${p.body}`;
+  return includesQuery(hay, q);
+}
+  function ensurePollSR(p){
+  if(!p || !p.poll) return null;
+
+  if(Array.isArray(p.poll.votesYes) && !Array.isArray(p.poll.da)) p.poll.da = p.poll.votesYes.slice();
+  if(Array.isArray(p.poll.votesNo)  && !Array.isArray(p.poll.ne)) p.poll.ne = p.poll.votesNo.slice();
+
+  p.poll.da = Array.isArray(p.poll.da) ? p.poll.da : [];
+  p.poll.ne = Array.isArray(p.poll.ne) ? p.poll.ne : [];
+  p.poll.endsAt = Number(p.poll.endsAt || 0);
+  p.poll.enabled = !!p.poll.enabled;
+
+  return p.poll;
+}
+
+function voteOnProposal(bid, proposalId, choice){ // "da" | "ne"
+  if(!bid || !proposalId) return;
+
+  if(CURRENT_SESSION?.role !== "stanar"){
+    alert("Glasanje je dostupno samo stanarima.");
+    return;
+  }
+
+  const user = CURRENT_SESSION.username;
+  const items = loadProposals(bid);
+  const idx = items.findIndex(x => x.id === proposalId);
+  if(idx === -1) return;
+
+  const p = items[idx];
+  const poll = ensurePollSR(p);
+  if(!poll?.enabled) return;
+
+  if(poll.endsAt && Date.now() >= poll.endsAt){
+    alert("Anketa je završena.");
+    return;
+  }
+
+  const wasInDa = poll.da.includes(user);
+  const wasInNe = poll.ne.includes(user);
+
+  poll.da = poll.da.filter(u => u !== user);
+  poll.ne = poll.ne.filter(u => u !== user);
+
+  if(choice === "da" && !wasInDa) poll.da.push(user);
+  if(choice === "ne" && !wasInNe) poll.ne.push(user);
+
+  items[idx] = p;
+  saveProposals(bid, items);
+
+  renderForum(bid, CURRENT_QUERY);
+  renderSearchDropdown(CURRENT_QUERY);
+  updateHomeSummary();
+}
+function renderForum(bid, q){
+  if(!forumList) return;
+  const all = loadProposals(bid).slice().sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+  const items = q ? all.filter(p => forumMatches(p, q)) : all;
+
+  forumList.innerHTML = "";
+
+  items.forEach(p => {
+    const li = document.createElement("li");
+    li.dataset.sid = "frm:" + p.id;
+
+    const top = document.createElement("div");
+    top.style.display = "flex";
+    top.style.justifyContent = "space-between";
+    top.style.gap = "10px";
+    top.style.flexWrap = "wrap";
+
+    const left = document.createElement("div");
+    left.style.fontWeight = "900";
+    left.textContent = p.title;
+
+    const right = document.createElement("div");
+    right.style.display = "flex";
+    right.style.gap = "8px";
+    right.style.alignItems = "center";
+
+    const meta = document.createElement("span");
+    meta.className = "badge";
+    meta.textContent = fmtDateTime(p.createdAt);
+
+    right.appendChild(meta);
+
+    top.appendChild(left);
+    top.appendChild(right);
+
+    const body = document.createElement("div");
+body.className = "smallText";
+body.style.marginTop = "8px";
+body.textContent = p.body;
+
+li.appendChild(top);
+li.appendChild(body);
+
+/* ✅ AUTOMATSKA ANKETA – 30 DANA (suptilno) */
+if (p.poll?.enabled) {
+  const pollInfo = document.createElement("div");
+  pollInfo.className = "smallText";
+  pollInfo.style.marginTop = "6px";
+  pollInfo.style.opacity = ".7";
+
+  const daysLeft = daysLeftUntil(p.poll.endsAt);
+
+  pollInfo.textContent =
+    daysLeft > 0
+      ? `Anketa traje 30 dana • preostalo ${daysLeft} dana`
+      : `Anketa je završena`;
+
+  li.appendChild(pollInfo);
+}
 // ✅ GLASANJE (DA / NE) – samo stanar glasa, svi vide rezultate
 const poll = ensurePollSR(p);
 if(poll?.enabled){
@@ -5032,24 +5083,17 @@ if(poll?.enabled){
   const iVotedDa = poll.da.includes(user);
   const iVotedNe = poll.ne.includes(user);
 
-  const daCount = poll.da.length;
-  const neCount = poll.ne.length;
-  const totalVotes = daCount + neCount;
-
-  const daPct = totalVotes ? Math.round((daCount / totalVotes) * 100) : 0;
-  const nePct = totalVotes ? (100 - daPct) : 0;
-
   const btnDa = document.createElement("button");
   btnDa.type = "button";
   btnDa.className = "btn btnGhost";
-  btnDa.textContent = `DA (${daCount})`;
+  btnDa.textContent = `DA (${poll.da.length})`;
   btnDa.disabled = ended || (CURRENT_SESSION?.role !== "stanar");
   if(iVotedDa) btnDa.style.boxShadow = "0 0 0 4px rgba(22,163,74,.18)";
 
   const btnNe = document.createElement("button");
   btnNe.type = "button";
   btnNe.className = "btn btnGhost";
-  btnNe.textContent = `NE (${neCount})`;
+  btnNe.textContent = `NE (${poll.ne.length})`;
   btnNe.disabled = ended || (CURRENT_SESSION?.role !== "stanar");
   if(iVotedNe) btnNe.style.boxShadow = "0 0 0 4px rgba(220,38,38,.18)";
 
@@ -5060,53 +5104,12 @@ if(poll?.enabled){
   status.className = "smallText";
   status.style.opacity = ".75";
   status.textContent = ended
-    ? "Glasanje je završeno."
+    ? "Glasanje je zatvoreno."
     : "Klikni DA ili NE (možeš promeniti glas).";
 
   wrap.appendChild(btnDa);
   wrap.appendChild(btnNe);
   wrap.appendChild(status);
-
-  // ✅ PROFI: procenat + progress bar
-  const meterWrap = document.createElement("div");
-  meterWrap.style.width = "100%";
-  meterWrap.style.marginTop = "6px";
-
-  const pctRow = document.createElement("div");
-  pctRow.className = "smallText";
-  pctRow.style.opacity = ".75";
-  pctRow.style.display = "flex";
-  pctRow.style.justifyContent = "space-between";
-  pctRow.style.gap = "10px";
-  pctRow.textContent = totalVotes
-    ? `DA ${daPct}% • NE ${nePct}% • Ukupno: ${totalVotes}`
-    : "Još nema glasova.";
-
-  const bar = document.createElement("div");
-  bar.style.height = "10px";
-  bar.style.borderRadius = "999px";
-  bar.style.overflow = "hidden";
-  bar.style.border = "1px solid rgba(15,23,42,.14)";
-  bar.style.background = "rgba(15,23,42,.08)";
-  bar.style.display = "flex";
-
-  const fillDa = document.createElement("div");
-  fillDa.style.height = "100%";
-  fillDa.style.width = `${daPct}%`;
-  fillDa.style.background = "rgba(22,163,74,.55)";
-
-  const fillNe = document.createElement("div");
-  fillNe.style.height = "100%";
-  fillNe.style.width = `${nePct}%`;
-  fillNe.style.background = "rgba(220,38,38,.55)";
-
-  bar.appendChild(fillDa);
-  bar.appendChild(fillNe);
-
-  meterWrap.appendChild(pctRow);
-  meterWrap.appendChild(bar);
-
-  wrap.appendChild(meterWrap);
 
   li.appendChild(wrap);
 }
