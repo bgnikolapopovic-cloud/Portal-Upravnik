@@ -3986,7 +3986,7 @@ function initAdminFinanceUploads(){
 
     if(!qq){
       closeMenu();
-      grid.innerHTML = `<div class="smallText"><span class="badge">Ukucaj naziv zgrade</span></div>`;
+      grid.innerHTML = ""; 
       renderTotals(0, 0);
       return;
     }
@@ -4036,7 +4036,7 @@ function initAdminFinanceUploads(){
   }
 
   // init stanje
-  grid.innerHTML = `<div class="smallText"><span class="badge">Ukucaj naziv zgrade</span></div>`;
+  grid.innerHTML = "";
   renderTotals(0, 0);
   closeMenu();
 }
