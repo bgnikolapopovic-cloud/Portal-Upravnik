@@ -3870,13 +3870,15 @@ if(uplMonthPick && !uplMonthPick.dataset.adminBound){
    ADMIN (FINANSIJE) — brza pretraga po zgradi
    =============================== */
 function initAdminFinanceUploads(){
+  if(CURRENT_SESSION?.role !== "admin") return;
+
   const input = document.getElementById("uplAdminSearchFin");
+  const menu  = document.getElementById("adminBuildingMenuFin");
   const grid  = document.getElementById("uplAdminGridFin");
   const totF  = document.getElementById("uplAdminTotalFilesFin");
   const totMB = document.getElementById("uplAdminTotalMBFin");
 
-  if(CURRENT_SESSION?.role !== "admin") return;
-  if(!input || !grid) return;
+  if(!input || !menu || !grid) return;
 
   function ymNowYYYYMM(){
     const d = new Date();
@@ -3886,119 +3888,159 @@ function initAdminFinanceUploads(){
     const m = (uplMonthPick?.value || "").trim();
     return m || ymNowYYYYMM();
   }
-  function renderEmpty(){
-    if(totF) totF.textContent = "0";
-    if(totMB) totMB.textContent = "0.00";
+  function renderTotals(files, mb){
+    if(totF) totF.textContent = String(files || 0);
+    if(totMB) totMB.textContent = Number(mb || 0).toFixed(2);
   }
 
-  function renderForQuery(q){
-    const qq = (q || "").trim();
-    if(!qq) return renderEmpty();
+  function closeMenu(){
+    menu.classList.add("hidden");
+    menu.innerHTML = "";
+  }
+  function openMenu(){
+    menu.classList.remove("hidden");
+  }
 
-    const nq = normalizeText(qq);
+  // da klik unutar menija NE zatvori pre nego što obradi stavku
+  menu.addEventListener("pointerdown", (e) => e.stopPropagation());
+
+  // klik van zatvara
+  if(!document.body.dataset.adminMenuBound){
+    document.addEventListener("pointerdown", (e) => {
+      const wrap = input.closest(".adminTopWrap");
+      if(wrap && wrap.contains(e.target)) return;
+      closeMenu();
+    });
+    document.body.dataset.adminMenuBound = "1";
+  }
+
+  function renderSelectedBuildingCard(b){
+    closeMenu();
+    
     const month = getMonth();
+    const r = calcMonthlyUploads(b.id, month);
 
-    const rows = (BUILDINGS || [])
-      .filter(b => normalizeText(b.title + " " + b.id).includes(nq))
-      .map(b => {
-        const r = calcMonthlyUploads(b.id, month);
-        return {
-          id: b.id,
-          title: b.title,
-          finMB: Number(r.finMB || 0),
-          brdMB: Number(r.brdMB || 0),
-          files: Number(r.totalFiles || 0),
-          mb: Number(r.totalMB || 0)
-        };
-      });
+    const files = Number(r.totalFiles || 0);
+    const mb    = Number(r.totalMB || 0);
 
     grid.innerHTML = "";
 
-    if(!rows.length){
-      grid.innerHTML = `<div class="smallText"><span class="badge">Nema rezultata</span></div>`;
-      if(totF) totF.textContent = "0";
-      if(totMB) totMB.textContent = "0.00";
+    const el = document.createElement("div");
+    el.className = "adminCard";
+    el.style.cursor = "pointer";
+
+    el.innerHTML = `
+      <div class="adminCardTitle">${escapeHTML(b.title)}</div>
+
+      <div class="adminCardRow">
+        <span>Finansije</span>
+        <b>${Number(r.finMB||0).toFixed(2)} MB</b>
+        <button type="button" class="adminNavBtn adminGoFin">Otvori</button>
+      </div>
+
+      <div class="adminCardRow">
+        <span>Oglasna tabla</span>
+        <b>${Number(r.brdMB||0).toFixed(2)} MB</b>
+        <button type="button" class="adminNavBtn adminGoBrd">Otvori</button>
+      </div>
+
+      <div class="adminCardRow total" style="cursor:pointer;">
+        <span>UKUPNO</span>
+        <b>${mb.toFixed(2)} MB</b>
+      </div>
+
+      <div class="smallText" style="margin-top:10px; opacity:.75;">
+        Mesec: ${escapeHTML(month)}
+      </div>
+    `;
+
+    el.querySelector(".adminGoFin")?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      setActiveBuilding(b.id);
+      input.value = b.title;
+      updateMonthlyUploadUI(false);
+      showPage("finansije");
+    });
+
+    el.querySelector(".adminGoBrd")?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      setActiveBuilding(b.id);
+      input.value = b.title;
+      updateMonthlyUploadUI(false);
+      showPage("oglasna");
+    });
+
+    el.addEventListener("click", () => {
+      setActiveBuilding(b.id);
+      input.value = b.title;
+      updateMonthlyUploadUI(false);
+    });
+
+    grid.appendChild(el);
+    renderTotals(files, mb);
+  }
+
+  function renderMenuForQuery(q){
+    const qq = (q || "").trim();
+    menu.innerHTML = "";
+
+    if(!qq){
+      closeMenu();
+      grid.innerHTML = `<div class="smallText"><span class="badge">Ukucaj naziv zgrade</span></div>`;
+      renderTotals(0, 0);
       return;
     }
 
-    let sumFiles = 0;
-    let sumMB = 0;
+    const nq = normalizeText(qq);
+    const matches = (BUILDINGS || [])
+      .filter(b => normalizeText(b.title + " " + b.id).includes(nq))
+      .slice(0, 8);
 
-    rows.forEach(r => {
-      sumFiles += r.files;
-      sumMB += r.mb;
+    if(!matches.length){
+      openMenu();
+      menu.innerHTML = `<div class="smallText" style="padding:10px 12px;"><span class="badge">Nema rezultata</span></div>`;
+      renderTotals(0, 0);
+      return;
+    }
 
-      const el = document.createElement("div");
-      el.className = "adminCard";
-      el.style.cursor = "pointer";
+    openMenu();
 
-      el.innerHTML = `
-        <div class="adminCardTitle">${escapeHTML(r.title)}</div>
+    matches.forEach(b => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "adminMenuItem";
+      btn.textContent = b.title;
 
-        <div class="adminCardRow">
-  <span>Finansije</span>
-  <b>${r.finMB.toFixed(2)} MB</b>
-  <button type="button" class="adminNavBtn adminGoFin">Otvori</button>
-</div>
-
-<div class="adminCardRow">
-  <span>Oglasna tabla</span>
-  <b>${r.brdMB.toFixed(2)} MB</b>
-  <button type="button" class="adminNavBtn adminGoBrd">Otvori</button>
-</div>
-
-        <div class="adminCardRow total adminSetOnly" style="cursor:pointer;">
-          <span>UKUPNO</span>
-          <b>${r.mb.toFixed(2)} MB</b>
-        </div>
-
-        <div class="smallText" style="margin-top:10px; opacity:.75;">
-          Mesec: ${escapeHTML(month)}
-        </div>
-      `;
-
-      el.querySelector(".adminGoFin")?.addEventListener("click", (e) => {
+      // pointerdown je sigurniji od click (pre “outside close”)
+      btn.addEventListener("pointerdown", (e) => {
+        e.preventDefault();
         e.stopPropagation();
-        setActiveBuilding(r.id);
-        input.value = r.title;
+
+        closeMenu();
+        input.value = b.title;
+
+        setActiveBuilding(b.id);
         updateMonthlyUploadUI(false);
-        showPage("finansije");
+        renderSelectedBuildingCard(b);
       });
 
-      el.querySelector(".adminGoBrd")?.addEventListener("click", (e) => {
-        e.stopPropagation();
-        setActiveBuilding(r.id);
-        input.value = r.title;
-        updateMonthlyUploadUI(false);
-        showPage("oglasna");
-      });
-
-      el.querySelector(".adminSetOnly")?.addEventListener("click", (e) => {
-        e.stopPropagation();
-        setActiveBuilding(r.id);
-        input.value = r.title;
-        updateMonthlyUploadUI(false);
-      });
-
-      el.addEventListener("click", () => {
-  setActiveBuilding(r.id);
-  input.value = r.title;
-  updateMonthlyUploadUI(false); 
-});
-      grid.appendChild(el);
+      menu.appendChild(btn);
     });
-
-    if(totF) totF.textContent = String(sumFiles);
-    if(totMB) totMB.textContent = sumMB.toFixed(2);
   }
 
+  // bind samo jednom
   if(!input.dataset.bound){
-    input.addEventListener("input", () => renderForQuery(input.value));
+    input.addEventListener("input", () => renderMenuForQuery(input.value));
+    input.addEventListener("focus", () => renderMenuForQuery(input.value));
     input.dataset.bound = "1";
   }
 
-  renderEmpty();
+  // init stanje
+  grid.innerHTML = `<div class="smallText"><span class="badge">Ukucaj naziv zgrade</span></div>`;
+  renderTotals(0, 0);
+  closeMenu();
 }
+
   
 function setText(el, val){
   if(!el) return;
