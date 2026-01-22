@@ -1982,6 +1982,63 @@ gap: 10px;
   white-space: nowrap;
 }
 
+/* ===== MOBILE FIX: header da ne bude razvucen ===== */
+@media (max-width: 720px){
+
+  /* ceo header u kolonu */
+  .pageHeader{
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  /* desni deo nek zauzme celu sirinu */
+  .rightCol{
+    width: 100%;
+    align-items: stretch;
+  }
+
+  /* topRow u kolonu (tools iznad, pill-ovi ispod) */
+  .rightCol .topRow{
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 10px;
+  }
+
+  /* tools full-width, wrap dozvoljen */
+  .rightCol .headerTools{
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  /* search ide preko cele sirine */
+  .rightCol .headerTools .searchInline{
+    flex: 1 1 100%;
+    max-width: 100%;
+    min-width: 0;
+    width: 100% !important;
+  }
+
+  /* input 100% */
+  .rightCol .headerTools #globalSearch{
+    width: 100%;
+  }
+
+  /* pill-ovi u red, ali da mogu da se prelome */
+  .rightCol .topMini{
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  /* balance kartica da ne izgleda kao “razvucena” */
+  .balanceCard{
+    width: 100% !important;
+  }
+}
+
   
 </style>
 </head>
