@@ -5840,6 +5840,12 @@ function renderForum(bid, q){
 
     right.appendChild(meta);
 
+    // ✅ NOVO: ko je pokrenuo (svima vidljivo, ali ime samo admin/upravnik)
+    const by = document.createElement("span");
+    by.className = "badge";
+    by.textContent = `Pokrenuo: ${getUnitLabel(bid, p.createdBy || "")}`;
+    right.appendChild(by);
+    
     top.appendChild(left);
     top.appendChild(right);
 
