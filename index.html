@@ -1964,6 +1964,12 @@ gap: 10px;
   max-width: 45vw;
 }
 
+  /* ✅ sticky top bar (da alatke ostanu vidljive pri scroll-u) */
+.pageHeader{
+  position: sticky;
+  top: 12px;
+  z-index: 50;
+}
   
 </style>
 </head>
@@ -3703,8 +3709,8 @@ function renderBuildingUI(){
   }
 
   // ✅ dugme "Promeni zgradu" ostaje
-  const multi = (CURRENT_SESSION?.buildings || []).length > 1 && (CURRENT_SESSION.role !== "stanar");
-  if(switchBuildingBtn) switchBuildingBtn.style.display = multi ? "" : "none";
+  const isManager = (CURRENT_SESSION?.role === "upravnik" || CURRENT_SESSION?.role === "admin");
+if(switchBuildingBtn) switchBuildingBtn.style.display = isManager ? "" : "none";
 }
 
 /* ===== login flow ===== */
