@@ -418,6 +418,10 @@ body.sidebar-open .sidebar{ filter:none; }
   justify-content:space-between;
   gap:14px;
   margin-bottom:18px;
+
+  position: sticky;
+  top: 12px;
+  z-index: 50;
 }
 .leftInfo{max-width:52vw}
 .meta{
@@ -1925,6 +1929,15 @@ gap: 10px;
 .unitOwnerRow input{
   flex:1;
 }
+
+/* ✅ NOVO: red sa (Promeni zgradu + Pretraga) */
+.headerTools{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  justify-content:flex-end;
+  flex-wrap:wrap;
+}
   
 </style>
 </head>
@@ -2058,25 +2071,29 @@ gap: 10px;
         </div>
 
         <div class="rightCol">
-          <div class="topMini">
-            <div class="pill" id="userPill">Korisnik</div>
-            <div class="pill" id="buildingPill">Zgrada</div>
-            <div class="pill pillBtn" id="switchBuildingBtn" style="display:none;">Promeni zgradu</div>
-          </div>
+  <div class="topMini">
+    <div class="pill" id="userPill">Korisnik</div>
+    <div class="pill" id="buildingPill">Zgrada</div>
+  </div>
 
-          <div class="searchInline" style="position:relative;">
-            <input id="globalSearch" placeholder="Pretraga (finansije, dokumenti, forum)">
-            <div class="searchResults" id="searchResults" style="display:none;"></div>
-          </div>
+  <!-- ✅ NOVO: Tools red (Promeni zgradu + Pretraga kao na screenshotu) -->
+  <div class="headerTools">
+    <div class="pill pillBtn" id="switchBuildingBtn" style="display:none;">Promeni zgradu</div>
 
-          <div class="balanceCard">
-            <span class="label">Stanje računa</span>
-            <div class="balanceAmount">
-              <span class="value" id="balanceValue">0,00</span>
-              <span class="currency">RSD</span>
-            </div>
-          </div>
-        </div>
+    <div class="searchInline" style="position:relative;">
+      <input id="globalSearch" placeholder="Pretraga (finansije, dokumenti, forum)">
+      <div class="searchResults" id="searchResults" style="display:none;"></div>
+    </div>
+  </div>
+
+  <div class="balanceCard">
+    <span class="label">Stanje računa</span>
+    <div class="balanceAmount">
+      <span class="value" id="balanceValue">0,00</span>
+      <span class="currency">RSD</span>
+    </div>
+  </div>
+</div>
       </section>
 
       <section class="page active" id="page-home">
