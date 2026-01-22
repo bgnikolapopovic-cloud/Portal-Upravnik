@@ -1970,6 +1970,46 @@ gap: 10px;
   top: 12px;
   z-index: 50;
 }
+
+/* ===== TOP ROW: tools levo, user/building desno ===== */
+.rightCol{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:10px;
+}
+
+.topRow{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:12px;
+}
+
+/* tools stoje levo od user pill-ova */
+.headerTools{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:nowrap;
+  justify-content:flex-end;
+  margin-top:0; /* bitno da ne “spušta” */
+}
+
+/* user/building pill-ovi desno */
+.topMini{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  justify-content:flex-end;
+  flex-wrap:wrap;
+}
+
+/* širina pretrage u headeru */
+.headerTools .searchInline{ min-width: 260px; }
+#globalSearch{ width: 320px; max-width: 40vw; }
+#switchBuildingBtn{ white-space: nowrap; }
   
 </style>
 </head>
@@ -2103,12 +2143,7 @@ gap: 10px;
         </div>
 
         <div class="rightCol">
-  <div class="topMini">
-    <div class="pill" id="userPill">Korisnik</div>
-    <div class="pill" id="buildingPill">Zgrada</div>
-  </div>
-
-  <!-- ✅ NOVO: Tools red (Promeni zgradu + Pretraga kao na screenshotu) -->
+  <div class="topRow">
   <div class="headerTools">
     <div class="pill pillBtn" id="switchBuildingBtn" style="display:none;">Promeni zgradu</div>
 
@@ -2117,6 +2152,12 @@ gap: 10px;
       <div class="searchResults" id="searchResults" style="display:none;"></div>
     </div>
   </div>
+
+  <div class="topMini">
+    <div class="pill" id="userPill">Korisnik</div>
+    <div class="pill" id="buildingPill">Zgrada</div>
+  </div>
+</div>
 
   <div class="balanceCard">
     <span class="label">Stanje računa</span>
