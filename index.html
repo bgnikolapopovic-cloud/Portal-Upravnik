@@ -1930,134 +1930,57 @@ gap: 10px;
   flex:1;
 }
 
-/* ✅ NOVO: red sa (Promeni zgradu + Pretraga) */
-.headerTools{
-  display:flex;
-  gap:10px;
-  align-items:center;
-  justify-content:flex-end;
-  flex-wrap:wrap;
-}
+  /* ===== FINAL FIX: TopRow + Tools layout ===== */
 
-  /* ================= HEADER TOOLS ================= */
-.headerTools{
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  justify-content: flex-end;
-  margin-top: 8px;
-  flex-wrap: wrap;
-}
-
-/* dugme da se ne lomi */
-#switchBuildingBtn{
-  white-space: nowrap;
-}
-
-/* pretraga u headeru */
-.headerTools .searchInline{
-  min-width: 260px;
-}
-
-#globalSearch{
-  width: 320px;
-  max-width: 45vw;
-}
-
-  /* ✅ sticky top bar (da alatke ostanu vidljive pri scroll-u) */
-.pageHeader{
-  position: sticky;
-  top: 12px;
-  z-index: 50;
-}
-
-/* ===== TOP ROW: tools levo, user/building desno ===== */
-.rightCol{
-  display:flex;
-  flex-direction:column;
-  align-items:flex-end;
-  gap:10px;
-}
-
-.topRow{
-  width:100%;
-  display:flex;
-  align-items:center;
-  justify-content:flex-end;
-  gap:12px;
-}
-
-/* tools stoje levo od user pill-ova */
-.headerTools{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  flex-wrap:nowrap;
-  justify-content:flex-end;
-  margin-top:0; /* bitno da ne “spušta” */
-}
-
-/* user/building pill-ovi desno */
-.topMini{
-  display:flex;
-  gap:8px;
-  align-items:center;
-  justify-content:flex-end;
-  flex-wrap:wrap;
-}
-
-/* širina pretrage u headeru */
-.headerTools .searchInline{ min-width: 260px; }
-#globalSearch{ width: 320px; max-width: 40vw; }
-#switchBuildingBtn{ white-space: nowrap; }
-
-/* ===== FIX: TopRow layout kao na screenshotu ===== */
-
-/* topRow: tools levo od user pill-ova, sve u istom redu */
+/* Top row: tools levo, user/building desno (u istom redu) */
 .rightCol .topRow{
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;  /* ključno */
+  justify-content: space-between; /* KLJUČNO */
   gap: 12px;
 }
 
-/* tools zauzimaju prostor i guraju se ka desno (ali ostaju levo od user pill-ova) */
+/* Tools (Promeni zgradu + Search) zauzimaju prostor i stoje desno u svom delu */
 .rightCol .headerTools{
   display: flex;
   align-items: center;
   gap: 10px;
-  flex: 1;                        /* ključno */
-  justify-content: flex-end;      /* drži ih desno u svom delu */
+  flex: 1;                       /* KLJUČNO */
+  justify-content: flex-end;
   flex-wrap: nowrap;
   margin-top: 0 !important;
 }
 
-/* user/building pill-ovi uvek skroz desno */
+/* User/Building pill-ovi uvek skroz desno */
 .rightCol .topMini{
   display: flex;
   gap: 10px;
   align-items: center;
   justify-content: flex-end;
   flex: 0 0 auto;
+  flex-wrap: wrap;
 }
 
-/* OVERRIDE globalnog width clamp-a za searchInline u headerTools */
+/* OVERRIDE tvog globalnog clamp-a samo za search u headerTools */
 .rightCol .headerTools .searchInline{
-  width: auto !important;
-  flex: 0 1 420px;      /* širina pretrage kao na slici */
+  width: auto !important;        /* KLJUČNO: poništava clamp */
+  flex: 0 1 420px;               /* širina pretrage kao na slici */
   max-width: 46vw;
   min-width: 260px;
+  padding: 10px 14px;            /* zadrži isti “card” osećaj */
 }
 
-/* input popunjava searchInline */
+/* Input popunjava searchInline */
 .rightCol .headerTools #globalSearch{
   width: 100%;
   max-width: none;
 }
 
-/* dugme da ne prelomi tekst */
-#switchBuildingBtn{ white-space: nowrap; }
+/* Dugme da se ne lomi */
+#switchBuildingBtn{
+  white-space: nowrap;
+}
 
   
 </style>
