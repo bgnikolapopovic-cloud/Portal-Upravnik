@@ -2010,7 +2010,55 @@ gap: 10px;
 .headerTools .searchInline{ min-width: 260px; }
 #globalSearch{ width: 320px; max-width: 40vw; }
 #switchBuildingBtn{ white-space: nowrap; }
-  }
+
+/* ===== FIX: TopRow layout kao na screenshotu ===== */
+
+/* topRow: tools levo od user pill-ova, sve u istom redu */
+.rightCol .topRow{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;  /* ključno */
+  gap: 12px;
+}
+
+/* tools zauzimaju prostor i guraju se ka desno (ali ostaju levo od user pill-ova) */
+.rightCol .headerTools{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;                        /* ključno */
+  justify-content: flex-end;      /* drži ih desno u svom delu */
+  flex-wrap: nowrap;
+  margin-top: 0 !important;
+}
+
+/* user/building pill-ovi uvek skroz desno */
+.rightCol .topMini{
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 0 0 auto;
+}
+
+/* OVERRIDE globalnog width clamp-a za searchInline u headerTools */
+.rightCol .headerTools .searchInline{
+  width: auto !important;
+  flex: 0 1 420px;      /* širina pretrage kao na slici */
+  max-width: 46vw;
+  min-width: 260px;
+}
+
+/* input popunjava searchInline */
+.rightCol .headerTools #globalSearch{
+  width: 100%;
+  max-width: none;
+}
+
+/* dugme da ne prelomi tekst */
+#switchBuildingBtn{ white-space: nowrap; }
+
   
 </style>
 </head>
