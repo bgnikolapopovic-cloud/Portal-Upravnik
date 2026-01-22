@@ -5321,14 +5321,29 @@ function getUnitLabel(bid, unitCode){
     CURRENT_SESSION?.role === "upravnik" ||
     CURRENT_SESSION?.role === "admin";
 
-  // stanar uvek vidi samo oznaku stana
+  // ⛔ stanar vidi samo ID stana
   if(!isPrivileged) return unitCode;
 
-  const units = loadUnits(bid);
-  const name = units[unitCode]?.fullName;
+  const code = String(unitCode || "").trim().toUpperCase();
+  if(!code) return "";
 
-  // upravnik/admin vidi i ime ako postoji
-  return name ? `${unitCode} (${name})` : unitCode;
+  // ✅ GLAVNI IZVOR: admin unos (UnitsDB)
+  const rows = loadUnitsDB(bid);
+  const hit = rows.find(r =>
+    String(r.unitCode || "").trim().toUpperCase() === code
+  );
+
+  const fullName = (hit?.ownerFullName || "").trim();
+  if(fullName) return `${code} (${fullName})`;
+
+  // ⚠️ fallback: stari sistem (ako negde još postoji)
+  const units = loadUnits(bid);
+  const legacyName =
+    units?.[code]?.fullName ||
+    units?.[code]?.ownerFullName ||
+    "";
+
+  return legacyName ? `${code} (${legacyName})` : code;
 }
 
 function bindAdminFinSwitch(){
