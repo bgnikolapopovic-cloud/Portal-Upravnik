@@ -418,10 +418,6 @@ body.sidebar-open .sidebar{ filter:none; }
   justify-content:space-between;
   gap:14px;
   margin-bottom:18px;
-
-  position: sticky;
-  top: 12px;
-  z-index: 50;
 }
 .leftInfo{max-width:52vw}
 .meta{
@@ -1929,116 +1925,6 @@ gap: 10px;
 .unitOwnerRow input{
   flex:1;
 }
-
-  /* ===== FINAL FIX: TopRow + Tools layout ===== */
-
-/* Top row: tools levo, user/building desno (u istom redu) */
-.rightCol .topRow{
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between; /* KLJUČNO */
-  gap: 12px;
-}
-
-/* Tools (Promeni zgradu + Search) zauzimaju prostor i stoje desno u svom delu */
-.rightCol .headerTools{
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex: 1;                       /* KLJUČNO */
-  justify-content: flex-end;
-  flex-wrap: nowrap;
-  margin-top: 0 !important;
-}
-
-/* User/Building pill-ovi uvek skroz desno */
-.rightCol .topMini{
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  justify-content: flex-end;
-  flex: 0 0 auto;
-  flex-wrap: wrap;
-}
-
-/* OVERRIDE tvog globalnog clamp-a samo za search u headerTools */
-.rightCol .headerTools .searchInline{
-  width: auto !important;        /* KLJUČNO: poništava clamp */
-  flex: 0 1 420px;               /* širina pretrage kao na slici */
-  max-width: 46vw;
-  min-width: 260px;
-  padding: 10px 14px;            /* zadrži isti “card” osećaj */
-}
-
-/* Input popunjava searchInline */
-.rightCol .headerTools #globalSearch{
-  width: 100%;
-  max-width: none;
-}
-
-/* Dugme da se ne lomi */
-#switchBuildingBtn{
-  white-space: nowrap;
-}
-
-/* ===== MOBILE FIX: header da ne bude razvucen ===== */
-@media (max-width: 720px){
-
-  /* ceo header u kolonu */
-  .pageHeader{
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-  }
-
-  /* desni deo nek zauzme celu sirinu */
-  .rightCol{
-    width: 100%;
-    align-items: stretch;
-  }
-
-  /* topRow u kolonu (tools iznad, pill-ovi ispod) */
-  .rightCol .topRow{
-    flex-direction: column;
-    align-items: stretch;
-    justify-content: flex-start;
-    gap: 10px;
-  }
-
-  /* tools full-width, wrap dozvoljen */
-  .rightCol .headerTools{
-    width: 100%;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-  }
-
-  /* search ide preko cele sirine */
-  .rightCol .headerTools .searchInline{
-    flex: 1 1 100%;
-    max-width: 100%;
-    min-width: 0;
-    width: 100% !important;
-  }
-
-  /* input 100% */
-  .rightCol .headerTools #globalSearch{
-    width: 100%;
-  }
-
-  /* pill-ovi u red, ali da mogu da se prelome */
-  .rightCol .topMini{
-    width: 100%;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-  }
-
-  /* balance kartica da ne izgleda kao “razvucena” */
-  .balanceCard{
-    width: 100% !important;
-  }
-}
-
   
 </style>
 </head>
@@ -2172,30 +2058,25 @@ gap: 10px;
         </div>
 
         <div class="rightCol">
-  <div class="topRow">
-  <div class="headerTools">
-    <div class="pill pillBtn" id="switchBuildingBtn" style="display:none;">Promeni zgradu</div>
+          <div class="topMini">
+            <div class="pill" id="userPill">Korisnik</div>
+            <div class="pill" id="buildingPill">Zgrada</div>
+            <div class="pill pillBtn" id="switchBuildingBtn" style="display:none;">Promeni zgradu</div>
+          </div>
 
-    <div class="searchInline" style="position:relative;">
-      <input id="globalSearch" placeholder="Pretraga (finansije, dokumenti, forum)">
-      <div class="searchResults" id="searchResults" style="display:none;"></div>
-    </div>
-  </div>
+          <div class="searchInline" style="position:relative;">
+            <input id="globalSearch" placeholder="Pretraga (finansije, dokumenti, forum)">
+            <div class="searchResults" id="searchResults" style="display:none;"></div>
+          </div>
 
-  <div class="topMini">
-    <div class="pill" id="userPill">Korisnik</div>
-    <div class="pill" id="buildingPill">Zgrada</div>
-  </div>
-</div>
-
-  <div class="balanceCard">
-    <span class="label">Stanje računa</span>
-    <div class="balanceAmount">
-      <span class="value" id="balanceValue">0,00</span>
-      <span class="currency">RSD</span>
-    </div>
-  </div>
-</div>
+          <div class="balanceCard">
+            <span class="label">Stanje računa</span>
+            <div class="balanceAmount">
+              <span class="value" id="balanceValue">0,00</span>
+              <span class="currency">RSD</span>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section class="page active" id="page-home">
@@ -3779,8 +3660,8 @@ function renderBuildingUI(){
   }
 
   // ✅ dugme "Promeni zgradu" ostaje
-  const isManager = (CURRENT_SESSION?.role === "upravnik" || CURRENT_SESSION?.role === "admin");
-if(switchBuildingBtn) switchBuildingBtn.style.display = isManager ? "" : "none";
+  const multi = (CURRENT_SESSION?.buildings || []).length > 1 && (CURRENT_SESSION.role !== "stanar");
+  if(switchBuildingBtn) switchBuildingBtn.style.display = multi ? "" : "none";
 }
 
 /* ===== login flow ===== */
