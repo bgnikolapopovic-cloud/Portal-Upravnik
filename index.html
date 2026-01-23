@@ -2444,84 +2444,152 @@ gap: 10px;
     </div>
 
     <!-- ✅ TAB: VLASNICI STANOVA -->
-    <div id="finTabWrapOwners" style="display:none;">
+<div id="finTabWrapOwners" style="display:none;">
 
-     <!-- ADMIN: Upravljanje zgradama -->
-<div id="adminBuildingsWrap" data-role="admin" style="display:none; margin-top:14px;">
-  <div class="badge">Upravljanje zgradama (samo admin)</div>
-
-  <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
-  <div class="field" style="min-width:160px;">
-    <label>Šifra zgrade (npr. BM25)</label>
-    <input id="adminBCode" type="text" placeholder="BM25">
+  <!-- ✅ POD-TABOVI unutar Vlasnika -->
+  <div class="fRow" style="margin-top:12px; gap:10px;">
+    <button class="btn btnPrimary" id="ownTabUnits" type="button">Dodaj stan</button>
+    <button class="btn btnGhost" id="ownTabBuildings" type="button">Dodaj zgradu</button>
   </div>
 
-  <div class="field" style="min-width:260px; flex:1;">
-    <label>Naziv zgrade</label>
-    <input id="adminBTitle" type="text" placeholder="Bore Markovića 25">
-  </div>
+  <!-- ================= POD-TAB CONTENT ================= -->
 
-  <div class="field" style="min-width:220px; flex:1;">
-    <label>Ulica</label>
-    <input id="adminBStreet" type="text" placeholder="Bore Markovića">
-  </div>
+  <!-- ✅ POD-TAB: DODAJ STAN + VLASNICI -->
+  <div id="ownWrapUnits" style="margin-top:14px;">
 
-  <div class="field" style="min-width:120px;">
-    <label>Broj</label>
-    <input id="adminBNumber" type="text" placeholder="25">
-  </div>
+    <!-- ADMIN: Upravljanje stanovima -->
+    <div id="adminUnitsWrap" style="display:none; margin-top:14px;">
+      <div class="badge">Upravljanje stanovima</div>
 
-  <div class="field" style="min-width:120px;">
-    <label>Broj stanova</label>
-    <input id="adminBUnits" type="number" min="1" placeholder="25">
-  </div>
+      <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end;">
+        <button class="btn btnPrimary" type="button" id="adminAddUnitBtn">Dodaj stan</button>
+        <div class="smallText" style="opacity:.75">
+          Dodaje novi stan (npr. BM25-026). Ime vlasnika unosi upravnik/admin.
+        </div>
+      </div>
 
-  <!-- ✅ NOVO: izbor upravnika -->
-  <div class="field" style="min-width:240px; flex:1;">
-    <label>Upravnik</label>
-    <select id="bMgrSelect">
-      <option value="">— Izaberi upravnika —</option>
-    </select>
-  </div>
+      <div class="smallText" style="opacity:.7; margin-top:6px;">
+        Ovde menjaš samo vlasnika za izabrani stan.
+      </div>
 
-  <button class="btn btnGhost" type="button" id="addMgrBtn">+ Novi upravnik</button>
+      <div id="adminAddUnitForm" style="display:none; margin-top:12px;">
+        <div class="fRow" style="gap:10px; align-items:flex-end; flex-wrap:wrap;">
+          <div class="field" style="min-width:160px;">
+            <label>Šifra zgrade</label>
+            <input id="adminUnitBCode" type="text" disabled>
+          </div>
 
-  <button class="btn btnPrimary" type="button" id="adminAddBuildingBtn">
-    Dodaj zgradu
-  </button>
-</div>
+          <div class="field" style="min-width:320px; flex:1;">
+            <label>Adresa</label>
+            <input id="adminUnitAddr" type="text" disabled>
+          </div>
 
-<!-- ✅ NOVO: forma za dodavanje novog upravnika -->
-<div id="newMgrWrap" style="display:none; margin-top:10px;">
-  <div class="badge">Novi upravnik</div>
+          <div class="field" style="min-width:260px; flex:1;">
+            <label>Ime i prezime vlasnika</label>
+            <input id="adminUnitOwner" type="text">
+          </div>
 
-  <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
-    <div class="field" style="min-width:260px; flex:1;">
-      <label>Ime i prezime</label>
-      <input id="mgrName" placeholder="npr. Marko Marković">
+          <div class="field" style="min-width:180px;">
+            <label>Novi ID stana</label>
+            <input id="adminUnitCode" type="text">
+          </div>
+
+          <button class="btn btnPrimary" type="button" id="adminSaveUnitBtn">Sačuvaj</button>
+          <button class="btn btnGhost" type="button" id="adminCancelUnitBtn">Odustani</button>
+        </div>
+      </div>
+
+      <div id="adminUnitsList" class="list" style="margin-top:10px;"></div>
     </div>
 
-    <div class="field" style="min-width:200px;">
-      <label>Username</label>
-      <input id="mgrUser" placeholder="npr. upravnik1">
+    <!-- VLASNICI STANOVA (PRO UI) -->
+    <div id="unitOwnersWrap" style="margin-top:16px;">
+
+      <div class="ownersHead">
+        <div class="ownersTitle">
+          <div class="badge">Vlasnici stanova</div>
+          <div class="hSub">
+            Unesi ime i prezime vlasnika za svaki stan. Stanar vidi samo svoje ime i prezime.
+          </div>
+        </div>
+
+        <div class="ownersTools">
+          <div id="ownersProgress" class="ownersProgress">Popunjeno: 0 / 0</div>
+
+          <label class="ownersToggle">
+            <input type="checkbox" id="ownersOnlyEmpty">
+            <span>Prikaži samo prazne</span>
+          </label>
+
+          <div class="searchInline ownersSearch">
+            <input id="ownersSearchInput" placeholder="Pretraga: BM25-001 ili ime vlasnika…">
+          </div>
+        </div>
+      </div>
+
+      <div id="unitOwnersTable" class="ownersList"></div>
     </div>
 
-    <div class="field" style="min-width:200px;">
-      <label>Lozinka</label>
-      <input id="mgrPass" placeholder="npr. 1234">
+  </div>
+
+  <!-- ✅ POD-TAB: DODAJ ZGRADU -->
+  <div id="ownWrapBuildings" style="display:none; margin-top:14px;">
+
+    <!-- ADMIN: Upravljanje zgradama -->
+    <div id="adminBuildingsWrap" data-role="admin" style="display:none; margin-top:14px;">
+      <div class="badge">Upravljanje zgradama (samo admin)</div>
+
+      <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+        <div class="field" style="min-width:160px;">
+          <label>Šifra zgrade (npr. BM25)</label>
+          <input id="adminBCode" type="text" placeholder="BM25">
+        </div>
+
+        <div class="field" style="min-width:260px; flex:1;">
+          <label>Naziv zgrade</label>
+          <input id="adminBTitle" type="text" placeholder="Bore Markovića 25">
+        </div>
+
+        <div class="field" style="min-width:220px; flex:1;">
+          <label>Ulica</label>
+          <input id="adminBStreet" type="text" placeholder="Bore Markovića">
+        </div>
+
+        <div class="field" style="min-width:120px;">
+          <label>Broj</label>
+          <input id="adminBNumber" type="text" placeholder="25">
+        </div>
+
+        <div class="field" style="min-width:120px;">
+          <label>Broj stanova</label>
+          <input id="adminBUnits" type="number" min="1" placeholder="25">
+        </div>
+
+        <div class="field" style="min-width:240px; flex:1;">
+          <label>Upravnik</label>
+          <select id="bMgrSelect">
+            <option value="">— Izaberi upravnika —</option>
+          </select>
+        </div>
+
+        <button class="btn btnGhost" type="button" id="addMgrBtn">+ Novi upravnik</button>
+
+        <button class="btn btnPrimary" type="button" id="adminAddBuildingBtn">
+          Dodaj zgradu
+        </button>
+      </div>
     </div>
 
-    <button type="button" class="btn btnPrimary" id="createMgrBtn">Kreiraj upravnika</button>
+    <!-- forma za dodavanje novog upravnika -->
+    <div id="newMgrWrap" style="display:none; margin-top:10px;">
+      <!-- (OVDE ostaje tvoj postojeći sadržaj newMgrWrap, ništa ne menjaj u njemu) -->
+    </div>
+
+    <div id="adminBuildingsList" class="list" style="margin-top:10px;"></div>
+
   </div>
 
-  <div class="smallText" style="opacity:.75; margin-top:6px;">
-    Upravnik će biti dodat u listu i možeš odmah dodeliti zgradu.
-  </div>
 </div>
-
-<div id="adminBuildingsList" class="list" style="margin-top:10px;"></div>
-</div>
-
 
       <!-- ADMIN: Upravljanje stanovima -->
       <div id="adminUnitsWrap" style="display:none; margin-top:14px;">
@@ -7421,19 +7489,11 @@ function bindFinanceTabs(){
     bDues.classList.toggle("btnPrimary",    which === "dues");
     bDues.classList.toggle("btnGhost",      which !== "dues");
 
-    // ✅ kad uđeš u tab "Vlasnici stanova"
-    if(which === "owners"){
-      const bid = activeBid();
-      if(bid){
-        if(typeof renderAdminUnits === "function") renderAdminUnits(bid);
-        if(typeof renderUnitOwners === "function") renderUnitOwners(bid);
-      }
-
-      if(typeof renderAdminBuildings === "function") renderAdminBuildings();
-
-      // ✅ oživi select upravnika + dodaj novog upravnika + dodela zgrade
-      if(typeof bindAdminBuildingsManagerUI === "function") bindAdminBuildingsManagerUI();
-    }
+    / ✅ kad uđeš u tab "Vlasnici stanova"
+if(which === "owners"){
+  // pod-tabovi (Dodaj stan / Dodaj zgradu) odlučuju šta se prikazuje i šta se renderuje
+  if(typeof bindOwnersSubTabs === "function") bindOwnersSubTabs();
+}
 
     // ✅ sakrij/prikaži admin blokove u zavisnosti od aktivnog taba + role
     if(typeof applyFinanceRoleUI === "function") applyFinanceRoleUI();
@@ -7446,6 +7506,56 @@ function bindFinanceTabs(){
   setActive("entries");
 }
 
+function bindOwnersSubTabs(){
+  const bU = document.getElementById("ownTabUnits");
+  const bB = document.getElementById("ownTabBuildings");
+  const wU = document.getElementById("ownWrapUnits");
+  const wB = document.getElementById("ownWrapBuildings");
+  const ownersWrap = document.getElementById("finTabWrapOwners");
+  if(!bU || !bB || !wU || !wB || !ownersWrap) return;
+
+  if(bU.dataset.bound === "1") return;
+  bU.dataset.bound = "1";
+
+  function set(which){
+    // zapamti aktivan pod-tab
+    ownersWrap.dataset.ownTab = which;
+
+    // UI toggle
+    wU.style.display = (which === "units") ? "block" : "none";
+    wB.style.display = (which === "buildings") ? "block" : "none";
+
+    bU.classList.toggle("btnPrimary", which === "units");
+    bU.classList.toggle("btnGhost",   which !== "units");
+
+    bB.classList.toggle("btnPrimary", which === "buildings");
+    bB.classList.toggle("btnGhost",   which !== "buildings");
+
+    // load
+    if(which === "units"){
+      const bid = activeBid();
+      if(bid){
+        if(typeof renderAdminUnits === "function") renderAdminUnits(bid);
+        if(typeof renderUnitOwners === "function") renderUnitOwners(bid);
+      }
+    } else {
+      if(typeof renderAdminBuildings === "function") renderAdminBuildings();
+      if(typeof bindAdminBuildingsManagerUI === "function") bindAdminBuildingsManagerUI();
+    }
+
+    if(typeof applyFinanceRoleUI === "function") applyFinanceRoleUI();
+  }
+
+  bU.addEventListener("click", () => set("units"));
+  bB.addEventListener("click", () => set("buildings"));
+
+  // default (ili sačuvano)
+  const role = CURRENT_SESSION?.role || "";
+  const saved = ownersWrap.dataset.ownTab || "units";
+  if(saved === "buildings" && role !== "admin") set("units");
+  else set(saved);
+}
+  
 /* POZIV */
 bindFinanceTabs();
 
@@ -7453,21 +7563,56 @@ function applyFinanceRoleUI(){
   const role = CURRENT_SESSION?.role || "";
 
   const ownersWrap = document.getElementById("finTabWrapOwners");
-  const unitsWrap  = document.getElementById("adminUnitsWrap");      // Dodaj stan
-  const bldWrap    = document.getElementById("adminBuildingsWrap");  // Dodaj zgradu
-
   const ownersActive = ownersWrap && ownersWrap.style.display !== "none";
 
-  // Upravnik + admin vide Dodaj stan (samo u Owners tabu)
-  if(unitsWrap){
-    unitsWrap.style.display = (ownersActive && (role === "admin" || role === "upravnik")) ? "block" : "none";
+  // pod-tab UI
+  const bU = document.getElementById("ownTabUnits");
+  const bB = document.getElementById("ownTabBuildings");
+  const wU = document.getElementById("ownWrapUnits");
+  const wB = document.getElementById("ownWrapBuildings");
+
+  // admin wrapovi koji već postoje u kodu
+  const unitsWrap = document.getElementById("adminUnitsWrap");      // Dodaj stan (admin/upravnik)
+  const bldWrap   = document.getElementById("adminBuildingsWrap");  // Dodaj zgradu (admin)
+
+  // ako Owners tab nije otvoren, sakrij oba wrappera (da ne “cure” po UI)
+  if(!ownersActive){
+    if(wU) wU.style.display = "none";
+    if(wB) wB.style.display = "none";
+    return;
   }
 
-  // Samo admin vidi Dodaj zgradu (samo u Owners tabu)
+  // dozvole
+  const canBuildings = (role === "admin");
+
+  // dugme/tab “Dodaj zgradu” samo admin
+  if(bB) bB.style.display = canBuildings ? "inline-flex" : "none";
+
+  // koji pod-tab je aktivan (default units)
+  const activeSub = ownersWrap.dataset.ownTab || "units";
+
+  // ako nije admin a stoji buildings, vrati na units
+  const safeSub = (!canBuildings && activeSub === "buildings") ? "units" : activeSub;
+  ownersWrap.dataset.ownTab = safeSub;
+
+  // prikaz wrappera
+  if(wU) wU.style.display = (safeSub === "units") ? "block" : "none";
+  if(wB) wB.style.display = (safeSub === "buildings" && canBuildings) ? "block" : "none";
+
+  // prikaz admin delova unutar wrappera (po ulozi)
+  if(unitsWrap){
+    unitsWrap.style.display =
+      (safeSub === "units" && (role === "admin" || role === "upravnik"))
+        ? "block" : "none";
+  }
+
   if(bldWrap){
-    bldWrap.style.display = (ownersActive && role === "admin") ? "block" : "none";
+    bldWrap.style.display =
+      (safeSub === "buildings" && role === "admin")
+        ? "block" : "none";
   }
 }
+  
 </script>
 
 <!-- Supabase SDK -->
