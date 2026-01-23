@@ -3641,11 +3641,24 @@ function renderBuildingUI(){
 
   // ako HOĆEŠ da meta ostane, ali samo kad postoji zgrada:
   if(buildingMeta){
-    buildingMeta.innerHTML = b ? `
-      Stambena zajednica: ${b.title}<br>
-      Broj jedinica: ${b.units}
-    ` : "";
-  }
+  const myUnit = String(CURRENT_SESSION?.unitCode || "").trim().toUpperCase();
+
+  // svi vide ID (ako postoji)
+  const idLine = myUnit ? `ID: ${myUnit}` : ``;
+
+  // samo stanar vidi i ime (ako postoji), a upravnik/admin samo ID
+  const namePart =
+    (CURRENT_SESSION?.role === "stanar" && myUnit)
+      ? (getUnitLabel(b?.id, myUnit) || myUnit).replace(myUnit, "").trim()
+      : "";
+
+  // namePart će biti "(Ime Prezime)" ili prazno
+  buildingMeta.innerHTML = b ? `
+    Stambena zajednica: ${b.title}<br>
+    Broj jedinica: ${b.units}
+    ${idLine ? `<br>${idLine}${namePart ? ` ${namePart}` : ``}` : ``}
+  ` : "";
+}
 
   // balans (ako ti je ovo potrebno)
   const bal = computeBalanceFromFinance(bid);
@@ -6755,12 +6768,13 @@ function formatDateDMY(dateStr){
   
 function renderUserBadge(){
   const el = document.getElementById("userBadge");
-  if(!el || !CURRENT_SESSION) return;
+  if(!el) return;
 
-  // Prikaži tačno korisničko ime (npr. NC28-003)
-  el.textContent = CURRENT_SESSION.username || "";
+  // ❌ više ne prikazujemo ID / username gore desno
+  el.textContent = "";
+  el.style.display = "none";
 }
-
+  
   // ================= ADMIN STATISTIKA: zatvaranje dropdowna klikom van =================
 document.addEventListener("click", (e) => {
   const wrap = document.querySelector("#page-statistika .adminTopWrap");
