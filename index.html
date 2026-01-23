@@ -5261,7 +5261,7 @@ function renderUnitOwners(bid){
   if(!wrap || !table) return;
 
   // samo ADMIN sme da unosi/menja vlasnike
-if(CURRENT_SESSION?.role !== "admin" && CURRENT_SESSION?.role !== "upravnik"){
+if(!(CURRENT_SESSION?.role === "admin" || CURRENT_SESSION?.role === "upravnik")){
   wrap.style.display = "none";
   return;
 }
@@ -5507,8 +5507,12 @@ const audDeleteBtn = document.getElementById("audDeleteBtn");
   
 if(!wrap || !list || !addBtn || !form || !bCodeI || !addrI || !ownerI || !unitI || !saveBtn || !cancelBtn ||
    !det || !audTitle || !audUnitCode || !audOwner || !audSaveBtn || !audCloseBtn || !audDeleteBtn) return;
- 
-  if(CURRENT_SESSION?.role !== "admin" && CURRENT_SESSION?.role !== "upravnik"){
+
+if(audDeleteBtn){
+    audDeleteBtn.style.display = (CURRENT_SESSION?.role === "admin") ? "inline-flex" : "none";
+  }
+  
+  if(!(CURRENT_SESSION?.role === "admin" || CURRENT_SESSION?.role === "upravnik")){
   wrap.style.display = "none";
   return;
 }
@@ -6815,10 +6819,20 @@ function bindFinanceTabs(){
 
     bDues.classList.toggle("btnPrimary",    which === "dues");
     bDues.classList.toggle("btnGhost",      which !== "dues");
-  
-  applyFinanceRoleUI();
+
+    // ✅ kad uđeš u tab "Vlasnici stanova" - bind/refresh svega što tu živi
+    if(which === "owners"){
+      const bid = (typeof activeBid === "function") ? activeBid() : activeBid;
+      if(bid){
+        if(typeof renderAdminUnits === "function") renderAdminUnits(bid);   // Dodaj stan (admin + upravnik)
+        if(typeof renderUnitOwners === "function") renderUnitOwners(bid);   // tabela vlasnika
+      }
+      if(typeof renderAdminBuildings === "function") renderAdminBuildings(); // Dodaj zgradu (samo admin)
+    }
+
+    applyFinanceRoleUI();
   }
-  
+
   bEntries.addEventListener("click", () => setActive("entries"));
   bOwners.addEventListener("click", () => setActive("owners"));
   bDues.addEventListener("click", () => setActive("dues"));
@@ -6849,9 +6863,7 @@ function applyFinanceRoleUI(){
   }
 }
 
-  
 </script>
-
 
 <!-- Supabase SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
