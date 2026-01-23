@@ -5317,15 +5317,19 @@ if(CURRENT_SESSION?.role !== "admin"){
 
 /* ===== HELPER: PRIKAZ STANA + IME (SAMO UPRAVNIK / ADMIN) ===== */
 function getUnitLabel(bid, unitCode){
-  const isPrivileged =
-    CURRENT_SESSION?.role === "upravnik" ||
-    CURRENT_SESSION?.role === "admin";
-
-  // ⛔ stanar vidi samo ID stana
-  if(!isPrivileged) return unitCode;
-
+  const role = CURRENT_SESSION?.role;
   const code = String(unitCode || "").trim().toUpperCase();
   if(!code) return "";
+
+  // admin i upravnik vide imena za sve stanove
+  const isPrivileged = (role === "upravnik" || role === "admin");
+
+  // stanar vidi ime samo za svoj stan
+  const myUnit = String(CURRENT_SESSION?.unitCode || "").trim().toUpperCase();
+  const canSeeName = isPrivileged || (role === "stanar" && myUnit === code);
+
+  // ako nema pravo da vidi ime -> samo ID stana
+  if(!canSeeName) return code;
 
   // ✅ GLAVNI IZVOR: admin unos (UnitsDB)
   const rows = loadUnitsDB(bid);
