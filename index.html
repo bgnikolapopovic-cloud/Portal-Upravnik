@@ -1925,6 +1925,29 @@ gap: 10px;
 .unitOwnerRow input{
   flex:1;
 }
+
+/* ===== FINANSIJE: 3 TAB dugmeta u jednom redu ===== */
+#page-finansije .fRow[data-role="upravnik"]{
+  display:flex;
+  gap:10px;
+  flex-wrap:nowrap;
+}
+
+#page-finansije .fRow[data-role="upravnik"] > .btn{
+  flex:1;
+  text-align:center;
+  white-space:nowrap;
+}
+
+/* Mobile: da se lepo prelomi u 2 reda ako nema mesta */
+@media (max-width: 760px){
+  #page-finansije .fRow[data-role="upravnik"]{
+    flex-wrap:wrap;
+  }
+  #page-finansije .fRow[data-role="upravnik"] > .btn{
+    flex:1 1 220px;
+  }
+}
   
 </style>
 </head>
@@ -2113,7 +2136,14 @@ gap: 10px;
       </div>
     </div>
 
-    <!-- ADMIN: Upravljanje stanovima -->
+    <!-- ✅ TABOVI: ISTO ZA UPRAVNIKA I ADMINA -->
+    <div class="fRow" data-role="upravnik" style="margin-top:12px; gap:10px;">
+      <button class="btn btnPrimary" id="finTabEntries">Finansijske promene</button>
+      <button class="btn btnGhost" id="finTabOwners">Vlasnici stanova</button>
+      <button class="btn btnGhost" id="finTabDues">Dugovanja stanara</button>
+    </div>
+
+    <!-- ✅ ADMIN: UPRAVLJANJE STANOVIMA (ISPOD TABOVA) -->
     <div id="adminUnitsWrap" data-role="admin" style="display:none; margin-top:14px;">
       <div class="badge">Upravljanje stanovima (samo admin)</div>
 
@@ -2124,110 +2154,105 @@ gap: 10px;
         </div>
       </div>
 
-<!-- ADMIN: forma za dodavanje stana (kao za zgradu) -->
-<div id="adminAddUnitForm" style="display:none; margin-top:12px;">
-  <div class="fRow" style="gap:10px; align-items:flex-end; flex-wrap:wrap;">
-    <div class="field" style="min-width:160px;">
-      <label>Šifra zgrade</label>
-      <input id="adminUnitBCode" type="text" disabled>
-    </div>
+      <div class="smallText" style="opacity:.7; margin-top:6px;">
+        Ovde menjaš samo vlasnika za izabrani stan.
+      </div>
 
-    <div class="field" style="min-width:320px; flex:1;">
-      <label>Adresa</label>
-      <input id="adminUnitAddr" type="text" disabled>
-    </div>
+      <!-- ADMIN: forma za dodavanje stana (kao za zgradu) -->
+      <div id="adminAddUnitForm" style="display:none; margin-top:12px;">
+        <div class="fRow" style="gap:10px; align-items:flex-end; flex-wrap:wrap;">
+          <div class="field" style="min-width:160px;">
+            <label>Šifra zgrade</label>
+            <input id="adminUnitBCode" type="text" disabled>
+          </div>
 
-    <div class="field" style="min-width:260px; flex:1;">
-      <label>Ime i prezime vlasnika</label>
-      <input id="adminUnitOwner" type="text" placeholder="npr. Marko Marković">
-    </div>
+          <div class="field" style="min-width:320px; flex:1;">
+            <label>Adresa</label>
+            <input id="adminUnitAddr" type="text" disabled>
+          </div>
 
-    <div class="field" style="min-width:180px;">
-      <label>Novi ID stana</label>
-      <input id="adminUnitCode" type="text" placeholder="npr. BM25-026">
-    </div>
+          <div class="field" style="min-width:260px; flex:1;">
+            <label>Ime i prezime vlasnika</label>
+            <input id="adminUnitOwner" type="text" placeholder="npr. Marko Marković">
+          </div>
 
-    <button class="btn btnPrimary" type="button" id="adminSaveUnitBtn">Sačuvaj</button>
-    <button class="btn btnGhost" type="button" id="adminCancelUnitBtn">Odustani</button>
-  </div>
+          <div class="field" style="min-width:180px;">
+            <label>Novi ID stana</label>
+            <input id="adminUnitCode" type="text" placeholder="npr. BM25-026">
+          </div>
 
-  <div class="smallText" style="opacity:.75; margin-top:8px;">
-    ID stana se predlaže automatski, možeš ga ručno izmeniti.
-  </div>
-</div>
-      
+          <button class="btn btnPrimary" type="button" id="adminSaveUnitBtn">Sačuvaj</button>
+          <button class="btn btnGhost" type="button" id="adminCancelUnitBtn">Odustani</button>
+        </div>
+
+        <div class="smallText" style="opacity:.75; margin-top:8px;">
+          ID stana se predlaže automatski, možeš ga ručno izmeniti.
+        </div>
+      </div>
+
       <div id="adminUnitsList" class="list" style="margin-top:10px;"></div>
+
+      <!-- ADMIN: detalji stana (otvara se klikom na red) -->
+      <div id="adminUnitDetails" style="display:none; margin-top:12px;">
+        <div class="badge" id="audTitle">Stan</div>
+
+        <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+          <div class="field" style="min-width:180px;">
+            <label>ID stana</label>
+            <input id="audUnitCode" type="text" disabled>
+          </div>
+
+          <div class="field" style="min-width:260px; flex:1;">
+            <label>Ime i prezime vlasnika</label>
+            <input id="audOwner" type="text" placeholder="npr. Marko Marković">
+          </div>
+
+          <button class="btn btnPrimary" type="button" id="audSaveBtn">Sačuvaj</button>
+          <button class="btn btnGhost" type="button" id="audCloseBtn">Zatvori</button>
+          <button class="btn btnGhost" type="button" id="audDeleteBtn">Obriši</button>
+        </div>
+      </div>
     </div>
 
-<!-- ADMIN: detalji stana (otvara se klikom na red) -->
-<div id="adminUnitDetails" style="display:none; margin-top:12px;">
-  <div class="badge" id="audTitle">Stan</div>
+    <div id="finEntriesWrap">
 
-  <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
-    <div class="field" style="min-width:180px;">
-      <label>ID stana</label>
-      <input id="audUnitCode" type="text" disabled>
-    </div>
+      <!-- ADMIN: Upravljanje zgradama -->
+      <div id="adminBuildingsWrap" data-role="admin" style="display:none; margin-top:14px;">
+        <div class="badge">Upravljanje zgradama (samo admin)</div>
 
-    <div class="field" style="min-width:260px; flex:1;">
-      <label>Ime i prezime vlasnika</label>
-      <input id="audOwner" type="text" placeholder="npr. Marko Marković">
-    </div>
+        <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+          <div class="field" style="min-width:160px;">
+            <label>Šifra zgrade (npr. BM25)</label>
+            <input id="adminBCode" type="text" placeholder="BM25">
+          </div>
 
-    <button class="btn btnPrimary" type="button" id="audSaveBtn">Sačuvaj</button>
-    <button class="btn btnGhost" type="button" id="audCloseBtn">Zatvori</button>
-    <button class="btn btnGhost" type="button" id="audDeleteBtn">Obriši</button>
-  </div>
+          <div class="field" style="min-width:260px; flex:1;">
+            <label>Naziv zgrade</label>
+            <input id="adminBTitle" type="text" placeholder="Bore Markovića 25">
+          </div>
 
-  <div class="smallText" style="opacity:.7; margin-top:6px;">
-    Ovde menjaš samo vlasnika za izabrani stan.
-  </div>
-</div>
-    
-          <div class="fRow" data-role="upravnik" style="margin-top:12px; gap:10px;">
-  <button class="btn btnPrimary" id="finTabEntries">Finansijske promene</button>
-  <button class="btn btnGhost" id="finTabDues">Dugovanja stanara</button>
-</div>
+          <div class="field" style="min-width:220px; flex:1;">
+            <label>Ulica</label>
+            <input id="adminBStreet" type="text" placeholder="Bore Markovića">
+          </div>
 
-       <div id="finEntriesWrap">  
+          <div class="field" style="min-width:120px;">
+            <label>Broj</label>
+            <input id="adminBNumber" type="text" placeholder="25">
+          </div>
 
-<!-- ADMIN: Upravljanje zgradama -->
-<div id="adminBuildingsWrap" data-role="admin" style="display:none; margin-top:14px;">
-  <div class="badge">Upravljanje zgradama (samo admin)</div>
+          <div class="field" style="min-width:120px;">
+            <label>Broj stanova</label>
+            <input id="adminBUnits" type="number" min="1" placeholder="25">
+          </div>
 
-  <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
-    <div class="field" style="min-width:160px;">
-      <label>Šifra zgrade (npr. BM25)</label>
-      <input id="adminBCode" type="text" placeholder="BM25">
-    </div>
+          <button class="btn btnPrimary" type="button" id="adminAddBuildingBtn">
+            Dodaj zgradu
+          </button>
+        </div>
 
-    <div class="field" style="min-width:260px; flex:1;">
-      <label>Naziv zgrade</label>
-      <input id="adminBTitle" type="text" placeholder="Bore Markovića 25">
-    </div>
-
-    <div class="field" style="min-width:220px; flex:1;">
-      <label>Ulica</label>
-      <input id="adminBStreet" type="text" placeholder="Bore Markovića">
-    </div>
-
-    <div class="field" style="min-width:120px;">
-      <label>Broj</label>
-      <input id="adminBNumber" type="text" placeholder="25">
-    </div>
-
-    <div class="field" style="min-width:120px;">
-      <label>Broj stanova</label>
-      <input id="adminBUnits" type="number" min="1" placeholder="25">
-    </div>
-
-    <button class="btn btnPrimary" type="button" id="adminAddBuildingBtn">
-      Dodaj zgradu
-    </button>
-  </div>
-
-  <div id="adminBuildingsList" class="list" style="margin-top:10px;"></div>
-</div>
+        <div id="adminBuildingsList" class="list" style="margin-top:10px;"></div>
+      </div>
          
 <!-- FIN HEADER CONTROLS (filter/sort) -->
 <div class="fRow" style="margin-top:12px; gap:10px; align-items:flex-end;">
