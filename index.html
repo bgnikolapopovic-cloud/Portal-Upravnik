@@ -2451,37 +2451,75 @@ gap: 10px;
   <div class="badge">Upravljanje zgradama (samo admin)</div>
 
   <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
-    <div class="field" style="min-width:160px;">
-      <label>Šifra zgrade (npr. BM25)</label>
-      <input id="adminBCode" type="text" placeholder="BM25">
-    </div>
-
-    <div class="field" style="min-width:260px; flex:1;">
-      <label>Naziv zgrade</label>
-      <input id="adminBTitle" type="text" placeholder="Bore Markovića 25">
-    </div>
-
-    <div class="field" style="min-width:220px; flex:1;">
-      <label>Ulica</label>
-      <input id="adminBStreet" type="text" placeholder="Bore Markovića">
-    </div>
-
-    <div class="field" style="min-width:120px;">
-      <label>Broj</label>
-      <input id="adminBNumber" type="text" placeholder="25">
-    </div>
-
-    <div class="field" style="min-width:120px;">
-      <label>Broj stanova</label>
-      <input id="adminBUnits" type="number" min="1" placeholder="25">
-    </div>
-
-    <button class="btn btnPrimary" type="button" id="adminAddBuildingBtn">
-      Dodaj zgradu
-    </button>
+  <div class="field" style="min-width:160px;">
+    <label>Šifra zgrade (npr. BM25)</label>
+    <input id="adminBCode" type="text" placeholder="BM25">
   </div>
 
-  <div id="adminBuildingsList" class="list" style="margin-top:10px;"></div>
+  <div class="field" style="min-width:260px; flex:1;">
+    <label>Naziv zgrade</label>
+    <input id="adminBTitle" type="text" placeholder="Bore Markovića 25">
+  </div>
+
+  <div class="field" style="min-width:220px; flex:1;">
+    <label>Ulica</label>
+    <input id="adminBStreet" type="text" placeholder="Bore Markovića">
+  </div>
+
+  <div class="field" style="min-width:120px;">
+    <label>Broj</label>
+    <input id="adminBNumber" type="text" placeholder="25">
+  </div>
+
+  <div class="field" style="min-width:120px;">
+    <label>Broj stanova</label>
+    <input id="adminBUnits" type="number" min="1" placeholder="25">
+  </div>
+
+  <!-- ✅ NOVO: izbor upravnika -->
+  <div class="field" style="min-width:240px; flex:1;">
+    <label>Upravnik</label>
+    <select id="bMgrSelect">
+      <option value="">— Izaberi upravnika —</option>
+    </select>
+  </div>
+
+  <button class="btn btnGhost" type="button" id="addMgrBtn">+ Novi upravnik</button>
+
+  <button class="btn btnPrimary" type="button" id="adminAddBuildingBtn">
+    Dodaj zgradu
+  </button>
+</div>
+
+<!-- ✅ NOVO: forma za dodavanje novog upravnika -->
+<div id="newMgrWrap" style="display:none; margin-top:10px;">
+  <div class="badge">Novi upravnik</div>
+
+  <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+    <div class="field" style="min-width:260px; flex:1;">
+      <label>Ime i prezime</label>
+      <input id="mgrName" placeholder="npr. Marko Marković">
+    </div>
+
+    <div class="field" style="min-width:200px;">
+      <label>Username</label>
+      <input id="mgrUser" placeholder="npr. upravnik1">
+    </div>
+
+    <div class="field" style="min-width:200px;">
+      <label>Lozinka</label>
+      <input id="mgrPass" placeholder="npr. 1234">
+    </div>
+
+    <button type="button" class="btn btnPrimary" id="createMgrBtn">Kreiraj upravnika</button>
+  </div>
+
+  <div class="smallText" style="opacity:.75; margin-top:6px;">
+    Upravnik će biti dodat u listu i možeš odmah dodeliti zgradu.
+  </div>
+</div>
+
+<div id="adminBuildingsList" class="list" style="margin-top:10px;"></div>
 </div>
 
 
@@ -5607,6 +5645,16 @@ function renderUnitOwners(bid){
   updateOwnersProgress(bid);
 }
 
+  function kUsersDB(){ return "pu_users_db_v1"; }
+
+function loadUsersDB(){
+  try{ return JSON.parse(localStorage.getItem(kUsersDB())) || []; }
+  catch{ return []; }
+}
+
+function saveUsersDB(rows){
+  localStorage.setItem(kUsersDB(), JSON.stringify(rows));
+}
 
 /* ===== HELPER: PRIKAZ STANA + IME (SAMO UPRAVNIK / ADMIN) ===== */
 function getUnitLabel(bid, unitCode){
@@ -5641,6 +5689,190 @@ function getUnitLabel(bid, unitCode){
     "";
 
   return legacyName ? `${code} (${legacyName})` : code;
+}
+
+/* ================= USERS DB (ADMIN: upravnici) ================= */
+function kUsersDB(){ return "pu_users_db_v1"; }
+
+function loadUsersDB(){
+  try{ return JSON.parse(localStorage.getItem(kUsersDB())) || []; }
+  catch{ return []; }
+}
+
+function saveUsersDB(rows){
+  localStorage.setItem(kUsersDB(), JSON.stringify(rows || []));
+}
+
+function listManagers(){
+  return loadUsersDB().filter(u => u && u.role === "upravnik");
+}
+
+function addManagerUser({ name, username, password }){
+  const rows = loadUsersDB();
+
+  const n = (name || "").trim();
+  const u = (username || "").trim();
+  const p = (password || "").trim();
+
+  if(!n || !u || !p) throw new Error("Popuni ime, username i lozinku za upravnika.");
+  if(rows.some(x => (x.username||"").toLowerCase() === u.toLowerCase())){
+    throw new Error("Username već postoji.");
+  }
+
+  const id = "u_" + Math.random().toString(16).slice(2,10);
+
+  const nu = {
+    id,
+    role: "upravnik",
+    name: n,
+    username: u,
+    password: p,   // ⚠️ front-only
+    buildings: []
+  };
+
+  rows.push(nu);
+  saveUsersDB(rows);
+  return nu;
+}
+
+function assignBuildingToManager(managerId, buildingId){
+  const rows = loadUsersDB();
+  const idx = rows.findIndex(u => u.id === managerId && u.role === "upravnik");
+  if(idx === -1) throw new Error("Upravnik nije pronađen.");
+
+  rows[idx].buildings = rows[idx].buildings || [];
+  if(!rows[idx].buildings.includes(buildingId)){
+    rows[idx].buildings.push(buildingId);
+  }
+  saveUsersDB(rows);
+}
+
+/* ================= ADMIN: bind UI za dodavanje zgrade + upravnika ================= */
+function bindAdminBuildingsManagerUI(){
+  const wrap = document.getElementById("adminBuildingsWrap");
+  if(!wrap) return;
+
+  // samo admin
+  if(CURRENT_SESSION?.role !== "admin") return;
+
+  // ne dupliraj bind
+  if(wrap.dataset.boundMgr === "1") return;
+  wrap.dataset.boundMgr = "1";
+
+  const mgrSel = document.getElementById("bMgrSelect");
+  const addMgrBtn = document.getElementById("addMgrBtn");
+  const newMgrWrap = document.getElementById("newMgrWrap");
+
+  const mgrName = document.getElementById("mgrName");
+  const mgrUser = document.getElementById("mgrUser");
+  const mgrPass = document.getElementById("mgrPass");
+  const createMgrBtn = document.getElementById("createMgrBtn");
+
+  const codeI   = document.getElementById("adminBCode");
+  const titleI  = document.getElementById("adminBTitle");
+  const streetI = document.getElementById("adminBStreet");
+  const numberI = document.getElementById("adminBNumber");
+  const unitsI  = document.getElementById("adminBUnits");
+  const addBBtn = document.getElementById("adminAddBuildingBtn");
+
+  function refreshManagersSelect(selectId){
+    if(!mgrSel) return;
+    const ms = listManagers();
+
+    mgrSel.innerHTML = `<option value="">— Izaberi upravnika —</option>`;
+    ms.forEach(m => {
+      const opt = document.createElement("option");
+      opt.value = m.id;
+      opt.textContent = `${m.name} (${m.username})`;
+      mgrSel.appendChild(opt);
+    });
+
+    if(selectId) mgrSel.value = selectId;
+  }
+
+  refreshManagersSelect();
+
+  // toggle: forma novi upravnik
+  if(addMgrBtn && newMgrWrap && !addMgrBtn.dataset.bound){
+    addMgrBtn.addEventListener("click", () => {
+      const isHidden = (newMgrWrap.style.display === "none" || !newMgrWrap.style.display);
+      newMgrWrap.style.display = isHidden ? "block" : "none";
+    });
+    addMgrBtn.dataset.bound = "1";
+  }
+
+  // kreiraj upravnika
+  if(createMgrBtn && !createMgrBtn.dataset.bound){
+    createMgrBtn.addEventListener("click", () => {
+      try{
+        const nu = addManagerUser({
+          name: mgrName?.value || "",
+          username: mgrUser?.value || "",
+          password: mgrPass?.value || ""
+        });
+
+        if(mgrName) mgrName.value = "";
+        if(mgrUser) mgrUser.value = "";
+        if(mgrPass) mgrPass.value = "";
+        if(newMgrWrap) newMgrWrap.style.display = "none";
+
+        refreshManagersSelect(nu.id);
+        alert("Upravnik je kreiran.");
+      }catch(e){
+        alert(e?.message || "Greška pri kreiranju upravnika.");
+      }
+    });
+    createMgrBtn.dataset.bound = "1";
+  }
+
+  // dodaj zgradu + dodeli upravniku
+  if(addBBtn && !addBBtn.dataset.bound){
+    addBBtn.addEventListener("click", () => {
+      try{
+        const code   = (codeI?.value || "").trim();
+        const title  = (titleI?.value || "").trim();
+        const street = (streetI?.value || "").trim();
+        const number = (numberI?.value || "").trim();
+        const units  = Number(unitsI?.value || 0);
+
+        if(!code || !title || !street || !number || !units){
+          alert("Popuni sva polja za zgradu (uključujući broj stanova).");
+          return;
+        }
+
+        const managerId = (mgrSel?.value || "").trim();
+        if(!managerId){
+          alert("Izaberi upravnika za ovu zgradu.");
+          return;
+        }
+
+        // ✅ kreiraj zgradu (tvoja postojeća funkcija mora postojati)
+        const newB = adminAddBuilding({ code, title, street, number, units, managerId });
+
+        // ✅ dodeli zgradu upravniku
+        assignBuildingToManager(managerId, newB.id);
+
+        // očisti polja
+        if(codeI) codeI.value = "";
+        if(titleI) titleI.value = "";
+        if(streetI) streetI.value = "";
+        if(numberI) numberI.value = "";
+        if(unitsI) unitsI.value = "";
+
+        // osveži admin listu zgrada (ako postoji)
+        if(typeof renderAdminBuildings === "function") renderAdminBuildings();
+
+        // prebaci admina na novu zgradu (opciono)
+        if(typeof setActiveBuilding === "function") setActiveBuilding(newB.id);
+        if(typeof applySearchFilter === "function") applySearchFilter();
+
+        alert("Zgrada je dodata i dodeljena upravniku.");
+      }catch(err){
+        alert(err?.message || "Greška pri dodavanju zgrade.");
+      }
+    });
+    addBBtn.dataset.bound = "1";
+  }
 }
 
 function bindAdminFinSwitch(){
@@ -7119,32 +7351,37 @@ function bindFinanceTabs(){
   if(bEntries.dataset.boundTabs === "1") return;
   bEntries.dataset.boundTabs = "1";
 
-  function setActive(which){
-    wEntries.style.display = (which === "entries") ? "block" : "none";
-    wOwners.style.display  = (which === "owners")  ? "block" : "none";
-    wDues.style.display    = (which === "dues")    ? "block" : "none";
+ function setActive(which){
+  wEntries.style.display = (which === "entries") ? "block" : "none";
+  wOwners.style.display  = (which === "owners")  ? "block" : "none";
+  wDues.style.display    = (which === "dues")    ? "block" : "none";
 
-    bEntries.classList.toggle("btnPrimary", which === "entries");
-    bEntries.classList.toggle("btnGhost",   which !== "entries");
+  bEntries.classList.toggle("btnPrimary", which === "entries");
+  bEntries.classList.toggle("btnGhost",   which !== "entries");
 
-    bOwners.classList.toggle("btnPrimary",  which === "owners");
-    bOwners.classList.toggle("btnGhost",    which !== "owners");
+  bOwners.classList.toggle("btnPrimary",  which === "owners");
+  bOwners.classList.toggle("btnGhost",    which !== "owners");
 
-    bDues.classList.toggle("btnPrimary",    which === "dues");
-    bDues.classList.toggle("btnGhost",      which !== "dues");
+  bDues.classList.toggle("btnPrimary",    which === "dues");
+  bDues.classList.toggle("btnGhost",      which !== "dues");
 
-    // ✅ kad uđeš u tab "Vlasnici stanova" - bind/refresh svega što tu živi
-    if(which === "owners"){
-      const bid = (typeof activeBid === "function") ? activeBid() : activeBid;
-      if(bid){
-        if(typeof renderAdminUnits === "function") renderAdminUnits(bid);   // Dodaj stan (admin + upravnik)
-        if(typeof renderUnitOwners === "function") renderUnitOwners(bid);   // tabela vlasnika
-      }
-      if(typeof renderAdminBuildings === "function") renderAdminBuildings(); // Dodaj zgradu (samo admin)
+  // ✅ kad uđeš u tab "Vlasnici stanova"
+  if(which === "owners"){
+    const bid = activeBid();
+    if(bid){
+      if(typeof renderAdminUnits === "function") renderAdminUnits(bid);   // Dodaj stan (admin + upravnik)
+      if(typeof renderUnitOwners === "function") renderUnitOwners(bid);   // tabela vlasnika
     }
 
-    applyFinanceRoleUI();
+    if(typeof renderAdminBuildings === "function") renderAdminBuildings(); // Dodaj zgradu (samo admin)
+
+    // ✅ oživi select upravnika + dodaj novog upravnika + dodela zgrade
+    if(typeof bindAdminBuildingsManagerUI === "function") bindAdminBuildingsManagerUI();
   }
+
+  // ✅ sakrij/prikaži admin blokove u zavisnosti od aktivnog taba + role
+  if(typeof applyFinanceRoleUI === "function") applyFinanceRoleUI();
+}
 
   bEntries.addEventListener("click", () => setActive("entries"));
   bOwners.addEventListener("click", () => setActive("owners"));
