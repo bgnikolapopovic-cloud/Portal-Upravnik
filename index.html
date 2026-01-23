@@ -6049,19 +6049,28 @@ function renderAdminBuildings(){
 
       const newB = adminAddBuilding({ code, title, street, number, units });
 
-      // očisti polja
-      codeI.value = "";
-      titleI.value = "";
-      streetI.value = "";
-      numberI.value = "";
-      unitsI.value = "";
+// ✅ NOVO: dodaj zgradu u session listu da bude vidljiva u izboru/dropdown-u odmah
+if(CURRENT_SESSION){
+  CURRENT_SESSION.buildings = CURRENT_SESSION.buildings || [];
+  if(!CURRENT_SESSION.buildings.includes(newB.id)){
+    CURRENT_SESSION.buildings.push(newB.id);
+    saveSession(CURRENT_SESSION);
+  }
+}
 
-      redraw();
+// očisti polja
+codeI.value = "";
+titleI.value = "";
+streetI.value = "";
+numberI.value = "";
+unitsI.value = "";
 
-      // prebaci admina na novu zgradu
-      setActiveBuilding(newB.id);
-      applySearchFilter();
-      showPage("finansije");
+redraw();
+
+// prebaci admina na novu zgradu
+setActiveBuilding(newB.id);
+applySearchFilter();
+showPage("finansije");
     }catch(err){
       alert(err?.message || "Greška pri dodavanju zgrade.");
     }
