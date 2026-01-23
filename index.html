@@ -3873,7 +3873,8 @@ if(CURRENT_SESSION.role === "stanar"){
   enterPortal();
   return;
 }
-
+}
+  
 // ✅ AUTH: pronađi usera iz DB (pu_users_db_v1)
 function findUserFromDB(username, password){
   const u = (username || "").trim().toLowerCase();
