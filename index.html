@@ -2136,478 +2136,422 @@ gap: 10px;
       </div>
     </div>
 
-    <!-- ✅ TABOVI: ISTO ZA UPRAVNIKA I ADMINA -->
+    <!-- ✅ TABOVI -->
     <div class="fRow" data-role="upravnik" style="margin-top:12px; gap:10px;">
       <button class="btn btnPrimary" id="finTabEntries">Finansijske promene</button>
       <button class="btn btnGhost" id="finTabOwners">Vlasnici stanova</button>
       <button class="btn btnGhost" id="finTabDues">Dugovanja stanara</button>
     </div>
 
-    <!-- ✅ ADMIN: UPRAVLJANJE STANOVIMA (ISPOD TABOVA) -->
-    <div id="adminUnitsWrap" data-role="admin" style="display:none; margin-top:14px;">
-      <div class="badge">Upravljanje stanovima (samo admin)</div>
+    <!-- ================= TAB CONTENT ================= -->
 
-      <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end;">
-        <button class="btn btnPrimary" type="button" id="adminAddUnitBtn">Dodaj stan</button>
-        <div class="smallText" style="opacity:.75">
-          Dodaje novi stan (npr. BM25-026). Ime vlasnika unosi admin.
-        </div>
-      </div>
+    <!-- ✅ TAB: FINANSIJSKE PROMENE -->
+    <div id="finTabWrapEntries">
+      <div id="finEntriesWrap">
 
-      <div class="smallText" style="opacity:.7; margin-top:6px;">
-        Ovde menjaš samo vlasnika za izabrani stan.
-      </div>
+        <!-- ADMIN: Upravljanje zgradama -->
+        <div id="adminBuildingsWrap" data-role="admin" style="display:none; margin-top:14px;">
+          <div class="badge">Upravljanje zgradama (samo admin)</div>
 
-      <!-- ADMIN: forma za dodavanje stana (kao za zgradu) -->
-      <div id="adminAddUnitForm" style="display:none; margin-top:12px;">
-        <div class="fRow" style="gap:10px; align-items:flex-end; flex-wrap:wrap;">
-          <div class="field" style="min-width:160px;">
-            <label>Šifra zgrade</label>
-            <input id="adminUnitBCode" type="text" disabled>
+          <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+            <div class="field" style="min-width:160px;">
+              <label>Šifra zgrade (npr. BM25)</label>
+              <input id="adminBCode" type="text" placeholder="BM25">
+            </div>
+
+            <div class="field" style="min-width:260px; flex:1;">
+              <label>Naziv zgrade</label>
+              <input id="adminBTitle" type="text" placeholder="Bore Markovića 25">
+            </div>
+
+            <div class="field" style="min-width:220px; flex:1;">
+              <label>Ulica</label>
+              <input id="adminBStreet" type="text" placeholder="Bore Markovića">
+            </div>
+
+            <div class="field" style="min-width:120px;">
+              <label>Broj</label>
+              <input id="adminBNumber" type="text" placeholder="25">
+            </div>
+
+            <div class="field" style="min-width:120px;">
+              <label>Broj stanova</label>
+              <input id="adminBUnits" type="number" min="1" placeholder="25">
+            </div>
+
+            <button class="btn btnPrimary" type="button" id="adminAddBuildingBtn">Dodaj zgradu</button>
           </div>
 
-          <div class="field" style="min-width:320px; flex:1;">
-            <label>Adresa</label>
-            <input id="adminUnitAddr" type="text" disabled>
-          </div>
-
-          <div class="field" style="min-width:260px; flex:1;">
-            <label>Ime i prezime vlasnika</label>
-            <input id="adminUnitOwner" type="text" placeholder="npr. Marko Marković">
-          </div>
-
-          <div class="field" style="min-width:180px;">
-            <label>Novi ID stana</label>
-            <input id="adminUnitCode" type="text" placeholder="npr. BM25-026">
-          </div>
-
-          <button class="btn btnPrimary" type="button" id="adminSaveUnitBtn">Sačuvaj</button>
-          <button class="btn btnGhost" type="button" id="adminCancelUnitBtn">Odustani</button>
-        </div>
-
-        <div class="smallText" style="opacity:.75; margin-top:8px;">
-          ID stana se predlaže automatski, možeš ga ručno izmeniti.
-        </div>
-      </div>
-
-      <div id="adminUnitsList" class="list" style="margin-top:10px;"></div>
-
-      <!-- ADMIN: detalji stana (otvara se klikom na red) -->
-      <div id="adminUnitDetails" style="display:none; margin-top:12px;">
-        <div class="badge" id="audTitle">Stan</div>
-
-        <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
-          <div class="field" style="min-width:180px;">
-            <label>ID stana</label>
-            <input id="audUnitCode" type="text" disabled>
-          </div>
-
-          <div class="field" style="min-width:260px; flex:1;">
-            <label>Ime i prezime vlasnika</label>
-            <input id="audOwner" type="text" placeholder="npr. Marko Marković">
-          </div>
-
-          <button class="btn btnPrimary" type="button" id="audSaveBtn">Sačuvaj</button>
-          <button class="btn btnGhost" type="button" id="audCloseBtn">Zatvori</button>
-          <button class="btn btnGhost" type="button" id="audDeleteBtn">Obriši</button>
-        </div>
-      </div>
-    </div>
-
-    <div id="finEntriesWrap">
-
-      <!-- ADMIN: Upravljanje zgradama -->
-      <div id="adminBuildingsWrap" data-role="admin" style="display:none; margin-top:14px;">
-        <div class="badge">Upravljanje zgradama (samo admin)</div>
-
-        <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
-          <div class="field" style="min-width:160px;">
-            <label>Šifra zgrade (npr. BM25)</label>
-            <input id="adminBCode" type="text" placeholder="BM25">
-          </div>
-
-          <div class="field" style="min-width:260px; flex:1;">
-            <label>Naziv zgrade</label>
-            <input id="adminBTitle" type="text" placeholder="Bore Markovića 25">
-          </div>
-
-          <div class="field" style="min-width:220px; flex:1;">
-            <label>Ulica</label>
-            <input id="adminBStreet" type="text" placeholder="Bore Markovića">
-          </div>
-
-          <div class="field" style="min-width:120px;">
-            <label>Broj</label>
-            <input id="adminBNumber" type="text" placeholder="25">
-          </div>
-
-          <div class="field" style="min-width:120px;">
-            <label>Broj stanova</label>
-            <input id="adminBUnits" type="number" min="1" placeholder="25">
-          </div>
-
-          <button class="btn btnPrimary" type="button" id="adminAddBuildingBtn">
-            Dodaj zgradu
-          </button>
+          <div id="adminBuildingsList" class="list" style="margin-top:10px;"></div>
         </div>
 
-        <div id="adminBuildingsList" class="list" style="margin-top:10px;"></div>
-      </div>
-         
-<!-- FIN HEADER CONTROLS (filter/sort) -->
-<div class="fRow" style="margin-top:12px; gap:10px; align-items:flex-end;">
-  <div class="half field" style="margin-top:0;">
-    <label for="finFilterType">Tip</label>
-    <select id="finFilterType">
-      <option value="svi">Svi</option>
-      <option value="prihod">Prihod</option>
-      <option value="rashod">Rashod</option>
-    </select>
-  </div>
+        <!-- FIN HEADER CONTROLS -->
+        <div class="fRow" style="margin-top:12px; gap:10px; align-items:flex-end;">
+          <div class="half field">
+            <label for="finFilterType">Tip</label>
+            <select id="finFilterType">
+              <option value="svi">Svi</option>
+              <option value="prihod">Prihod</option>
+              <option value="rashod">Rashod</option>
+            </select>
+          </div>
 
-  <div class="half field" style="margin-top:0;">
-    <label for="finFilterCategory">Kategorija</label>
-    <select id="finFilterCategory">
-      <option value="">Sve</option>
-      <option value="hitna intervencija">Hitna intervencija</option>
-      <option value="tekuće održavanje">Tekuće održavanje</option>
-      <option value="lift">Lift</option>
-      <option value="ostalo">Ostalo</option>
-      <option value="drugo">Drugo</option>
-    </select>
-  </div>
+          <div class="half field">
+            <label for="finFilterCategory">Kategorija</label>
+            <select id="finFilterCategory">
+              <option value="">Sve</option>
+              <option value="hitna intervencija">Hitna intervencija</option>
+              <option value="tekuće održavanje">Tekuće održavanje</option>
+              <option value="lift">Lift</option>
+              <option value="ostalo">Ostalo</option>
+              <option value="drugo">Drugo</option>
+            </select>
+          </div>
 
-  <div class="half field" style="margin-top:0; display:none;">
-  <label for="finSortBy">Sortiranje</label>
-  <select id="finSortBy">
-    <option value="date-desc">Datum ↓</option>
-    <option value="date-asc">Datum ↑</option>
-    <option value="amount-desc">Iznos ↓</option>
-    <option value="amount-asc">Iznos ↑</option>
-  </select>
-</div>
+          <div class="grow field">
+            <label for="finLocalSearch">Pretraga</label>
+            <input id="finLocalSearch" type="text" placeholder="npr. lift, servis, 120000...">
+          </div>
+        </div>
 
+        <!-- ✅ POČETNO STANJE (UPRAVNIK) -->
+        <div class="smallText" data-role="upravnik" style="margin-top:12px;">
+          <div class="fRow">
+            <div class="grow" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <span class="badge" style="font-size:11px; padding:6px 10px; opacity:.75;">Početno stanje (RSD)</span>
 
-  <div class="grow field" style="margin-top:0;">
-    <label for="finLocalSearch">Pretraga</label>
-    <input id="finLocalSearch" type="text" placeholder="npr. lift, servis, 120000...">
-  </div>
-</div>
-<!-- /FIN HEADER CONTROLS -->
-         
-          <!-- ✅ DODATO: POCETNO STANJE (samo admin/upravnik) -->
-          <div class="smallText" data-role="upravnik" style="margin-top:12px;">
-  <div class="fRow">
-    <div class="grow" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-      <span class="badge" style="font-size:11px; padding:6px 10px; opacity:.75;">
-        Početno stanje (RSD)
-      </span>
-
-      <div class="field openingBalanceWrap" style="margin-top:0; width:220px; display:flex; align-items:center; gap:8px;">
-  <input id="openingBalanceInput" type="number" step="0.01"
-    placeholder="npr. 948889"
-    style="height:36px; border-radius:14px; padding:8px 10px;">
-
-  <span id="openingBalanceLock"
-        class="lockIcon locked"
-        title="Zaključano – kliknite Izmeni">
-  </span>
-</div>
-      <button class="btn btnGhost" id="editOpeningBalanceBtn" type="button"
-        style="flex:unset; padding:10px 14px; border-radius:14px;">
-  Izmeni
-</button>
-
-<button class="btn btnGhost" id="saveOpeningBalanceBtn" type="button"
-        style="flex:unset; padding:10px 14px; border-radius:14px; display:none;">
-  Sačuvaj
-</button>
-    </div>
-  </div>
-</div>
-
-             <div class="smallText" data-role="admin" style="margin-top:12px;">
-  <div class="fRow">
-    <div class="grow" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-      <span class="badge" style="font-size:11px; padding:6px 10px; opacity:.75;">
-        Početno stanje (RSD)
-      </span>
-
-      <div class="field" style="margin-top:0; width:220px;">
-        <input id="openingBalanceInputAdmin" type="number" step="0.01" placeholder="npr. 948889"
-               style="height:36px; border-radius:14px; padding:8px 10px;">
-      </div>
-
-      <button class="btn btnGhost" id="editOpeningBalanceBtnAdmin" type="button"
-        style="flex:unset; padding:10px 14px; border-radius:14px;">
-  Izmeni
-</button>
-
-<button class="btn btnGhost" id="saveOpeningBalanceBtnAdmin" type="button"
-        style="flex:unset; padding:10px 14px; border-radius:14px; display:none;">
-  Sačuvaj
-</button>
-    </div>
-  </div>
-</div>
-
-          <!-- ✅ /DODATO -->
-
-          <div class="smallText" data-role="upravnik" style="margin-top:12px;">
-            <div class="fRow">
-              <div class="grow">
-                <span class="badge">Upravnik</span>
-                <span class="badge" style="margin-left:8px;">Upload limit: 10MB po unosu</span>
+              <div class="field openingBalanceWrap" style="width:220px; display:flex; gap:8px;">
+                <input id="openingBalanceInput" type="number" step="0.01" placeholder="npr. 948889">
+                <span id="openingBalanceLock" class="lockIcon locked"></span>
               </div>
-              <div>
-                <button class="btn btnGhost" id="addFinanceBtn" type="button">Dodaj finansijsku stavku</button>
-              </div>
+
+              <button class="btn btnGhost" id="editOpeningBalanceBtn" type="button">Izmeni</button>
+              <button class="btn btnGhost" id="saveOpeningBalanceBtn" type="button" style="display:none;">Sačuvaj</button>
             </div>
           </div>
+        </div>
 
-          <div id="financeFormWrap" data-role="upravnik" style="display:none; margin-top:12px;">
-            <div class="fRow">
-              <div class="half field">
-                <label for="fDate">Datum</label>
-                <input id="fDate" type="date">
+        <!-- ✅ POČETNO STANJE (ADMIN) -->
+        <div class="smallText" data-role="admin" style="margin-top:12px;">
+          <div class="fRow">
+            <div class="grow" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <span class="badge" style="font-size:11px; padding:6px 10px; opacity:.75;">Početno stanje (RSD)</span>
+
+              <div class="field" style="margin-top:0; width:220px;">
+                <input id="openingBalanceInputAdmin" type="number" step="0.01" placeholder="npr. 948889"
+                       style="height:36px; border-radius:14px; padding:8px 10px;">
               </div>
 
-              <div class="half field">
-                <label for="fType">Tip</label>
-                <select id="fType">
-                  <option value="rashod">Rashod</option>
-                  <option value="prihod">Prihod</option>
-                </select>
-              </div>
+              <button class="btn btnGhost" id="editOpeningBalanceBtnAdmin" type="button"
+                      style="flex:unset; padding:10px 14px; border-radius:14px;">Izmeni</button>
 
-              <div class="half field">
-                <label for="fCategory">Kategorija</label>
-                <select id="fCategory">
-                  <option value="hitna intervencija">Hitna intervencija</option>
-                  <option value="tekuće održavanje">Tekuće održavanje</option>
-                  <option value="lift">Lift</option>
-                  <option value="ostalo">Ostalo</option>
-                  <option value="drugo">Drugo</option>
-                </select>
-              </div>
-
-              <div class="half field">
-                <label for="fFirm">Firma (dropdown)</label>
-                <select id="fFirm"></select>
-              </div>
-
-              <div class="grow field">
-                <label for="fFirmNew">Nova firma (opciono)</label>
-                <input id="fFirmNew" type="text" placeholder="Unesi novu firmu ako ne postoji u listi">
-              </div>
-
-              <div class="grow field">
-                <label for="fDesc">Opis</label>
-                <input id="fDesc" type="text" placeholder="npr. placanje racuna / uplata stanara">
-              </div>
-
-              <div class="grow field">
-                <label for="fAmount">Iznos (RSD)</label>
-                <input id="fAmount" type="number" step="0.01" placeholder="npr. 12500">
-              </div>
-
-              <div class="grow field">
-                <label for="fDocs">Dokumenti (više fajlova)</label>
-                <input id="fDocs" type="file" multiple accept="application/pdf">
-                <div class="smallText" style="margin-top:6px;">
-                  Ukupna veličina fajlova po unosu max 10MB. Klik na fajl u listi = otvori PDF.
-                </div>
-              </div>
-<div class="grow" id="existingDocsWrap" style="display:none; margin-top:6px;">
-  <div class="smallText" style="margin-top:6px;">
-    Postojeći dokumenti (klik “Ukloni” da izbrišeš iz stavke):
-  </div>
-  <ul class="fileList" id="existingDocsList"></ul>
-</div>
-
-              <div class="grow" style="display:flex; gap:10px; margin-top:6px;">
-                <button class="btn btnPrimary" id="saveFinanceBtn" type="button">Sačuvaj</button>
-                <button class="btn btnGhost" id="cancelFinanceBtn" type="button">Otkaži</button>
-              </div>
-
-              <div class="error" id="financeError" style="display:none;">Greška: proveri polja i limit fajlova (10MB).</div>
+              <button class="btn btnGhost" id="saveOpeningBalanceBtnAdmin" type="button"
+                      style="flex:unset; padding:10px 14px; border-radius:14px; display:none;">Sačuvaj</button>
             </div>
           </div>
+        </div>
 
-          <ul class="boardList" id="financeList"></ul>
+        <!-- ✅ UPRAVNIK: akcije -->
+        <div class="smallText" data-role="upravnik" style="margin-top:12px;">
+          <div class="fRow">
+            <div class="grow">
+              <span class="badge">Upravnik</span>
+              <span class="badge" style="margin-left:8px;">Upload limit: 10MB po unosu</span>
+            </div>
+            <div>
+              <button class="btn btnGhost" id="addFinanceBtn" type="button">Dodaj finansijsku stavku</button>
+            </div>
+          </div>
+        </div>
 
-</div><!-- /finEntriesWrap -->
+        <div id="financeFormWrap" data-role="upravnik" style="display:none; margin-top:12px;">
+          <div class="fRow">
+            <div class="half field">
+              <label for="fDate">Datum</label>
+              <input id="fDate" type="date">
+            </div>
 
-          <div id="finDuesWrap" style="display:none;">
-         
-<!-- ✅ DUG / PRETPLATA STANARA (samo upravnik) -->
-<div class="smallText" data-role="upravnik" style="margin-top:14px;">
-  <span class="badge">Dug / pretplata stanara</span>
+            <div class="half field">
+              <label for="fType">Tip</label>
+              <select id="fType">
+                <option value="rashod">Rashod</option>
+                <option value="prihod">Prihod</option>
+              </select>
+            </div>
 
-  <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end;">
-    <div class="half field" style="margin-top:0;">
-      <label for="monthlyFeeInput">Mesečna obaveza (RSD)</label>
-      <input id="monthlyFeeInput" type="number" min="0" step="1" value="2000">
+            <div class="half field">
+              <label for="fCategory">Kategorija</label>
+              <select id="fCategory">
+                <option value="hitna intervencija">Hitna intervencija</option>
+                <option value="tekuće održavanje">Tekuće održavanje</option>
+                <option value="lift">Lift</option>
+                <option value="ostalo">Ostalo</option>
+                <option value="drugo">Drugo</option>
+              </select>
+            </div>
+
+            <div class="half field">
+              <label for="fFirm">Firma (dropdown)</label>
+              <select id="fFirm"></select>
+            </div>
+
+            <div class="grow field">
+              <label for="fFirmNew">Nova firma (opciono)</label>
+              <input id="fFirmNew" type="text" placeholder="Unesi novu firmu ako ne postoji u listi">
+            </div>
+
+            <div class="grow field">
+              <label for="fDesc">Opis</label>
+              <input id="fDesc" type="text" placeholder="npr. placanje racuna / uplata stanara">
+            </div>
+
+            <div class="grow field">
+              <label for="fAmount">Iznos (RSD)</label>
+              <input id="fAmount" type="number" step="0.01" placeholder="npr. 12500">
+            </div>
+
+            <div class="grow field">
+              <label for="fDocs">Dokumenti (više fajlova)</label>
+              <input id="fDocs" type="file" multiple accept="application/pdf">
+              <div class="smallText" style="margin-top:6px;">
+                Ukupna veličina fajlova po unosu max 10MB. Klik na fajl u listi = otvori PDF.
+              </div>
+            </div>
+
+            <div class="grow" id="existingDocsWrap" style="display:none; margin-top:6px;">
+              <div class="smallText" style="margin-top:6px;">
+                Postojeći dokumenti (klik “Ukloni” da izbrišeš iz stavke):
+              </div>
+              <ul class="fileList" id="existingDocsList"></ul>
+            </div>
+
+            <div class="grow" style="display:flex; gap:10px; margin-top:6px;">
+              <button class="btn btnPrimary" id="saveFinanceBtn" type="button">Sačuvaj</button>
+              <button class="btn btnGhost" id="cancelFinanceBtn" type="button">Otkaži</button>
+            </div>
+
+            <div class="error" id="financeError" style="display:none;">Greška: proveri polja i limit fajlova (10MB).</div>
+          </div>
+        </div>
+
+        <ul class="boardList" id="financeList"></ul>
+
+      </div>
     </div>
 
-    <div class="half field" style="margin-top:0;">
-      <label for="duesStartMonth">Početni mesec obračuna</label>
-      <input id="duesStartMonth" type="month">
+    <!-- ✅ TAB: VLASNICI STANOVA -->
+    <div id="finTabWrapOwners" style="display:none;">
+
+      <!-- ADMIN: Upravljanje stanovima -->
+      <div id="adminUnitsWrap" data-role="admin" style="display:none; margin-top:14px;">
+        <div class="badge">Upravljanje stanovima (samo admin)</div>
+
+        <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end;">
+          <button class="btn btnPrimary" type="button" id="adminAddUnitBtn">Dodaj stan</button>
+          <div class="smallText" style="opacity:.75">
+            Dodaje novi stan (npr. BM25-026). Ime vlasnika unosi admin.
+          </div>
+        </div>
+
+        <div class="smallText" style="opacity:.7; margin-top:6px;">
+          Ovde menjaš samo vlasnika za izabrani stan.
+        </div>
+
+        <div id="adminAddUnitForm" style="display:none; margin-top:12px;">
+          <div class="fRow" style="gap:10px; align-items:flex-end; flex-wrap:wrap;">
+            <div class="field" style="min-width:160px;">
+              <label>Šifra zgrade</label>
+              <input id="adminUnitBCode" type="text" disabled>
+            </div>
+
+            <div class="field" style="min-width:320px; flex:1;">
+              <label>Adresa</label>
+              <input id="adminUnitAddr" type="text" disabled>
+            </div>
+
+            <div class="field" style="min-width:260px; flex:1;">
+              <label>Ime i prezime vlasnika</label>
+              <input id="adminUnitOwner" type="text">
+            </div>
+
+            <div class="field" style="min-width:180px;">
+              <label>Novi ID stana</label>
+              <input id="adminUnitCode" type="text">
+            </div>
+
+            <button class="btn btnPrimary" type="button" id="adminSaveUnitBtn">Sačuvaj</button>
+            <button class="btn btnGhost" type="button" id="adminCancelUnitBtn">Odustani</button>
+          </div>
+        </div>
+
+        <div id="adminUnitsList" class="list" style="margin-top:10px;"></div>
+      </div>
+
+      <!-- VLASNICI STANOVA -->
+      <div id="unitOwnersWrap" style="margin-top:16px;">
+        <div class="badge">Vlasnici stanova</div>
+
+        <div class="fRow" style="margin-top:10px;">
+          <div class="smallText" style="opacity:.75">
+            Unesi ime i prezime vlasnika za svaki stan. Stanar vidi samo svoje ime i prezime.
+          </div>
+        </div>
+
+        <div id="unitOwnersTable" class="list" style="margin-top:10px;"></div>
+      </div>
+
     </div>
 
-    <div>
-      <button class="btn btnGhost" id="saveDuesSettingsBtn" type="button" style="flex:unset;">
-        Sačuvaj podešavanja
-      </button>
+    <!-- ✅ TAB: DUGOVANJA -->
+    <div id="finTabWrapDues" style="display:none;">
+
+      <!-- ✅ DUG / PRETPLATA STANARA (samo upravnik) -->
+      <div class="smallText" data-role="upravnik" style="margin-top:14px;">
+        <span class="badge">Dug / pretplata stanara</span>
+
+        <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end;">
+          <div class="half field" style="margin-top:0;">
+            <label for="monthlyFeeInput">Mesečna obaveza (RSD)</label>
+            <input id="monthlyFeeInput" type="number" min="0" step="1" value="2000">
+          </div>
+
+          <div class="half field" style="margin-top:0;">
+            <label for="duesStartMonth">Početni mesec obračuna</label>
+            <input id="duesStartMonth" type="month">
+          </div>
+
+          <div>
+            <button class="btn btnGhost" id="saveDuesSettingsBtn" type="button" style="flex:unset;">Sačuvaj podešavanja</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="duesToolbar">
+        <div class="field" style="min-width:220px;">
+          <label for="duesSearch">Pretraga stanara</label>
+          <input id="duesSearch" type="text" placeholder="npr. BM25-002">
+        </div>
+
+        <div class="field" style="min-width:220px;">
+          <label for="duesFilter">Filter</label>
+          <select id="duesFilter">
+            <option value="svi">Svi</option>
+            <option value="dug">Samo dug</option>
+            <option value="nula">Samo 0</option>
+            <option value="pretplata">Samo pretplata</option>
+          </select>
+        </div>
+
+        <div class="field" style="min-width:220px;">
+          <label for="duesSort">Sortiranje</label>
+          <select id="duesSort">
+            <option value="user-asc">Korisnik A–Z</option>
+            <option value="saldo-asc">Najveći dug</option>
+            <option value="saldo-desc">Najveća pretplata</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="duesGrid" id="duesGrid"></div>
+
+      <!-- UPLATA -->
+      <div id="duesPayWrap" style="display:none; margin-top:14px;">
+        <div class="badge" id="duesPayTitle">Uplata</div>
+
+        <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end;">
+          <div class="half field" style="margin-top:0;">
+            <label for="duesPayDate">Datum uplate</label>
+            <input id="duesPayDate" type="date">
+          </div>
+
+          <div class="half field" style="margin-top:0;">
+            <label for="duesPayAmount">Iznos (RSD)</label>
+            <input id="duesPayAmount" type="number" step="0.01" placeholder="npr. 2000">
+          </div>
+
+          <div class="grow field" style="margin-top:0;">
+            <label for="duesPayNote">Napomena (opciono)</label>
+            <input id="duesPayNote" type="text" placeholder="npr. januar 2026 / dug / korekcija">
+          </div>
+        </div>
+
+        <div class="field" style="margin-top:10px;">
+          <label for="duesPayDocs">PDF potvrde (više fajlova, max 10MB)</label>
+          <input id="duesPayDocs" type="file" multiple accept="application/pdf">
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
+          <button class="btn btnPrimary" id="duesPaySaveBtn" type="button">Sačuvaj uplatu</button>
+          <button class="btn btnGhost" id="duesPayCancelBtn" type="button">Otkaži</button>
+        </div>
+
+        <div class="error" id="duesPayError" style="display:none;"></div>
+      </div>
+
+      <!-- IZMJENA / KOREKCIJA -->
+      <div id="duesAdjWrap" style="display:none; margin-top:14px;">
+        <div class="badge" id="duesAdjTitle">Izmena</div>
+
+        <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end;">
+          <div class="half field">
+            <label for="duesAdjDate">Datum izmene</label>
+            <input id="duesAdjDate" type="date">
+          </div>
+
+          <div class="half field">
+            <label for="duesAdjKind">Akcija</label>
+            <select id="duesAdjKind">
+              <option value="plus">Povećaj iznos</option>
+              <option value="minus">Smanji iznos</option>
+            </select>
+          </div>
+
+          <div class="half field">
+            <label for="duesAdjAmount">Iznos (RSD)</label>
+            <input id="duesAdjAmount" type="number" step="0.01">
+          </div>
+
+          <div class="grow field">
+            <label for="duesAdjNote">Razlog</label>
+            <input id="duesAdjNote" type="text" placeholder="npr. korekcija / greška u uplati">
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
+          <button class="btn btnPrimary" id="duesAdjSaveBtn" type="button">Sačuvaj izmenu</button>
+          <button class="btn btnGhost" id="duesAdjCancelBtn" type="button">Otkaži</button>
+        </div>
+
+        <div class="error" id="duesAdjError" style="display:none;"></div>
+      </div>
+
+      <!-- STANAR: moj dug / pretplata -->
+      <div class="smallText" data-role="stanar" id="tenantDuesBox" style="margin-top:14px;">
+        <span class="badge">Moj dug / pretplata</span>
+
+        <div class="fRow" style="margin-top:10px; gap:10px;">
+          <span class="badge status-uplaceno">
+            Uplaćeno: <b id="tPaid">0,00</b> RSD
+          </span>
+
+          <span class="badge status-obaveza">
+            Obaveza: <b id="tExpected">0,00</b> RSD
+          </span>
+
+          <span class="badge status-dug" id="tSaldoBadge">0,00</span>
+        </div>
+
+        <div class="smallText" id="tPeriod" style="margin-top:8px;"></div>
+      </div>
+
     </div>
-  </div>
 
-  <!-- ===== Dugovanja stanara: toolbar + grid ===== -->
-<div class="duesToolbar">
-  <div class="field" style="min-width:220px;">
-    <label for="duesSearch">Pretraga stanara</label>
-    <input id="duesSearch" type="text" placeholder="npr. BM25-002">
-  </div>
+  </section>
+</section>
 
-  <div class="field" style="min-width:220px;">
-    <label for="duesFilter">Filter</label>
-    <select id="duesFilter">
-      <option value="svi">Svi</option>
-      <option value="dug">Samo dug</option>
-      <option value="nula">Samo 0</option>
-      <option value="pretplata">Samo pretplata</option>
-    </select>
-  </div>
+<!-- OGLASNA -->
+<section class="page" id="page-oglasna">
 
-  <div class="field" style="min-width:220px;">
-    <label for="duesSort">Sortiranje</label>
-    <select id="duesSort">
-      <option value="user-asc">Korisnik A–Z</option>
-      <option value="saldo-asc">Najveći dug</option>
-      <option value="saldo-desc">Najveća pretplata</option>
-    </select>
-  </div>
-</div>
-
-<div class="duesGrid" id="duesGrid"></div>
-
-
-<!-- ===== UPLATA ===== -->
-<div id="duesPayWrap" style="display:none; margin-top:14px;">
-  <div class="badge" id="duesPayTitle">Uplata</div>
-
-  <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end;">
-    <div class="half field" style="margin-top:0;">
-      <label for="duesPayDate">Datum uplate</label>
-      <input id="duesPayDate" type="date">
-    </div>
-
-    <div class="half field" style="margin-top:0;">
-      <label for="duesPayAmount">Iznos (RSD)</label>
-      <input id="duesPayAmount" type="number" step="0.01" placeholder="npr. 2000">
-    </div>
-
-    <div class="grow field" style="margin-top:0;">
-      <label for="duesPayNote">Napomena (opciono)</label>
-      <input id="duesPayNote" type="text" placeholder="npr. januar 2026 / dug / korekcija">
-    </div>
-  </div>
-    
-  <div class="field" style="margin-top:10px;">
-    <label for="duesPayDocs">PDF potvrde (više fajlova, max 10MB)</label>
-    <input id="duesPayDocs" type="file" multiple accept="application/pdf">
-  </div>
-
-  <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
-    <button class="btn btnPrimary" id="duesPaySaveBtn" type="button">Sačuvaj uplatu</button>
-    <button class="btn btnGhost" id="duesPayCancelBtn" type="button">Otkaži</button>
-  </div>
-
-  <div class="error" id="duesPayError" style="display:none;"></div>
-</div>
-<!-- /duesPayWrap -->
-
-
-<!-- ===== VLASNICI STANOVA (UPRAVNIK / ADMIN) ===== -->
-<div id="unitOwnersWrap" style="display:none; margin-top:16px;">
-  <div class="badge">Vlasnici stanova</div>
-
-  <div class="fRow" style="margin-top:10px;">
-    <div class="smallText" style="opacity:.75">
-      Unesi ime i prezime vlasnika za svaki stan.  
-      Stanar vidi samo svoje ime i prezime.
-    </div>
-  </div>
-
-  <div id="unitOwnersTable" class="list" style="margin-top:10px;"></div>
-</div>
-
-
-<!-- ===== IZMJENA / KOREKCIJA (UPRAVNIK / ADMIN) ===== -->
-<div id="duesAdjWrap" style="display:none; margin-top:14px;">
-  <div class="badge" id="duesAdjTitle">Izmena</div>
-
-  <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end;">
-    <div class="half field">
-      <label for="duesAdjDate">Datum izmene</label>
-      <input id="duesAdjDate" type="date">
-    </div>
-
-    <div class="half field">
-      <label for="duesAdjKind">Akcija</label>
-      <select id="duesAdjKind">
-        <option value="plus">Povećaj iznos</option>
-        <option value="minus">Smanji iznos</option>
-      </select>
-    </div>
-
-    <div class="half field">
-      <label for="duesAdjAmount">Iznos (RSD)</label>
-      <input id="duesAdjAmount" type="number" step="0.01">
-    </div>
-
-    <div class="grow field">
-      <label for="duesAdjNote">Razlog</label>
-      <input id="duesAdjNote" type="text" placeholder="npr. korekcija / greška u uplati">
-    </div>
-  </div>
-
-  <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
-    <button class="btn btnPrimary" id="duesAdjSaveBtn" type="button">Sačuvaj izmenu</button>
-    <button class="btn btnGhost" id="duesAdjCancelBtn" type="button">Otkaži</button>
-  </div>
-
-  <div class="error" id="duesAdjError" style="display:none;"></div>
-</div>
-
-</div><!-- /finDuesWrap -->
-            
-          <!-- ✅ STANAR: moj dug / pretplata (read-only) -->
-<div class="smallText" data-role="stanar" id="tenantDuesBox" style="margin-top:14px;">
-  <span class="badge">Moj dug / pretplata</span>
-
-  <div class="fRow" style="margin-top:10px; gap:10px;">
-    <span class="badge status-uplaceno">
-  Uplaćeno: <b id="tPaid">0,00</b> RSD
-</span>
-
-<span class="badge status-obaveza">
-  Obaveza: <b id="tExpected">0,00</b> RSD
-</span>
-
-<span class="badge status-dug" id="tSaldoBadge">
-  0,00
-</span>
-  </div>
-
-  <div class="smallText" id="tPeriod" style="margin-top:8px;"></div>
-</div>
-
-        </section>
-      </section>
-
-      <!-- OGLASNA -->
-      <section class="page" id="page-oglasna">
         <section class="card">
           <h3>Oglasna tabla</h3>
 
@@ -6718,13 +6662,11 @@ function updateHomeSummary(){
 
   if(!monthSel || !yearSel || !applyBtn || !hidden) return;
 
-  // 1) Napuni godine (npr poslednjih 5 + sledećih 1)
   const now = new Date();
   const thisYear = now.getFullYear();
   const startY = thisYear - 5;
   const endY   = thisYear + 1;
 
-  // Ako select godina nema opcije ili nema dovoljno, popuni
   if (yearSel.options.length <= 1) {
     yearSel.innerHTML = '<option value="">Godina</option>';
     for(let y = endY; y >= startY; y--){
@@ -6735,7 +6677,6 @@ function updateHomeSummary(){
     }
   }
 
-  // 2) Postavi default na trenutni mesec/godinu
   const mm = String(now.getMonth() + 1).padStart(2,"0");
   monthSel.value = mm;
   yearSel.value = String(thisYear);
@@ -6750,36 +6691,26 @@ function updateHomeSummary(){
     }
 
     hidden.value = `${y}-${m}`;
-
-    // okini change event da postojeći kod preradi statistiku
     hidden.dispatchEvent(new Event("change", { bubbles:true }));
 
     if(hint) hint.textContent = `Izabrano: ${m}.${y}`;
   }
 
   applyBtn.addEventListener("click", updateHiddenAndTrigger);
-
-  // opcionalno: kada promeni mesec/godinu odmah upiši hint
   monthSel.addEventListener("change", () => { if(hint) hint.textContent = "Klikni Primeni"; });
   yearSel.addEventListener("change", () => { if(hint) hint.textContent = "Klikni Primeni"; });
 
-  // inicijalno pokreni odmah
   updateHiddenAndTrigger();
 })();
 
-  /* =========================
+/* =========================
    SIDEBAR LOGOUT
 ========================= */
-
 const sidebarLogout = document.getElementById("sidebarLogout");
 
 if (sidebarLogout) {
   sidebarLogout.addEventListener("click", (e) => {
     e.preventDefault();
-
-    // (opciono) potvrda
-    // if (!confirm("Da li ste sigurni da želite da se odjavite?")) return;
-
     clearSessions();
     CURRENT_SESSION = null;
     closeS();
@@ -6793,17 +6724,14 @@ function formatDateDMY(dateStr){
   return `${d}.${m}.${y}`;
 }
 
-  
 function renderUserBadge(){
   const el = document.getElementById("userBadge");
   if(!el) return;
-
-  // ❌ više ne prikazujemo ID / username gore desno
   el.textContent = "";
   el.style.display = "none";
 }
-  
-  // ================= ADMIN STATISTIKA: zatvaranje dropdowna klikom van =================
+
+/* ================= ADMIN STATISTIKA: zatvaranje dropdowna klikom van ================= */
 document.addEventListener("click", (e) => {
   const wrap = document.querySelector("#page-statistika .adminTopWrap");
   const menu = document.getElementById("adminBuildingMenuFin");
@@ -6811,35 +6739,29 @@ document.addEventListener("click", (e) => {
 
   if(!menu) return;
 
-  // klik unutar inputa ili dropdowna -> ne zatvaramo
   if(
     (wrap && wrap.contains(e.target)) ||
     (input && input.contains(e.target)) ||
     menu.contains(e.target)
   ) return;
 
-  // klik van -> zatvori
   menu.classList.add("hidden");
 });
 
-// ================= ADMIN STATISTIKA: otvori/sakrij dropdown po unosu =================
+/* ================= ADMIN STATISTIKA: otvori/sakrij dropdown po unosu ================= */
 (() => {
   const input = document.getElementById("uplAdminSearchFin");
   const menu  = document.getElementById("adminBuildingMenuFin");
   if(!input || !menu) return;
 
-  // kad klikneš u input: ako već ima nešto ukucano, prikaži listu
   input.addEventListener("focus", () => {
     if(input.value.trim().length) menu.classList.remove("hidden");
   });
 
-  // dok kucaš: ako ima teksta -> pokaži, ako je prazno -> sakrij
   input.addEventListener("input", () => {
     const q = input.value.trim();
     if(q.length){
       menu.classList.remove("hidden");
-      // tvoja funkcija koja renderuje/filteruje zgrade
-      // ako se kod tebe zove drugačije, zameni ovu liniju:
       if(typeof renderForQuery === "function") renderForQuery(q);
     }else{
       menu.classList.add("hidden");
@@ -6847,7 +6769,7 @@ document.addEventListener("click", (e) => {
   });
 })();
 
-// ================= ADMIN STATISTIKA: klik na "Otvori" -> zatvori dropdown =================
+/* ================= ADMIN STATISTIKA: klik na dugme u meniju ================= */
 (() => {
   const menu  = document.getElementById("adminBuildingMenuFin");
   const input = document.getElementById("uplAdminSearchFin");
@@ -6856,17 +6778,53 @@ document.addEventListener("click", (e) => {
   menu.addEventListener("click", (e) => {
     const btn = e.target.closest("button");
     if(!btn) return;
-
-    // Ako je klik na bilo koji button u meniju (npr. "Otvori"), zatvori dropdown
     menu.classList.add("hidden");
-
-    // (opciono) skini fokus sa inputa da se ne otvori odmah opet
     if(input) input.blur();
   });
 })();
 
-  
+/* ================= FIN TABOVI (Entries / Owners / Dues) ================= */
+function bindFinanceTabs(){
+  const bEntries = document.getElementById("finTabEntries");
+  const bOwners  = document.getElementById("finTabOwners");
+  const bDues    = document.getElementById("finTabDues");
+
+  const wEntries = document.getElementById("finTabWrapEntries");
+  const wOwners  = document.getElementById("finTabWrapOwners");
+  const wDues    = document.getElementById("finTabWrapDues");
+
+  if(!bEntries || !bOwners || !bDues || !wEntries || !wOwners || !wDues) return;
+
+  if(bEntries.dataset.boundTabs === "1") return;
+  bEntries.dataset.boundTabs = "1";
+
+  function setActive(which){
+    wEntries.style.display = (which === "entries") ? "block" : "none";
+    wOwners.style.display  = (which === "owners")  ? "block" : "none";
+    wDues.style.display    = (which === "dues")    ? "block" : "none";
+
+    bEntries.classList.toggle("btnPrimary", which === "entries");
+    bEntries.classList.toggle("btnGhost",   which !== "entries");
+
+    bOwners.classList.toggle("btnPrimary",  which === "owners");
+    bOwners.classList.toggle("btnGhost",    which !== "owners");
+
+    bDues.classList.toggle("btnPrimary",    which === "dues");
+    bDues.classList.toggle("btnGhost",      which !== "dues");
+  }
+
+  bEntries.addEventListener("click", () => setActive("entries"));
+  bOwners.addEventListener("click", () => setActive("owners"));
+  bDues.addEventListener("click", () => setActive("dues"));
+
+  setActive("entries");
+}
+
+/* POZIV */
+bindFinanceTabs();
+
 </script>
+
 
 <!-- Supabase SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
