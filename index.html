@@ -7329,8 +7329,15 @@ function formatDateDMY(dateStr){
 function renderUserBadge(){
   const el = document.getElementById("userBadge");
   if(!el) return;
-  el.textContent = "";
-  el.style.display = "none";
+
+  // prikazi samo adminu i upravniku
+  if(["admin","upravnik"].includes(CURRENT_SESSION?.role)){
+    el.textContent = CURRENT_SESSION?.username || "";
+    el.style.display = "inline-block";
+  }else{
+    el.textContent = "";
+    el.style.display = "none";
+  }
 }
 
 /* ================= ADMIN STATISTIKA: zatvaranje dropdowna klikom van ================= */
