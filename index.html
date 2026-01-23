@@ -2464,58 +2464,61 @@ gap: 10px;
   </div>
 </div>
 
-<!-- ===== VLASNICI STANOVA (samo upravnik/admin) ===== -->
+<div class="duesGrid" id="duesGrid"></div>
+
+
+<!-- ===== UPLATA ===== -->
+<div id="duesPayWrap" style="display:none; margin-top:14px;">
+  <div class="badge" id="duesPayTitle">Uplata</div>
+
+  <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end;">
+    <div class="half field" style="margin-top:0;">
+      <label for="duesPayDate">Datum uplate</label>
+      <input id="duesPayDate" type="date">
+    </div>
+
+    <div class="half field" style="margin-top:0;">
+      <label for="duesPayAmount">Iznos (RSD)</label>
+      <input id="duesPayAmount" type="number" step="0.01" placeholder="npr. 2000">
+    </div>
+
+    <div class="grow field" style="margin-top:0;">
+      <label for="duesPayNote">Napomena (opciono)</label>
+      <input id="duesPayNote" type="text" placeholder="npr. januar 2026 / dug / korekcija">
+    </div>
+  </div>
+    
+  <div class="field" style="margin-top:10px;">
+    <label for="duesPayDocs">PDF potvrde (više fajlova, max 10MB)</label>
+    <input id="duesPayDocs" type="file" multiple accept="application/pdf">
+  </div>
+
+  <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
+    <button class="btn btnPrimary" id="duesPaySaveBtn" type="button">Sačuvaj uplatu</button>
+    <button class="btn btnGhost" id="duesPayCancelBtn" type="button">Otkaži</button>
+  </div>
+
+  <div class="error" id="duesPayError" style="display:none;"></div>
+</div>
+<!-- /duesPayWrap -->
+
+
+<!-- ===== VLASNICI STANOVA (UPRAVNIK / ADMIN) ===== -->
 <div id="unitOwnersWrap" style="display:none; margin-top:16px;">
-  <div class="badge">Vlasnici stanova (vidljivo samo upravniku i adminu)</div>
+  <div class="badge">Vlasnici stanova</div>
 
   <div class="fRow" style="margin-top:10px;">
     <div class="smallText" style="opacity:.75">
-      Unesi ime i prezime vlasnika za svaki stan. Podaci nisu vidljivi stanarima.
+      Unesi ime i prezime vlasnika za svaki stan.  
+      Stanar vidi samo svoje ime i prezime.
     </div>
   </div>
 
   <div id="unitOwnersTable" class="list" style="margin-top:10px;"></div>
 </div>
 
-  
-<div class="duesGrid" id="duesGrid"></div>
 
-  <div id="duesPayWrap" style="display:none; margin-top:14px;">
-    <div class="badge" id="duesPayTitle">Uplata</div>
-
-    <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end;">
-      <div class="half field" style="margin-top:0;">
-        <label for="duesPayDate">Datum uplate</label>
-        <input id="duesPayDate" type="date">
-      </div>
-
-      <div class="half field" style="margin-top:0;">
-        <label for="duesPayAmount">Iznos (RSD)</label>
-        <input id="duesPayAmount" type="number" step="0.01" placeholder="npr. 2000">
-      </div>
-
-      <div class="grow field" style="margin-top:0;">
-        <label for="duesPayNote">Napomena (opciono)</label>
-        <input id="duesPayNote" type="text" placeholder="npr. januar 2026 / dug / korekcija">
-      </div>
-    </div>
-    
-    <div class="field" style="margin-top:10px;">
-      <label for="duesPayDocs">PDF potvrde (više fajlova, max 10MB)</label>
-      <input id="duesPayDocs" type="file" multiple accept="application/pdf">
-    </div>
-
-    <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
-      <button class="btn btnPrimary" id="duesPaySaveBtn" type="button" style="flex:unset;">Sačuvaj uplatu</button>
-      <button class="btn btnGhost" id="duesPayCancelBtn" type="button" style="flex:unset;">Otkaži</button>
-    </div>
-
-    <div class="error" id="duesPayError" style="display:none;"></div>
-</div> <!-- /duesPayWrap -->
-
-</div>
-
-  <!-- ✅ IZMJENA / KOREKCIJA (UPRAVNIK / ADMIN) -->
+<!-- ===== IZMJENA / KOREKCIJA (UPRAVNIK / ADMIN) ===== -->
 <div id="duesAdjWrap" style="display:none; margin-top:14px;">
   <div class="badge" id="duesAdjTitle">Izmena</div>
 
@@ -2545,13 +2548,13 @@ gap: 10px;
   </div>
 
   <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
-    <button class="btn btnPrimary" id="duesAdjSaveBtn" type="button" style="flex:unset;">Sačuvaj izmenu</button>
-    <button class="btn btnGhost" id="duesAdjCancelBtn" type="button" style="flex:unset;">Otkaži</button>
+    <button class="btn btnPrimary" id="duesAdjSaveBtn" type="button">Sačuvaj izmenu</button>
+    <button class="btn btnGhost" id="duesAdjCancelBtn" type="button">Otkaži</button>
   </div>
 
   <div class="error" id="duesAdjError" style="display:none;"></div>
 </div>
-            
+
 </div><!-- /finDuesWrap -->
             
           <!-- ✅ STANAR: moj dug / pretplata (read-only) -->
