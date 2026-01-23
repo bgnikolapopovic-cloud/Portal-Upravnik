@@ -5285,7 +5285,7 @@ function renderUnitOwners(bid){
   if(!wrap || !table) return;
 
   // samo ADMIN sme da unosi/menja vlasnike
-if(CURRENT_SESSION?.role !== "admin"){
+if(CURRENT_SESSION?.role !== "admin" && CURRENT_SESSION?.role !== "upravnik"){
   wrap.style.display = "none";
   return;
 }
@@ -5532,10 +5532,10 @@ const audDeleteBtn = document.getElementById("audDeleteBtn");
 if(!wrap || !list || !addBtn || !form || !bCodeI || !addrI || !ownerI || !unitI || !saveBtn || !cancelBtn ||
    !det || !audTitle || !audUnitCode || !audOwner || !audSaveBtn || !audCloseBtn || !audDeleteBtn) return;
  
-  if(CURRENT_SESSION?.role !== "admin"){
-    wrap.style.display = "none";
-    return;
-  }
+  if(CURRENT_SESSION?.role !== "admin" && CURRENT_SESSION?.role !== "upravnik"){
+  wrap.style.display = "none";
+  return;
+}
 
   wrap.style.display = "block";
 
