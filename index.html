@@ -7386,37 +7386,37 @@ function bindFinanceTabs(){
   if(bEntries.dataset.boundTabs === "1") return;
   bEntries.dataset.boundTabs = "1";
 
- function setActive(which){
-  wEntries.style.display = (which === "entries") ? "block" : "none";
-  wOwners.style.display  = (which === "owners")  ? "block" : "none";
-  wDues.style.display    = (which === "dues")    ? "block" : "none";
+  function setActive(which){
+    wEntries.style.display = (which === "entries") ? "block" : "none";
+    wOwners.style.display  = (which === "owners")  ? "block" : "none";
+    wDues.style.display    = (which === "dues")    ? "block" : "none";
 
-  bEntries.classList.toggle("btnPrimary", which === "entries");
-  bEntries.classList.toggle("btnGhost",   which !== "entries");
+    bEntries.classList.toggle("btnPrimary", which === "entries");
+    bEntries.classList.toggle("btnGhost",   which !== "entries");
 
-  bOwners.classList.toggle("btnPrimary",  which === "owners");
-  bOwners.classList.toggle("btnGhost",    which !== "owners");
+    bOwners.classList.toggle("btnPrimary",  which === "owners");
+    bOwners.classList.toggle("btnGhost",    which !== "owners");
 
-  bDues.classList.toggle("btnPrimary",    which === "dues");
-  bDues.classList.toggle("btnGhost",      which !== "dues");
+    bDues.classList.toggle("btnPrimary",    which === "dues");
+    bDues.classList.toggle("btnGhost",      which !== "dues");
 
-  // ✅ kad uđeš u tab "Vlasnici stanova"
-  if(which === "owners"){
-    const bid = activeBid();
-    if(bid){
-      if(typeof renderAdminUnits === "function") renderAdminUnits(bid);   // Dodaj stan (admin + upravnik)
-      if(typeof renderUnitOwners === "function") renderUnitOwners(bid);   // tabela vlasnika
+    // ✅ kad uđeš u tab "Vlasnici stanova"
+    if(which === "owners"){
+      const bid = activeBid();
+      if(bid){
+        if(typeof renderAdminUnits === "function") renderAdminUnits(bid);
+        if(typeof renderUnitOwners === "function") renderUnitOwners(bid);
+      }
+
+      if(typeof renderAdminBuildings === "function") renderAdminBuildings();
+
+      // ✅ oživi select upravnika + dodaj novog upravnika + dodela zgrade
+      if(typeof bindAdminBuildingsManagerUI === "function") bindAdminBuildingsManagerUI();
     }
 
-    if(typeof renderAdminBuildings === "function") renderAdminBuildings(); // Dodaj zgradu (samo admin)
-
-    // ✅ oživi select upravnika + dodaj novog upravnika + dodela zgrade
-    if(typeof bindAdminBuildingsManagerUI === "function") bindAdminBuildingsManagerUI();
+    // ✅ sakrij/prikaži admin blokove u zavisnosti od aktivnog taba + role
+    if(typeof applyFinanceRoleUI === "function") applyFinanceRoleUI();
   }
-
-  // ✅ sakrij/prikaži admin blokove u zavisnosti od aktivnog taba + role
-  if(typeof applyFinanceRoleUI === "function") applyFinanceRoleUI();
-}
 
   bEntries.addEventListener("click", () => setActive("entries"));
   bOwners.addEventListener("click", () => setActive("owners"));
@@ -7447,7 +7447,6 @@ function applyFinanceRoleUI(){
     bldWrap.style.display = (ownersActive && role === "admin") ? "block" : "none";
   }
 }
-
 </script>
 
 <!-- Supabase SDK -->
