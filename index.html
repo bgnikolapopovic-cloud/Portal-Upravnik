@@ -2149,42 +2149,7 @@ gap: 10px;
     <div id="finTabWrapEntries">
       <div id="finEntriesWrap">
 
-        <!-- ADMIN: Upravljanje zgradama -->
-        <div id="adminBuildingsWrap" data-role="admin" style="display:none; margin-top:14px;">
-          <div class="badge">Upravljanje zgradama (samo admin)</div>
-
-          <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
-            <div class="field" style="min-width:160px;">
-              <label>Šifra zgrade (npr. BM25)</label>
-              <input id="adminBCode" type="text" placeholder="BM25">
-            </div>
-
-            <div class="field" style="min-width:260px; flex:1;">
-              <label>Naziv zgrade</label>
-              <input id="adminBTitle" type="text" placeholder="Bore Markovića 25">
-            </div>
-
-            <div class="field" style="min-width:220px; flex:1;">
-              <label>Ulica</label>
-              <input id="adminBStreet" type="text" placeholder="Bore Markovića">
-            </div>
-
-            <div class="field" style="min-width:120px;">
-              <label>Broj</label>
-              <input id="adminBNumber" type="text" placeholder="25">
-            </div>
-
-            <div class="field" style="min-width:120px;">
-              <label>Broj stanova</label>
-              <input id="adminBUnits" type="number" min="1" placeholder="25">
-            </div>
-
-            <button class="btn btnPrimary" type="button" id="adminAddBuildingBtn">Dodaj zgradu</button>
-          </div>
-
-          <div id="adminBuildingsList" class="list" style="margin-top:10px;"></div>
-        </div>
-
+        
         <!-- FIN HEADER CONTROLS -->
         <div class="fRow" style="margin-top:12px; gap:10px; align-items:flex-end;">
           <div class="half field">
@@ -2342,14 +2307,53 @@ gap: 10px;
     <!-- ✅ TAB: VLASNICI STANOVA -->
     <div id="finTabWrapOwners" style="display:none;">
 
+     <!-- ADMIN: Upravljanje zgradama -->
+<div id="adminBuildingsWrap" data-role="admin" style="display:none; margin-top:14px;">
+  <div class="badge">Upravljanje zgradama (samo admin)</div>
+
+  <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+    <div class="field" style="min-width:160px;">
+      <label>Šifra zgrade (npr. BM25)</label>
+      <input id="adminBCode" type="text" placeholder="BM25">
+    </div>
+
+    <div class="field" style="min-width:260px; flex:1;">
+      <label>Naziv zgrade</label>
+      <input id="adminBTitle" type="text" placeholder="Bore Markovića 25">
+    </div>
+
+    <div class="field" style="min-width:220px; flex:1;">
+      <label>Ulica</label>
+      <input id="adminBStreet" type="text" placeholder="Bore Markovića">
+    </div>
+
+    <div class="field" style="min-width:120px;">
+      <label>Broj</label>
+      <input id="adminBNumber" type="text" placeholder="25">
+    </div>
+
+    <div class="field" style="min-width:120px;">
+      <label>Broj stanova</label>
+      <input id="adminBUnits" type="number" min="1" placeholder="25">
+    </div>
+
+    <button class="btn btnPrimary" type="button" id="adminAddBuildingBtn">
+      Dodaj zgradu
+    </button>
+  </div>
+
+  <div id="adminBuildingsList" class="list" style="margin-top:10px;"></div>
+</div>
+
+
       <!-- ADMIN: Upravljanje stanovima -->
-      <div id="adminUnitsWrap" data-role="admin" style="display:none; margin-top:14px;">
-        <div class="badge">Upravljanje stanovima (samo admin)</div>
+      <div id="adminUnitsWrap" style="display:none; margin-top:14px;">
+        <div class="badge">Upravljanje stanovima</div>
 
         <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end;">
           <button class="btn btnPrimary" type="button" id="adminAddUnitBtn">Dodaj stan</button>
           <div class="smallText" style="opacity:.75">
-            Dodaje novi stan (npr. BM25-026). Ime vlasnika unosi admin.
+            Dodaje novi stan (npr. BM25-026). Ime vlasnika unosi upravnik/admin.
           </div>
         </div>
 
@@ -6811,8 +6815,10 @@ function bindFinanceTabs(){
 
     bDues.classList.toggle("btnPrimary",    which === "dues");
     bDues.classList.toggle("btnGhost",      which !== "dues");
+  
+  applyFinanceRoleUI();
   }
-
+  
   bEntries.addEventListener("click", () => setActive("entries"));
   bOwners.addEventListener("click", () => setActive("owners"));
   bDues.addEventListener("click", () => setActive("dues"));
@@ -6823,6 +6829,27 @@ function bindFinanceTabs(){
 /* POZIV */
 bindFinanceTabs();
 
+function applyFinanceRoleUI(){
+  const role = CURRENT_SESSION?.role || "";
+
+  const ownersWrap = document.getElementById("finTabWrapOwners");
+  const unitsWrap  = document.getElementById("adminUnitsWrap");      // Dodaj stan
+  const bldWrap    = document.getElementById("adminBuildingsWrap");  // Dodaj zgradu
+
+  const ownersActive = ownersWrap && ownersWrap.style.display !== "none";
+
+  // Upravnik + admin vide Dodaj stan (samo u Owners tabu)
+  if(unitsWrap){
+    unitsWrap.style.display = (ownersActive && (role === "admin" || role === "upravnik")) ? "block" : "none";
+  }
+
+  // Samo admin vidi Dodaj zgradu (samo u Owners tabu)
+  if(bldWrap){
+    bldWrap.style.display = (ownersActive && role === "admin") ? "block" : "none";
+  }
+}
+
+  
 </script>
 
 
