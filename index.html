@@ -1948,6 +1948,145 @@ gap: 10px;
     flex:1 1 220px;
   }
 }
+
+/* ================= VLASNICI STANOVA (PRO UI) ================= */
+
+.ownersHead{
+  display:flex;
+  justify-content:space-between;
+  gap:16px;
+  align-items:flex-end;
+  margin: 10px 0 12px;
+}
+
+.ownersTitle .hSub{
+  margin-top:8px;
+  opacity:.75;
+  font-size:13px;
+  line-height:1.35;
+}
+
+.ownersTools{
+  display:flex;
+  gap:14px;
+  align-items:center;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+.ownersProgress{
+  font-weight:900;
+  font-size:13px;
+  opacity:.8;
+  padding:8px 10px;
+  border-radius:12px;
+  border:1px solid rgba(15,23,42,.14);
+  background: rgba(255,255,255,.55);
+}
+
+.ownersSearch input{
+  width:min(360px, 70vw);
+  height:40px;
+  border-radius:14px;
+}
+
+.ownersToggle{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  user-select:none;
+  font-size:13px;
+  opacity:.9;
+}
+
+.ownersToggle input{
+  width:18px;
+  height:18px;
+}
+
+.ownersList{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-top:10px;
+}
+
+/* jedan red kao "card" */
+.ownerRow{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  padding:12px 12px;
+  border-radius:16px;
+  border:1px solid rgba(15,23,42,.14);
+  background: rgba(255,255,255,.75);
+  box-shadow: 0 10px 22px rgba(2,6,23,.06);
+}
+
+.ownerRow:hover{ background: rgba(255,255,255,.88); }
+
+/* badge za sifru stana */
+.ownerBadge{
+  font-weight:900;
+  font-size:13px;
+  padding:8px 10px;
+  border-radius:12px;
+  border:1px solid rgba(15,23,42,.14);
+  background: rgba(15,23,42,.04);
+  min-width: 108px;
+  text-align:center;
+}
+
+/* input */
+.ownerField{ flex:1; display:flex; align-items:center; }
+
+.ownerField input{
+  width:100%;
+  height:40px;
+  border-radius:12px;
+  border:1px solid rgba(15,23,42,.18);
+  background: rgba(255,255,255,.95);
+  padding: 0 12px;
+}
+
+.ownerField input:focus{
+  outline:none;
+  border-color: rgba(15,23,42,.35);
+  box-shadow: 0 0 0 4px rgba(15,23,42,.08);
+}
+
+/* status — / • / ✓ */
+.ownerStatus{
+  width:40px;
+  height:40px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(15,23,42,.14);
+  background: rgba(15,23,42,.03);
+  font-weight:900;
+  font-size:16px;
+  opacity:.75;
+}
+
+.ownerStatus.saved{ opacity:1; }
+.ownerStatus.dirty{ opacity:1; }
+
+/* mobile: red u 2 linije */
+@media (max-width: 640px){
+  .ownerRow{
+    flex-direction:column;
+    align-items:stretch;
+  }
+  .ownerBadge{
+    min-width:unset;
+    text-align:left;
+  }
+  .ownerStatus{
+    width:100%;
+  }
+}
   
 </style>
 </head>
@@ -2391,19 +2530,34 @@ gap: 10px;
         <div id="adminUnitsList" class="list" style="margin-top:10px;"></div>
       </div>
 
-      <!-- VLASNICI STANOVA -->
-      <div id="unitOwnersWrap" style="margin-top:16px;">
-        <div class="badge">Vlasnici stanova</div>
+      <!-- VLASNICI STANOVA (PRO UI) -->
+<div id="unitOwnersWrap" style="margin-top:16px;">
 
-        <div class="fRow" style="margin-top:10px;">
-          <div class="smallText" style="opacity:.75">
-            Unesi ime i prezime vlasnika za svaki stan. Stanar vidi samo svoje ime i prezime.
-          </div>
-        </div>
-
-        <div id="unitOwnersTable" class="list" style="margin-top:10px;"></div>
+  <div class="ownersHead">
+    <div class="ownersTitle">
+      <div class="badge">Vlasnici stanova</div>
+      <div class="hSub">
+        Unesi ime i prezime vlasnika za svaki stan. Stanar vidi samo svoje ime i prezime.
       </div>
+    </div>
 
+    <div class="ownersTools">
+      <div id="ownersProgress" class="ownersProgress">Popunjeno: 0 / 0</div>
+
+      <label class="ownersToggle">
+        <input type="checkbox" id="ownersOnlyEmpty">
+        <span>Prikaži samo prazne</span>
+      </label>
+
+      <div class="searchInline ownersSearch">
+        <input id="ownersSearchInput" placeholder="Pretraga: BM25-001 ili ime vlasnika…">
+      </div>
+    </div>
+  </div>
+
+  <!-- ovde JS crta redove -->
+  <div id="unitOwnersTable" class="ownersList"></div>
+</div>
     </div>
 
     <!-- ✅ TAB: DUGOVANJA -->
@@ -5237,22 +5391,114 @@ function getVoteStats(poll){
   };
 }
 
-/* ================= VLASNICI STANOVA ================= */
+/* ================= VLASNICI STANOVA (PRO+ UX) ================= */
+/* (ostavljamo legacy kUnits/loadUnits/saveUnits zbog fallback-a u getUnitLabel) */
+
+let OWNERS_QUERY = "";
+let OWNERS_ONLY_EMPTY = false;
+
+const OWNERS_LAST = new Map();   // unitCode -> last saved value
+const OWNERS_DIRTY = new Set();  // unitCode
+const OWNER_TIMERS = new Map();  // unitCode -> timeoutId
 
 function kUnits(bid){
   return `units_${bid}`;
 }
-
 function loadUnits(bid){
-  try{
-    return JSON.parse(localStorage.getItem(kUnits(bid))) || {};
-  }catch{
-    return {};
-  }
+  try{ return JSON.parse(localStorage.getItem(kUnits(bid))) || {}; }
+  catch{ return {}; }
 }
-
 function saveUnits(bid, data){
   localStorage.setItem(kUnits(bid), JSON.stringify(data));
+}
+
+// BM25 prefix iz building.id (b_bm25 -> BM25)
+function ownersPrefixFromBid(bid){
+  const b = BUILDINGS.find(x => x.id === bid);
+  if(!b) return "";
+  return String(b.id || "").toUpperCase().replace("B_","");
+}
+
+function setStatusEl(statusEl, state){
+  if(!statusEl) return;
+  statusEl.classList.remove("saved","dirty");
+
+  if(state === "empty"){ statusEl.textContent = "—"; return; }
+  if(state === "dirty"){ statusEl.textContent = "•"; statusEl.classList.add("dirty"); return; }
+  if(state === "saved"){ statusEl.textContent = "✓"; statusEl.classList.add("saved"); return; }
+}
+
+function updateOwnersProgress(bid){
+  const el = document.getElementById("ownersProgress");
+  if(!el) return;
+
+  const building = BUILDINGS.find(b => b.id === bid);
+  const total = building?.units || 0;
+
+  const rows = loadUnitsDB(bid) || [];
+  const prefix = ownersPrefixFromBid(bid);
+
+  let filled = 0;
+  for(let i=1; i<=total; i++){
+    const code = `${prefix}-${String(i).padStart(3,"0")}`;
+    const hit = rows.find(r => String(r.unitCode||"").toUpperCase() === code);
+    if((hit?.ownerFullName || "").trim()) filled++;
+  }
+  el.textContent = `Popunjeno: ${filled} / ${total}`;
+}
+
+function bindOwnersUIOnce(){
+  const q = document.getElementById("ownersSearchInput");
+  const only = document.getElementById("ownersOnlyEmpty");
+  if(!q || !only) return;
+
+  if(q.dataset.bound === "1") return;
+  q.dataset.bound = "1";
+
+  q.addEventListener("input", () => {
+    OWNERS_QUERY = (q.value || "").trim().toLowerCase();
+    const bid = activeBid();
+    if(bid) renderUnitOwners(bid);
+  });
+
+  only.addEventListener("change", () => {
+    OWNERS_ONLY_EMPTY = !!only.checked;
+    const bid = activeBid();
+    if(bid) renderUnitOwners(bid);
+  });
+}
+
+function scheduleSaveOwner(bid, unitCode, value, statusEl){
+  setStatusEl(statusEl, "dirty");
+  OWNERS_DIRTY.add(unitCode);
+
+  const prev = OWNER_TIMERS.get(unitCode);
+  if(prev) clearTimeout(prev);
+
+  const t = setTimeout(() => {
+    const v = (value || "").trim();
+
+    const rows = loadUnitsDB(bid) || [];
+    const idx = rows.findIndex(x => String(x.unitCode||"").toUpperCase() === unitCode);
+
+    if(v){
+      const payload = { unitCode, ownerFullName: v };
+      if(idx === -1) rows.push(payload);
+      else rows[idx] = { ...rows[idx], ...payload };
+    }else{
+      if(idx !== -1) rows.splice(idx, 1);
+    }
+
+    saveUnitsDB(bid, rows);
+
+    OWNERS_LAST.set(unitCode, v);
+    OWNERS_DIRTY.delete(unitCode);
+
+    setStatusEl(statusEl, v ? "saved" : "empty");
+    updateOwnersProgress(bid);
+  }, 550);
+
+  OWNER_TIMERS.set(unitCode, t);
 }
 
 function renderUnitOwners(bid){
@@ -5260,49 +5506,107 @@ function renderUnitOwners(bid){
   const table = document.getElementById("unitOwnersTable");
   if(!wrap || !table) return;
 
-  // samo ADMIN sme da unosi/menja vlasnike
-if(!(CURRENT_SESSION?.role === "admin" || CURRENT_SESSION?.role === "upravnik")){
-  wrap.style.display = "none";
-  return;
-}
+  // admin + upravnik smeju da vide/menjaju
+  if(!(CURRENT_SESSION?.role === "admin" || CURRENT_SESSION?.role === "upravnik")){
+    wrap.style.display = "none";
+    return;
+  }
 
   wrap.style.display = "block";
-  table.innerHTML = "";
+  bindOwnersUIOnce();
 
-  const units = loadUnits(bid);
   const building = BUILDINGS.find(b => b.id === bid);
   if(!building) return;
 
-  for(let i = 1; i <= building.units; i++){
-    const code = `${building.id.toUpperCase().replace("B_","")}-${String(i).padStart(3,"0")}`;
+  const prefix = ownersPrefixFromBid(bid);
+  const rows = loadUnitsDB(bid) || [];
+  const dbMap = new Map(rows.map(r => [String(r.unitCode||"").toUpperCase(), r]));
 
+  const q = OWNERS_QUERY;
+  const onlyEmpty = OWNERS_ONLY_EMPTY;
+
+  const all = [];
+  for(let i=1; i<=building.units; i++){
+    const code = `${prefix}-${String(i).padStart(3,"0")}`;
+    const name = (dbMap.get(code)?.ownerFullName || "").trim();
+    all.push({ code, name });
+  }
+
+  const filtered = all.filter(x => {
+    const code = x.code.toLowerCase();
+    const name = (x.name || "").toLowerCase();
+
+    if(onlyEmpty && x.name.trim() !== "") return false;
+    if(!q) return true;
+    return code.includes(q) || name.includes(q);
+  });
+
+  table.innerHTML = "";
+
+  if(!filtered.length){
+    table.innerHTML = `<div class="smallText"><span class="badge">Nema rezultata</span></div>`;
+    updateOwnersProgress(bid);
+    return;
+  }
+
+  filtered.forEach(item => {
     const row = document.createElement("div");
-    row.className = "unitOwnerRow fRow";
+    row.className = "ownerRow";
 
-    const label = document.createElement("div");
-    label.className = "unitCode";
-    label.textContent = code;
+    const badge = document.createElement("div");
+    badge.className = "ownerBadge";
+    badge.textContent = item.code;
 
-    const input = document.createElement("input");
-    input.type = "text";
-    input.placeholder = "Ime i prezime vlasnika";
-    input.value = units[code]?.fullName || "";
+    const field = document.createElement("div");
+    field.className = "ownerField";
 
-    input.addEventListener("change", () => {
-      const data = loadUnits(bid);
-      if(input.value.trim()){
-        data[code] = { fullName: input.value.trim() };
-      }else{
-        delete data[code];
-      }
-      saveUnits(bid, data);
+    const inp = document.createElement("input");
+    inp.type = "text";
+    inp.placeholder = "Ime i prezime vlasnika";
+    inp.value = item.name || "";
+
+    const status = document.createElement("div");
+    status.className = "ownerStatus";
+
+    OWNERS_LAST.set(item.code, (item.name || "").trim());
+    setStatusEl(status, (item.name || "").trim() ? "saved" : "empty");
+
+    inp.addEventListener("input", () => {
+      scheduleSaveOwner(bid, item.code, inp.value, status);
     });
 
-    row.appendChild(label);
-    row.appendChild(input);
+    inp.addEventListener("blur", () => {
+      if(!OWNERS_DIRTY.has(item.code)) return;
+      scheduleSaveOwner(bid, item.code, inp.value, status);
+    });
+
+    inp.addEventListener("keydown", (e) => {
+      if(e.key === "Enter"){
+        e.preventDefault();
+        const inputs = Array.from(table.querySelectorAll("input"));
+        const i = inputs.indexOf(inp);
+        if(i >= 0 && inputs[i+1]) inputs[i+1].focus();
+      }
+      if(e.key === "Escape"){
+        e.preventDefault();
+        const last = OWNERS_LAST.get(item.code) || "";
+        inp.value = last;
+        OWNERS_DIRTY.delete(item.code);
+        setStatusEl(status, last ? "saved" : "empty");
+      }
+    });
+
+    field.appendChild(inp);
+    row.appendChild(badge);
+    row.appendChild(field);
+    row.appendChild(status);
+
     table.appendChild(row);
-  }
+  });
+
+  updateOwnersProgress(bid);
 }
+
 
 /* ===== HELPER: PRIKAZ STANA + IME (SAMO UPRAVNIK / ADMIN) ===== */
 function getUnitLabel(bid, unitCode){
@@ -6880,6 +7184,7 @@ function applyFinanceRoleUI(){
 
   // samo za proveru
   console.log("Supabase connected:", supabaseClient);
+
 </script>
 
 
