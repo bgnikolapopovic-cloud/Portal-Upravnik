@@ -3847,7 +3847,10 @@ function renderBuildingUI(){
 
 /* ===== login flow ===== */
 function attemptLogin(username, pass){
-  const u = USERS.find(x => x.username === username && x.pass === pass);
+  const uName = (username || "").trim();
+  const p     = (pass || "").trim();
+
+  const u = USERS.find(x => x.username === uName && x.pass === p);
   if(!u){
     errEl.style.display = "block";
     return;
@@ -3855,24 +3858,34 @@ function attemptLogin(username, pass){
   errEl.style.display = "none";
 
   CURRENT_SESSION = {
-  username: u.username,
-  role: u.role,
-  buildings: (u.buildings || []).slice(),
-  activeBuildingId: null
-};
+    username: u.username,
+    role: u.role,
+    buildings: (u.buildings || []).slice(),
+    activeBuildingId: null
+  };
 
-// 🔒 sakrij upravnik blokove stanarima
-document.querySelectorAll('[data-role="upravnik"]').forEach(el => {
-  if (CURRENT_SESSION?.role !== "upravnik") el.style.display = "none";
-});
+  // 🔒 sakrij "upravnik" blokove samo stanarima (admin sme da vidi)
+  document.querySelectorAll('[data-role="upravnik"]').forEach(el => {
+    if(!["upravnik","admin"].includes(CURRENT_SESSION?.role)) el.style.display = "none";
+  });
 
-// stanar ide odmah u svoju zgradu
-if(CURRENT_SESSION.role === "stanar"){
-  CURRENT_SESSION.activeBuildingId = CURRENT_SESSION.buildings[0] || null;
-  saveSession(CURRENT_SESSION);
-  enterPortal();
-  return;
-}
+  // ✅ stanar ide odmah u svoju zgradu
+  if(CURRENT_SESSION.role === "stanar"){
+    CURRENT_SESSION.activeBuildingId = CURRENT_SESSION.buildings[0] || null;
+    saveSession(CURRENT_SESSION);
+    enterPortal();
+    return;
+  }
+
+  // ✅ upravnik/admin: ako ima više zgrada -> izbor, inače odmah ulaz
+  if((CURRENT_SESSION.buildings || []).length > 1){
+    saveSession(CURRENT_SESSION);
+    showBuildingSelect();
+  }else{
+    CURRENT_SESSION.activeBuildingId = CURRENT_SESSION.buildings[0] || null;
+    saveSession(CURRENT_SESSION);
+    enterPortal();
+  }
 }
   
 // ✅ AUTH: pronađi usera iz DB (pu_users_db_v1)
