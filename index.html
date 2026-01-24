@@ -3755,33 +3755,53 @@ function applyRoleUI(role){
   const roleEls = document.querySelectorAll("[data-role]");
 
   roleEls.forEach(el => {
-  const need = el.getAttribute("data-role");
+    const need = el.getAttribute("data-role");
 
-  // ✅ manage = upravnik ili admin
-  if(need === "manage"){
-    el.style.display = (role === "upravnik" || role === "admin") ? "" : "none";
-    return;
+    // ✅ manage = upravnik ili admin
+    if(need === "manage"){
+      el.style.display = (role === "upravnik" || role === "admin") ? "" : "none";
+      return;
+    }
+
+    // Admin vidi i admin i upravnik blokove
+    if(role === "admin"){
+      el.style.display = (need === "admin" || need === "upravnik") ? "" : "none";
+      return;
+    }
+
+    // Ostali: samo svoje
+    el.style.display = (need === role) ? "" : "none";
+  });
+
+  // ✅ Promeni zgradu dugme (samo admin/upravnik)
+  const sw = document.getElementById("switchBuildingBtn");
+  if(sw){
+    sw.style.display = (role === "admin" || role === "upravnik") ? "inline-flex" : "none";
   }
-
-  // Admin vidi i admin i upravnik blokove
-  if(role === "admin"){
-    el.style.display = (need === "admin" || need === "upravnik") ? "" : "none";
-    return;
-  }
-
-  // Ostali: samo svoje
-  el.style.display = (need === role) ? "" : "none";
-});
 }
+  
+function resetGlobalSearchUI(){
+  CURRENT_QUERY = "";
+  const gs = document.getElementById("globalSearch");
+  const sr = document.getElementById("searchResults");
+  if(gs) gs.value = "";
+  if(sr) sr.style.display = "none";
+}
+  
 /* ===== building context UI ===== */
 function setActiveBuilding(bid){
   if(!CURRENT_SESSION) return;
+
   CURRENT_SESSION.activeBuildingId = bid;
   saveSession(CURRENT_SESSION);
+
+  // reset pretrage kad promenimo zgradu (da ne ostanu stari rezultati/filteri)
+  resetGlobalSearchUI();
+
   renderBuildingUI();
   refreshAllModules();
 }
-
+  
 function renderBuildingUI(){
   const bid = CURRENT_SESSION?.activeBuildingId;
   const b = getBuildingById(bid);
@@ -7100,38 +7120,57 @@ function scrollToSid(sid){
   });
 }
   
+// ===== GLOBAL SEARCH (bind samo jednom) =====
 if(globalSearch){
-  globalSearch.addEventListener("input", () => {
-    CURRENT_QUERY = (globalSearch.value || "").trim();
-    applySearchFilter();
-    renderSearchDropdown(CURRENT_QUERY);
-  });
+  if(globalSearch.dataset.bound !== "1"){
+    globalSearch.addEventListener("input", () => {
+      CURRENT_QUERY = (globalSearch.value || "").trim();
+      applySearchFilter();
+      renderSearchDropdown(CURRENT_QUERY);
+    });
 
-  globalSearch.addEventListener("focus", () => {
-    renderSearchDropdown((globalSearch.value || "").trim());
-  });
+    globalSearch.addEventListener("focus", () => {
+      renderSearchDropdown((globalSearch.value || "").trim());
+    });
 
-  globalSearch.addEventListener("keydown", (e) => {
-    if(e.key === "Escape"){
-      if(searchResults) searchResults.style.display = "none";
-    }
-  });
+    globalSearch.addEventListener("keydown", (e) => {
+      if(e.key === "Escape"){
+        if(searchResults) searchResults.style.display = "none";
+      }
+    });
+
+    globalSearch.dataset.bound = "1";
+  }
 }
+
 if(searchResults){
-  searchResults.addEventListener("click", (e) => {
-    const row = e.target.closest(".srItem");
-    if(!row) return;
-    const page = row.getAttribute("data-page");
-    const sid  = row.getAttribute("data-sid");
-    if(page) goToHit(page, sid);
-  });
+  if(searchResults.dataset.bound !== "1"){
+    searchResults.addEventListener("click", (e) => {
+      const row = e.target.closest(".srItem");
+      if(!row) return;
+      const page = row.getAttribute("data-page");
+      const sid  = row.getAttribute("data-sid");
+      if(page) goToHit(page, sid);
+    });
+
+    searchResults.dataset.bound = "1";
+  }
 }
-document.addEventListener("click", (e) => {
-  if(!searchResults || !globalSearch) return;
-  const wrap = globalSearch.closest(".searchInline");
-  if(wrap && wrap.contains(e.target)) return;
-  searchResults.style.display = "none";
-});
+
+// zatvori dropdown klikom van (bind samo jednom)
+if(!document.documentElement.dataset.searchBound){
+  document.addEventListener("click", (e) => {
+    const sr = document.getElementById("searchResults");
+    const gs = document.getElementById("globalSearch");
+    if(!sr || !gs) return;
+
+    const wrap = gs.closest(".searchInline");
+    if(wrap && wrap.contains(e.target)) return;
+
+    sr.style.display = "none";
+  });
+  document.documentElement.dataset.searchBound = "1";
+}
 
 /* ===== refresh modules for active building ===== */
 function refreshAllModules(){
