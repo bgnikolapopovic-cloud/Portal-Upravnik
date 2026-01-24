@@ -2094,6 +2094,71 @@ gap: 10px;
     width:100%;
   }
 }
+
+/* ===== TOP HEADER: stvarno FIXED + “floating” (nije zalepljen uz ivice) ===== */
+.topRightBar{
+  position: fixed !important;
+  top: calc(10px + env(safe-area-inset-top)) !important;
+
+  /* umesto da bude samo desno, ograniči širinu i centriraj */
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+
+  width: min(1180px, calc(100vw - 24px)) !important; /* 12px margin levo/desno */
+  padding: 0 12px !important;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end; /* sve ide ka desnoj strani unutar bara */
+  gap: 12px;
+
+  z-index: 9999 !important;
+  pointer-events: auto !important;
+}
+
+/* Alati (Promeni zgradu + pretraga) */
+.topRightTools{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 1 560px;        /* ne preširoko na desktopu */
+  min-width: 0;
+}
+
+.topRightTools .topSearch{
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 420px;       /* da ne pojede ceo bar */
+}
+
+/* ===== MOBILE: da ne prelazi preko hamburgera/sidebara ===== */
+@media (max-width: 900px){
+  .topRightBar{
+    width: calc(100vw - 16px) !important;
+    padding: 0 8px !important;
+
+    /* prostor za hamburger dugme (prilagodi ako treba) */
+    padding-left: 64px !important;
+
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  .topRightTools{
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .topRightTools .topSearch{
+    max-width: none;
+    width: 100%;
+  }
+}
+
+/* baš mali telefoni: sakrij logo da oslobodi prostor */
+@media (max-width: 520px){
+  .topRightLogo{ display:none !important; }
+  .topRightBar{ padding-left: 56px !important; }
+}
   
 </style>
 </head>
