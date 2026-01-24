@@ -2472,7 +2472,7 @@ gap: 10px;
         Ovde menjaš samo vlasnika za izabrani stan.
       </div>
 
-      <div id="adminAddUnitForm" style="display:none; margin-top:12px;">
+      <div id="adminAddUnitForm" style="margin-top:12px;">
         <div class="fRow" style="gap:10px; align-items:flex-end; flex-wrap:wrap;">
           <div class="field" style="min-width:160px;">
             <label>Šifra zgrade</label>
@@ -6097,6 +6097,19 @@ if(audDeleteBtn){
 
   wrap.style.display = "block";
 
+  
+// ✅ auto-popuna šifre zgrade i adrese
+const building = BUILDINGS.find(b => b.id === bid);
+if(building){
+  const bcode = building.id.replace("b_","").toUpperCase();
+  const addr = `${building.street || ""} ${building.number || ""}`.trim();
+
+  bCodeI.value = bcode;
+  addrI.value  = (building.title || addr || "");
+}
+
+// ✅ forma je uvek vidljiva
+form.style.display = "block";
   function redraw(){
     const rows = loadUnitsDB(bid);
     list.innerHTML = "";
@@ -6129,33 +6142,59 @@ if(audDeleteBtn){
     });
 
     const left = document.createElement("div");
-    left.innerHTML = `
-      <div style="font-weight:900">${escapeHTML(u.unitCode)}</div>
-      <div class="smallText" style="opacity:.75">
-        Vlasnik: <b>${escapeHTML(u.ownerFullName || "—")}</b>
-      </div>
-    `;
+left.innerHTML = `
+  <div style="font-weight:900">${escapeHTML(u.unitCode)}</div>
+  <div class="smallText" style="opacity:.75">
+    Vlasnik: <b>${escapeHTML(u.ownerFullName || "—")}</b>
+  </div>
+`;
 
-    const actions = document.createElement("div");
-    actions.style.display = "flex";
-    actions.style.gap = "8px";
+const actions = document.createElement("div");
+actions.style.display = "flex";
+actions.style.gap = "8px";
 
-    const del = document.createElement("button");
-    del.type = "button";
-    del.className = "btn btnGhost";
-    del.textContent = "Obriši";
-    del.addEventListener("click", (e) => {
-      e.stopPropagation(); // da klik na Obriši ne otvara detalje
-      if(!confirm(`Obrisati ${u.unitCode}?`)) return;
-      deleteUnitDB(bid, u.unitCode);
-      redraw();
-    });
+const edit = document.createElement("button");
+edit.type = "button";
+edit.className = "btn btnGhost";
+edit.textContent = "Izmeni";
+edit.addEventListener("click", (e) => {
+  e.stopPropagation(); // da klik na Izmeni ne otvara detalje
 
-    actions.appendChild(del);
+  // ✅ prebaci formu u EDIT mode i popuni polja
+  const form   = document.getElementById("adminAddUnitForm");
+  const unitI  = document.getElementById("adminUnitCode");
+  const ownerI = document.getElementById("adminUnitOwner");
+  const saveBtn = document.getElementById("adminSaveUnitBtn");
 
-    row.appendChild(left);
-    row.appendChild(actions);
-    list.appendChild(row);
+  if(form){
+    form.dataset.mode = "edit";
+    form.dataset.editing = u.unitCode || "";
+  }
+  if(unitI) unitI.value = u.unitCode || "";
+  if(ownerI){
+    ownerI.value = u.ownerFullName || "";
+    ownerI.focus();
+  }
+  if(saveBtn) saveBtn.textContent = "Sačuvaj izmene";
+});
+
+const del = document.createElement("button");
+del.type = "button";
+del.className = "btn btnGhost";
+del.textContent = "Obriši";
+del.addEventListener("click", (e) => {
+  e.stopPropagation(); // da klik na Obriši ne otvara detalje
+  if(!confirm(`Obrisati ${u.unitCode}?`)) return;
+  deleteUnitDB(bid, u.unitCode);
+  redraw();
+});
+
+actions.appendChild(edit);
+actions.appendChild(del);
+
+row.appendChild(left);
+row.appendChild(actions);
+list.appendChild(row);
   });
 }
   
@@ -6179,7 +6218,11 @@ if(audDeleteBtn){
 };
 
 cancelBtn.onclick = () => {
-  form.style.display = "none";
+  form.dataset.mode = "add";
+  form.dataset.editing = "";
+  saveBtn.textContent = "Sačuvaj";
+  ownerI.value = "";
+  ownerI.focus();
 };
 
 saveBtn.onclick = () => {
