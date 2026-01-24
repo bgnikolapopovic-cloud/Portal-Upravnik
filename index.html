@@ -82,42 +82,49 @@ body::before{
 
 /* TOP RIGHT */
 .topRightBar{
-  position:absolute;
+  position:fixed; /* da bude profesionalno i uvek gore */
   top:calc(10px + env(safe-area-inset-top));
   right:calc(var(--main-pad) + env(safe-area-inset-right));
   display:flex;
   align-items:center;
   gap:12px;
   z-index:95;
-  pointer-events:none;
-}
-.topRightTitle{
-  text-align:left;
-  font-weight:900;
-  line-height:1.05;
-}
-.topRightTitle span{
-  display:block;
-  font-size:18px;
-}
-.topRightLogo{
-  padding:6px;
-  background:rgba(255,255,255,.72);
-  border:1px solid var(--border);
-  border-radius:22px;
-  box-shadow:var(--shadow);
-}
-.topRightLogo img{
-  height:56px;
-  width:auto;
-  display:block;
-  border-radius:16px;
-}
-@media(min-width:900px){
-  .topRightTitle span{font-size:22px;}
-  .topRightLogo img{height:92px;}
+  pointer-events:auto; /* BITNO: bez ovoga input/dugme ne rade */
 }
 
+.topRightTools{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.topRightTools .topSearch{
+  border-radius:999px;
+  padding:10px 12px;
+  background:rgba(255,255,255,.72);
+  border:1px solid rgba(15,23,42,.14);
+  box-shadow:var(--shadow);
+  min-width:320px;
+  max-width:420px;
+}
+
+.topRightTools .topSearch input{
+  border:none;
+  background:transparent;
+  width:100%;
+  outline:none;
+  font-size:14px;
+}
+
+/* na login ekranu sakrij alate */
+body.mode-login #topRightTools{ display:none; }
+
+@media (max-width: 900px){
+  .topRightBar{ flex-wrap:wrap; justify-content:flex-end; }
+  .topRightTools{ width:100%; justify-content:flex-end; }
+  .topRightTools .topSearch{ min-width:260px; max-width:100%; }
+}
+  
 /* SCREENS */
 .loginWrap{
   min-height:100vh;
@@ -2096,11 +2103,20 @@ gap: 10px;
 
 <!-- TOP RIGHT BRAND -->
 <div class="topRightBar">
-  <div class="topRightTitle">
 
+  <!-- TOOLS: promena zgrade + globalna pretraga (uvek gore, na svim stranicama) -->
+  <div class="topRightTools" id="topRightTools">
+    <div class="pill pillBtn" id="switchBuildingBtn" style="display:none;">Promeni zgradu</div>
+
+    <div class="searchInline topSearch" style="position:relative;">
+      <input id="globalSearch" placeholder="Pretraga (finansije, dokumenti, forum)">
+      <div class="searchResults" id="searchResults" style="display:none;"></div>
+    </div>
+  </div>
+
+  <div class="topRightTitle">
     <!-- USER ID BADGE -->
     <div class="userBadge" id="userBadge"></div>
-
     <span>Portal</span>
     <span>Upravnik</span>
   </div>
@@ -2109,7 +2125,6 @@ gap: 10px;
     <img src="logo.png" alt="Portal Upravnik logo">
   </div>
 </div>
-
 
 <!-- LOGIN SCREEN -->
 <section class="loginWrap" id="loginScreen">
@@ -2220,25 +2235,14 @@ gap: 10px;
         </div>
 
         <div class="rightCol">
-          <div class="topMini">
-            <div class="pill" id="userPill">Korisnik</div>
-            <div class="pill" id="buildingPill">Zgrada</div>
-            <div class="pill pillBtn" id="switchBuildingBtn" style="display:none;">Promeni zgradu</div>
-          </div>
-
-          <div class="searchInline" style="position:relative;">
-            <input id="globalSearch" placeholder="Pretraga (finansije, dokumenti, forum)">
-            <div class="searchResults" id="searchResults" style="display:none;"></div>
-          </div>
-
-          <div class="balanceCard">
-            <span class="label">Stanje računa</span>
-            <div class="balanceAmount">
-              <span class="value" id="balanceValue">0,00</span>
-              <span class="currency">RSD</span>
-            </div>
-          </div>
-        </div>
+  <div class="balanceCard">
+    <span class="label">Stanje računa</span>
+    <div class="balanceAmount">
+      <span class="value" id="balanceValue">0,00</span>
+      <span class="currency">RSD</span>
+    </div>
+  </div>
+</div>
       </section>
 
       <section class="page active" id="page-home">
@@ -2251,8 +2255,6 @@ gap: 10px;
             <li id="homeForum">Forum: (nema)</li>
           </ul>
 
-
-          
           <div class="smallText" data-role="admin" style="margin-top:12px;">
             Admin: placeholder (upravljanje korisnicima, regulativama i kontaktima).
           </div>
@@ -7227,8 +7229,12 @@ function updateHomeSummary(){
   const session = getSession();
   if(session && session.username && session.role){
     CURRENT_SESSION = session;
-    userPill.textContent = session.username;
-    applyRoleUI(session.role);
+
+// userPill je uklonjen iz UI (sad je gore userBadge), ali ostavljamo kompatibilnost:
+if(userPill) userPill.textContent = session.username;
+
+applyRoleUI(session.role);
+renderUserBadge();
 
     if(!CURRENT_SESSION.activeBuildingId){
       if(CURRENT_SESSION.role === "stanar"){
