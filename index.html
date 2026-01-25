@@ -1876,6 +1876,217 @@ gap: 10px;
   font-size:12px;
 }
 
+  /* ===== FORUM – PROCENTI GLASANJA ===== */
+.pollStats{
+  font-size:13px;
+  color:var(--muted);
+}
+
+.pollBar{
+  display:flex;
+  height:8px;
+  border-radius:6px;
+  overflow:hidden;
+  background:rgba(15,23,42,.12);
+  margin-bottom:6px;
+}
+
+.pollYes{
+  background:#22c55e;
+}
+
+.pollNo{
+  background:#ef4444;
+}
+
+.pollText{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  align-items:center;
+}
+
+.pollSep{
+  opacity:.6;
+}
+
+/* ===== VLASNICI STANOVA ===== */
+.unitOwnerRow{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+.unitOwnerRow .unitCode{
+  min-width:90px;
+  font-weight:600;
+}
+
+.unitOwnerRow input{
+  flex:1;
+}
+
+/* ===== FINANSIJE: 3 TAB dugmeta u jednom redu ===== */
+#page-finansije .fRow[data-role="upravnik"]{
+  display:flex;
+  gap:10px;
+  flex-wrap:nowrap;
+}
+
+#page-finansije .fRow[data-role="upravnik"] > .btn{
+  flex:1;
+  text-align:center;
+  white-space:nowrap;
+}
+
+/* Mobile: da se lepo prelomi u 2 reda ako nema mesta */
+@media (max-width: 760px){
+  #page-finansije .fRow[data-role="upravnik"]{
+    flex-wrap:wrap;
+  }
+  #page-finansije .fRow[data-role="upravnik"] > .btn{
+    flex:1 1 220px;
+  }
+}
+
+/* ================= VLASNICI STANOVA (PRO UI) ================= */
+
+.ownersHead{
+  display:flex;
+  justify-content:space-between;
+  gap:16px;
+  align-items:flex-end;
+  margin: 10px 0 12px;
+}
+
+.ownersTitle .hSub{
+  margin-top:8px;
+  opacity:.75;
+  font-size:13px;
+  line-height:1.35;
+}
+
+.ownersTools{
+  display:flex;
+  gap:14px;
+  align-items:center;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+.ownersProgress{
+  font-weight:900;
+  font-size:13px;
+  opacity:.8;
+  padding:8px 10px;
+  border-radius:12px;
+  border:1px solid rgba(15,23,42,.14);
+  background: rgba(255,255,255,.55);
+}
+
+.ownersSearch input{
+  width:min(360px, 70vw);
+  height:40px;
+  border-radius:14px;
+}
+
+.ownersToggle{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  user-select:none;
+  font-size:13px;
+  opacity:.9;
+}
+
+.ownersToggle input{
+  width:18px;
+  height:18px;
+}
+
+.ownersList{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-top:10px;
+}
+
+/* jedan red kao "card" */
+.ownerRow{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  padding:12px 12px;
+  border-radius:16px;
+  border:1px solid rgba(15,23,42,.14);
+  background: rgba(255,255,255,.75);
+  box-shadow: 0 10px 22px rgba(2,6,23,.06);
+}
+
+.ownerRow:hover{ background: rgba(255,255,255,.88); }
+
+/* badge za sifru stana */
+.ownerBadge{
+  font-weight:900;
+  font-size:13px;
+  padding:8px 10px;
+  border-radius:12px;
+  border:1px solid rgba(15,23,42,.14);
+  background: rgba(15,23,42,.04);
+  min-width: 108px;
+  text-align:center;
+}
+
+/* input */
+.ownerField{ flex:1; display:flex; align-items:center; }
+
+.ownerField input{
+  width:100%;
+  height:40px;
+  border-radius:12px;
+  border:1px solid rgba(15,23,42,.18);
+  background: rgba(255,255,255,.95);
+  padding: 0 12px;
+}
+
+.ownerField input:focus{
+  outline:none;
+  border-color: rgba(15,23,42,.35);
+  box-shadow: 0 0 0 4px rgba(15,23,42,.08);
+}
+
+/* status — / • / ✓ */
+.ownerStatus{
+  width:40px;
+  height:40px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(15,23,42,.14);
+  background: rgba(15,23,42,.03);
+  font-weight:900;
+  font-size:16px;
+  opacity:.75;
+}
+
+.ownerStatus.saved{ opacity:1; }
+.ownerStatus.dirty{ opacity:1; }
+
+/* mobile: red u 2 linije */
+@media (max-width: 640px){
+  .ownerRow{
+    flex-direction:column;
+    align-items:stretch;
+  }
+  .ownerBadge{
+    min-width:unset;
+    text-align:left;
+  }
+  .ownerStatus{
+    width:100%;
+  }
+}
   
 </style>
 </head>
@@ -2049,361 +2260,480 @@ gap: 10px;
       </section>
 
       <!-- FINANSIJE -->
-      <section class="page" id="page-finansije">
-        <section class="card">
-          <div class="finTitleRow">
-  <h3>Finansije</h3>
+<section class="page" id="page-finansije">
+  <section class="card">
 
-  <!-- STANAR: Moj dug/pretplata u naslovu Finansija -->
-  <div class="finTenantBadge status-obaveza" data-role="stanar" id="finTenantBadge" style="display:none;">
-    <span id="finTenantBadgeText">0,00 RSD</span>
-  </div>
-</div>
+    <div class="finTitleRow">
+      <h3>Finansije</h3>
 
-          <div class="fRow" data-role="upravnik" style="margin-top:12px; gap:10px;">
-  <button class="btn btnPrimary" id="finTabEntries">Finansijske promene</button>
-  <button class="btn btnGhost" id="finTabDues">Dugovanja stanara</button>
-</div>
+      <!-- ADMIN: Promeni zgradu (Finansije) -->
+      <div id="adminFinBuildingSwitch" data-role="admin" style="display:none;"></div>
 
-       <div id="finEntriesWrap">  
-         
-<!-- FIN HEADER CONTROLS (filter/sort) -->
-<div class="fRow" style="margin-top:12px; gap:10px; align-items:flex-end;">
-  <div class="half field" style="margin-top:0;">
-    <label for="finFilterType">Tip</label>
-    <select id="finFilterType">
-      <option value="svi">Svi</option>
-      <option value="prihod">Prihod</option>
-      <option value="rashod">Rashod</option>
-    </select>
-  </div>
-
-  <div class="half field" style="margin-top:0;">
-    <label for="finFilterCategory">Kategorija</label>
-    <select id="finFilterCategory">
-      <option value="">Sve</option>
-      <option value="hitna intervencija">Hitna intervencija</option>
-      <option value="tekuće održavanje">Tekuće održavanje</option>
-      <option value="lift">Lift</option>
-      <option value="ostalo">Ostalo</option>
-      <option value="drugo">Drugo</option>
-    </select>
-  </div>
-
-  <div class="half field" style="margin-top:0; display:none;">
-  <label for="finSortBy">Sortiranje</label>
-  <select id="finSortBy">
-    <option value="date-desc">Datum ↓</option>
-    <option value="date-asc">Datum ↑</option>
-    <option value="amount-desc">Iznos ↓</option>
-    <option value="amount-asc">Iznos ↑</option>
-  </select>
-</div>
-
-
-  <div class="grow field" style="margin-top:0;">
-    <label for="finLocalSearch">Pretraga</label>
-    <input id="finLocalSearch" type="text" placeholder="npr. lift, servis, 120000...">
-  </div>
-</div>
-<!-- /FIN HEADER CONTROLS -->
-         
-          <!-- ✅ DODATO: POCETNO STANJE (samo admin/upravnik) -->
-          <div class="smallText" data-role="upravnik" style="margin-top:12px;">
-  <div class="fRow">
-    <div class="grow" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-      <span class="badge" style="font-size:11px; padding:6px 10px; opacity:.75;">
-        Početno stanje (RSD)
-      </span>
-
-      <div class="field openingBalanceWrap" style="margin-top:0; width:220px; display:flex; align-items:center; gap:8px;">
-  <input id="openingBalanceInput" type="number" step="0.01"
-    placeholder="npr. 948889"
-    style="height:36px; border-radius:14px; padding:8px 10px;">
-
-  <span id="openingBalanceLock"
-        class="lockIcon locked"
-        title="Zaključano – kliknite Izmeni">
-  </span>
-</div>
-      <button class="btn btnGhost" id="editOpeningBalanceBtn" type="button"
-        style="flex:unset; padding:10px 14px; border-radius:14px;">
-  Izmeni
-</button>
-
-<button class="btn btnGhost" id="saveOpeningBalanceBtn" type="button"
-        style="flex:unset; padding:10px 14px; border-radius:14px; display:none;">
-  Sačuvaj
-</button>
-    </div>
-  </div>
-</div>
-
-             <div class="smallText" data-role="admin" style="margin-top:12px;">
-  <div class="fRow">
-    <div class="grow" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-      <span class="badge" style="font-size:11px; padding:6px 10px; opacity:.75;">
-        Početno stanje (RSD)
-      </span>
-
-      <div class="field" style="margin-top:0; width:220px;">
-        <input id="openingBalanceInputAdmin" type="number" step="0.01" placeholder="npr. 948889"
-               style="height:36px; border-radius:14px; padding:8px 10px;">
+      <!-- STANAR: Moj dug/pretplata u naslovu Finansija -->
+      <div class="finTenantBadge status-obaveza" data-role="stanar" id="finTenantBadge" style="display:none;">
+        <span id="finTenantBadgeText">0,00 RSD</span>
       </div>
-
-      <button class="btn btnGhost" id="editOpeningBalanceBtnAdmin" type="button"
-        style="flex:unset; padding:10px 14px; border-radius:14px;">
-  Izmeni
-</button>
-
-<button class="btn btnGhost" id="saveOpeningBalanceBtnAdmin" type="button"
-        style="flex:unset; padding:10px 14px; border-radius:14px; display:none;">
-  Sačuvaj
-</button>
     </div>
-  </div>
-</div>
 
-          <!-- ✅ /DODATO -->
+    <!-- ✅ TABOVI -->
+    <div class="fRow" data-role="upravnik" style="margin-top:12px; gap:10px;">
+      <button class="btn btnPrimary" id="finTabEntries">Finansijske promene</button>
+      <button class="btn btnGhost" id="finTabOwners">Vlasnici stanova</button>
+      <button class="btn btnGhost" id="finTabDues">Dugovanja stanara</button>
+    </div>
 
-          <div class="smallText" data-role="upravnik" style="margin-top:12px;">
-            <div class="fRow">
-              <div class="grow">
-                <span class="badge">Upravnik</span>
-                <span class="badge" style="margin-left:8px;">Upload limit: 10MB po unosu</span>
-              </div>
-              <div>
-                <button class="btn btnGhost" id="addFinanceBtn" type="button">Dodaj finansijsku stavku</button>
-              </div>
-            </div>
+    <!-- ================= TAB CONTENT ================= -->
+
+    <!-- ✅ TAB: FINANSIJSKE PROMENE -->
+    <div id="finTabWrapEntries">
+      <div id="finEntriesWrap">
+
+        
+        <!-- FIN HEADER CONTROLS -->
+        <div class="fRow" style="margin-top:12px; gap:10px; align-items:flex-end;">
+          <div class="half field">
+            <label for="finFilterType">Tip</label>
+            <select id="finFilterType">
+              <option value="svi">Svi</option>
+              <option value="prihod">Prihod</option>
+              <option value="rashod">Rashod</option>
+            </select>
           </div>
 
-          <div id="financeFormWrap" data-role="upravnik" style="display:none; margin-top:12px;">
-            <div class="fRow">
-              <div class="half field">
-                <label for="fDate">Datum</label>
-                <input id="fDate" type="date">
-              </div>
-
-              <div class="half field">
-                <label for="fType">Tip</label>
-                <select id="fType">
-                  <option value="rashod">Rashod</option>
-                  <option value="prihod">Prihod</option>
-                </select>
-              </div>
-
-              <div class="half field">
-                <label for="fCategory">Kategorija</label>
-                <select id="fCategory">
-                  <option value="hitna intervencija">Hitna intervencija</option>
-                  <option value="tekuće održavanje">Tekuće održavanje</option>
-                  <option value="lift">Lift</option>
-                  <option value="ostalo">Ostalo</option>
-                  <option value="drugo">Drugo</option>
-                </select>
-              </div>
-
-              <div class="half field">
-                <label for="fFirm">Firma (dropdown)</label>
-                <select id="fFirm"></select>
-              </div>
-
-              <div class="grow field">
-                <label for="fFirmNew">Nova firma (opciono)</label>
-                <input id="fFirmNew" type="text" placeholder="Unesi novu firmu ako ne postoji u listi">
-              </div>
-
-              <div class="grow field">
-                <label for="fDesc">Opis</label>
-                <input id="fDesc" type="text" placeholder="npr. placanje racuna / uplata stanara">
-              </div>
-
-              <div class="grow field">
-                <label for="fAmount">Iznos (RSD)</label>
-                <input id="fAmount" type="number" step="0.01" placeholder="npr. 12500">
-              </div>
-
-              <div class="grow field">
-                <label for="fDocs">Dokumenti (više fajlova)</label>
-                <input id="fDocs" type="file" multiple accept="application/pdf">
-                <div class="smallText" style="margin-top:6px;">
-                  Ukupna veličina fajlova po unosu max 10MB. Klik na fajl u listi = otvori PDF.
-                </div>
-              </div>
-<div class="grow" id="existingDocsWrap" style="display:none; margin-top:6px;">
-  <div class="smallText" style="margin-top:6px;">
-    Postojeći dokumenti (klik “Ukloni” da izbrišeš iz stavke):
-  </div>
-  <ul class="fileList" id="existingDocsList"></ul>
-</div>
-
-              <div class="grow" style="display:flex; gap:10px; margin-top:6px;">
-                <button class="btn btnPrimary" id="saveFinanceBtn" type="button">Sačuvaj</button>
-                <button class="btn btnGhost" id="cancelFinanceBtn" type="button">Otkaži</button>
-              </div>
-
-              <div class="error" id="financeError" style="display:none;">Greška: proveri polja i limit fajlova (10MB).</div>
-            </div>
+          <div class="half field">
+            <label for="finFilterCategory">Kategorija</label>
+            <select id="finFilterCategory">
+              <option value="">Sve</option>
+              <option value="hitna intervencija">Hitna intervencija</option>
+              <option value="tekuće održavanje">Tekuće održavanje</option>
+              <option value="lift">Lift</option>
+              <option value="ostalo">Ostalo</option>
+              <option value="drugo">Drugo</option>
+            </select>
           </div>
 
-          <ul class="boardList" id="financeList"></ul>
+          <div class="grow field">
+            <label for="finLocalSearch">Pretraga</label>
+            <input id="finLocalSearch" type="text" placeholder="npr. lift, servis, 120000...">
+          </div>
+        </div>
 
-</div><!-- /finEntriesWrap -->
+        <!-- ✅ POČETNO STANJE (UPRAVNIK) -->
+        <div class="smallText" data-role="upravnik" style="margin-top:12px;">
+          <div class="fRow">
+            <div class="grow" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <span class="badge" style="font-size:11px; padding:6px 10px; opacity:.75;">Početno stanje (RSD)</span>
 
-          <div id="finDuesWrap" style="display:none;">
-         
-<!-- ✅ DUG / PRETPLATA STANARA (samo upravnik) -->
-<div class="smallText" data-role="upravnik" style="margin-top:14px;">
-  <span class="badge">Dug / pretplata stanara</span>
+              <div class="field openingBalanceWrap" style="width:220px; display:flex; gap:8px;">
+                <input id="openingBalanceInput" type="number" step="0.01" placeholder="npr. 948889">
+                <span id="openingBalanceLock" class="lockIcon locked"></span>
+              </div>
 
-  <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end;">
-    <div class="half field" style="margin-top:0;">
-      <label for="monthlyFeeInput">Mesečna obaveza (RSD)</label>
-      <input id="monthlyFeeInput" type="number" min="0" step="1" value="2000">
+              <button class="btn btnGhost" id="editOpeningBalanceBtn" type="button">Izmeni</button>
+              <button class="btn btnGhost" id="saveOpeningBalanceBtn" type="button" style="display:none;">Sačuvaj</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ✅ POČETNO STANJE (ADMIN) -->
+        <div class="smallText" data-role="admin" style="margin-top:12px;">
+          <div class="fRow">
+            <div class="grow" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <span class="badge" style="font-size:11px; padding:6px 10px; opacity:.75;">Početno stanje (RSD)</span>
+
+              <div class="field" style="margin-top:0; width:220px;">
+                <input id="openingBalanceInputAdmin" type="number" step="0.01" placeholder="npr. 948889"
+                       style="height:36px; border-radius:14px; padding:8px 10px;">
+              </div>
+
+              <button class="btn btnGhost" id="editOpeningBalanceBtnAdmin" type="button"
+                      style="flex:unset; padding:10px 14px; border-radius:14px;">Izmeni</button>
+
+              <button class="btn btnGhost" id="saveOpeningBalanceBtnAdmin" type="button"
+                      style="flex:unset; padding:10px 14px; border-radius:14px; display:none;">Sačuvaj</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ✅ UPRAVNIK: akcije -->
+        <div class="smallText" data-role="upravnik" style="margin-top:12px;">
+          <div class="fRow">
+            <div class="grow">
+              <span class="badge">Upravnik</span>
+              <span class="badge" style="margin-left:8px;">Upload limit: 10MB po unosu</span>
+            </div>
+            <div>
+              <button class="btn btnGhost" id="addFinanceBtn" type="button">Dodaj finansijsku stavku</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="financeFormWrap" data-role="upravnik" style="display:none; margin-top:12px;">
+          <div class="fRow">
+            <div class="half field">
+              <label for="fDate">Datum</label>
+              <input id="fDate" type="date">
+            </div>
+
+            <div class="half field">
+              <label for="fType">Tip</label>
+              <select id="fType">
+                <option value="rashod">Rashod</option>
+                <option value="prihod">Prihod</option>
+              </select>
+            </div>
+
+            <div class="half field">
+              <label for="fCategory">Kategorija</label>
+              <select id="fCategory">
+                <option value="hitna intervencija">Hitna intervencija</option>
+                <option value="tekuće održavanje">Tekuće održavanje</option>
+                <option value="lift">Lift</option>
+                <option value="ostalo">Ostalo</option>
+                <option value="drugo">Drugo</option>
+              </select>
+            </div>
+
+            <div class="half field">
+              <label for="fFirm">Firma (dropdown)</label>
+              <select id="fFirm"></select>
+            </div>
+
+            <div class="grow field">
+              <label for="fFirmNew">Nova firma (opciono)</label>
+              <input id="fFirmNew" type="text" placeholder="Unesi novu firmu ako ne postoji u listi">
+            </div>
+
+            <div class="grow field">
+              <label for="fDesc">Opis</label>
+              <input id="fDesc" type="text" placeholder="npr. placanje racuna / uplata stanara">
+            </div>
+
+            <div class="grow field">
+              <label for="fAmount">Iznos (RSD)</label>
+              <input id="fAmount" type="number" step="0.01" placeholder="npr. 12500">
+            </div>
+
+            <div class="grow field">
+              <label for="fDocs">Dokumenti (više fajlova)</label>
+              <input id="fDocs" type="file" multiple accept="application/pdf">
+              <div class="smallText" style="margin-top:6px;">
+                Ukupna veličina fajlova po unosu max 10MB. Klik na fajl u listi = otvori PDF.
+              </div>
+            </div>
+
+            <div class="grow" id="existingDocsWrap" style="display:none; margin-top:6px;">
+              <div class="smallText" style="margin-top:6px;">
+                Postojeći dokumenti (klik “Ukloni” da izbrišeš iz stavke):
+              </div>
+              <ul class="fileList" id="existingDocsList"></ul>
+            </div>
+
+            <div class="grow" style="display:flex; gap:10px; margin-top:6px;">
+              <button class="btn btnPrimary" id="saveFinanceBtn" type="button">Sačuvaj</button>
+              <button class="btn btnGhost" id="cancelFinanceBtn" type="button">Otkaži</button>
+            </div>
+
+            <div class="error" id="financeError" style="display:none;">Greška: proveri polja i limit fajlova (10MB).</div>
+          </div>
+        </div>
+
+        <ul class="boardList" id="financeList"></ul>
+
+      </div>
     </div>
 
-    <div class="half field" style="margin-top:0;">
-      <label for="duesStartMonth">Početni mesec obračuna</label>
-      <input id="duesStartMonth" type="month">
-    </div>
+    <!-- ✅ TAB: VLASNICI STANOVA -->
+<div id="finTabWrapOwners" style="display:none;">
 
-    <div>
-      <button class="btn btnGhost" id="saveDuesSettingsBtn" type="button" style="flex:unset;">
-        Sačuvaj podešavanja
-      </button>
-    </div>
+  <!-- ✅ POD-TABOVI unutar Vlasnika -->
+  <div class="fRow" style="margin-top:12px; gap:10px;">
+    <button class="btn btnPrimary" id="ownTabUnits" type="button">Dodaj stan</button>
+    <button class="btn btnGhost" id="ownTabBuildings" type="button">Dodaj zgradu</button>
   </div>
 
-  <!-- ===== Dugovanja stanara: toolbar + grid ===== -->
-<div class="duesToolbar">
-  <div class="field" style="min-width:220px;">
-    <label for="duesSearch">Pretraga stanara</label>
-    <input id="duesSearch" type="text" placeholder="npr. BM25-002">
-  </div>
+  <!-- ================= POD-TAB CONTENT ================= -->
 
-  <div class="field" style="min-width:220px;">
-    <label for="duesFilter">Filter</label>
-    <select id="duesFilter">
-      <option value="svi">Svi</option>
-      <option value="dug">Samo dug</option>
-      <option value="nula">Samo 0</option>
-      <option value="pretplata">Samo pretplata</option>
-    </select>
-  </div>
+  <!-- ✅ POD-TAB: DODAJ STAN + VLASNICI -->
+  <div id="ownWrapUnits" style="margin-top:14px;">
 
-  <div class="field" style="min-width:220px;">
-    <label for="duesSort">Sortiranje</label>
-    <select id="duesSort">
-      <option value="user-asc">Korisnik A–Z</option>
-      <option value="saldo-asc">Najveći dug</option>
-      <option value="saldo-desc">Najveća pretplata</option>
-    </select>
-  </div>
-</div>
+    <!-- ADMIN: Upravljanje stanovima -->
+    <div id="adminUnitsWrap" style="display:none; margin-top:14px;">
+      <div class="badge">Upravljanje stanovima</div>
 
-<div class="duesGrid" id="duesGrid"></div>
-
-  <div id="duesPayWrap" style="display:none; margin-top:14px;">
-    <div class="badge" id="duesPayTitle">Uplata</div>
-
-    <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end;">
-      <div class="half field" style="margin-top:0;">
-        <label for="duesPayDate">Datum uplate</label>
-        <input id="duesPayDate" type="date">
+      <div class="smallText" style="opacity:.7; margin-top:6px;">
+        Ovde menjaš samo vlasnika za izabrani stan.
       </div>
 
-      <div class="half field" style="margin-top:0;">
-        <label for="duesPayAmount">Iznos (RSD)</label>
-        <input id="duesPayAmount" type="number" step="0.01" placeholder="npr. 2000">
+      <div id="adminAddUnitForm" style="margin-top:12px;">
+        <div class="fRow" style="gap:10px; align-items:flex-end; flex-wrap:wrap;">
+          <div class="field" style="min-width:160px;">
+            <label>Šifra zgrade</label>
+            <input id="adminUnitBCode" type="text" disabled>
+          </div>
+
+          <div class="field" style="min-width:320px; flex:1;">
+            <label>Adresa</label>
+            <input id="adminUnitAddr" type="text" disabled>
+          </div>
+
+          <div class="field" style="min-width:260px; flex:1;">
+            <label>Ime i prezime vlasnika</label>
+            <input id="adminUnitOwner" type="text">
+          </div>
+
+          <div class="field" style="min-width:180px;">
+            <label>Novi ID stana</label>
+            <input id="adminUnitCode" type="text">
+          </div>
+
+          <button class="btn btnPrimary" type="button" id="adminSaveUnitBtn">Sačuvaj</button>
+          <button class="btn btnGhost" type="button" id="adminCancelUnitBtn">Odustani</button>
+        </div>
       </div>
 
-      <div class="grow field" style="margin-top:0;">
-        <label for="duesPayNote">Napomena (opciono)</label>
-        <input id="duesPayNote" type="text" placeholder="npr. januar 2026 / dug / korekcija">
+      <div id="adminUnitsList" class="list" style="margin-top:10px;"></div>
+    </div>
+
+    <!-- VLASNICI STANOVA (PRO UI) -->
+    <div id="unitOwnersWrap" style="margin-top:16px;">
+
+      <div class="ownersHead">
+        <div class="ownersTitle">
+          <div class="badge">Vlasnici stanova</div>
+          <div class="hSub">
+            Unesi ime i prezime vlasnika za svaki stan. Stanar vidi samo svoje ime i prezime.
+          </div>
+        </div>
+
+        <div class="ownersTools">
+          <div id="ownersProgress" class="ownersProgress">Popunjeno: 0 / 0</div>
+
+          <label class="ownersToggle">
+            <input type="checkbox" id="ownersOnlyEmpty">
+            <span>Prikaži samo prazne</span>
+          </label>
+
+          <div class="searchInline ownersSearch">
+            <input id="ownersSearchInput" placeholder="Pretraga: BM25-001 ili ime vlasnika…">
+          </div>
+        </div>
+      </div>
+
+      <div id="unitOwnersTable" class="ownersList"></div>
+    </div>
+
+  </div>
+
+  <!-- ✅ POD-TAB: DODAJ ZGRADU -->
+  <div id="ownWrapBuildings" style="display:none; margin-top:14px;">
+
+    <!-- ADMIN: Upravljanje zgradama -->
+    <div id="adminBuildingsWrap" data-role="admin" style="display:none; margin-top:14px;">
+      <div class="badge">Upravljanje zgradama (samo admin)</div>
+
+      <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+        <div class="field" style="min-width:160px;">
+          <label>Šifra zgrade (npr. BM25)</label>
+          <input id="adminBCode" type="text" placeholder="BM25">
+        </div>
+
+        <div class="field" style="min-width:260px; flex:1;">
+          <label>Naziv zgrade</label>
+          <input id="adminBTitle" type="text" placeholder="Bore Markovića 25">
+        </div>
+
+        <div class="field" style="min-width:220px; flex:1;">
+          <label>Ulica</label>
+          <input id="adminBStreet" type="text" placeholder="Bore Markovića">
+        </div>
+
+        <div class="field" style="min-width:120px;">
+          <label>Broj</label>
+          <input id="adminBNumber" type="text" placeholder="25">
+        </div>
+
+        <div class="field" style="min-width:120px;">
+          <label>Broj stanova</label>
+          <input id="adminBUnits" type="number" min="1" placeholder="25">
+        </div>
+
+        <div class="field" style="min-width:240px; flex:1;">
+          <label>Upravnik</label>
+          <select id="bMgrSelect">
+            <option value="">— Izaberi upravnika —</option>
+          </select>
+        </div>
+
+        <button class="btn btnGhost" type="button" id="addMgrBtn">+ Novi upravnik</button>
+
+        <button class="btn btnPrimary" type="button" id="adminAddBuildingBtn">
+          Dodaj zgradu
+        </button>
       </div>
     </div>
-    
-    <div class="field" style="margin-top:10px;">
-      <label for="duesPayDocs">PDF potvrde (više fajlova, max 10MB)</label>
-      <input id="duesPayDocs" type="file" multiple accept="application/pdf">
+
+    <!-- forma za dodavanje novog upravnika -->
+    <div id="newMgrWrap" style="display:none; margin-top:10px;">
+      <!-- (OVDE ostaje tvoj postojeći sadržaj newMgrWrap, ništa ne menjaj u njemu) -->
     </div>
 
-    <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
-      <button class="btn btnPrimary" id="duesPaySaveBtn" type="button" style="flex:unset;">Sačuvaj uplatu</button>
-      <button class="btn btnGhost" id="duesPayCancelBtn" type="button" style="flex:unset;">Otkaži</button>
-    </div>
+    <div id="adminBuildingsList" class="list" style="margin-top:10px;"></div>
 
-    <div class="error" id="duesPayError" style="display:none;"></div>
-</div> <!-- /duesPayWrap -->
+  </div>
 
 </div>
 
-  <!-- ✅ IZMJENA / KOREKCIJA (UPRAVNIK / ADMIN) -->
-<div id="duesAdjWrap" style="display:none; margin-top:14px;">
-  <div class="badge" id="duesAdjTitle">Izmena</div>
+          <!-- ✅ TAB: DUGOVANJA -->
+    <div id="finTabWrapDues" style="display:none;">
 
-  <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end;">
-    <div class="half field">
-      <label for="duesAdjDate">Datum izmene</label>
-      <input id="duesAdjDate" type="date">
+      <!-- ✅ DUG / PRETPLATA STANARA (samo upravnik) -->
+      <div class="smallText" data-role="upravnik" style="margin-top:14px;">
+        <span class="badge">Dug / pretplata stanara</span>
+
+        <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end;">
+          <div class="half field" style="margin-top:0;">
+            <label for="monthlyFeeInput">Mesečna obaveza (RSD)</label>
+            <input id="monthlyFeeInput" type="number" min="0" step="1" value="2000">
+          </div>
+
+          <div class="half field" style="margin-top:0;">
+            <label for="duesStartMonth">Početni mesec obračuna</label>
+            <input id="duesStartMonth" type="month">
+          </div>
+
+          <div>
+            <button class="btn btnGhost" id="saveDuesSettingsBtn" type="button" style="flex:unset;">Sačuvaj podešavanja</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="duesToolbar">
+        <div class="field" style="min-width:220px;">
+          <label for="duesSearch">Pretraga stanara</label>
+          <input id="duesSearch" type="text" placeholder="npr. BM25-002">
+        </div>
+
+        <div class="field" style="min-width:220px;">
+          <label for="duesFilter">Filter</label>
+          <select id="duesFilter">
+            <option value="svi">Svi</option>
+            <option value="dug">Samo dug</option>
+            <option value="nula">Samo 0</option>
+            <option value="pretplata">Samo pretplata</option>
+          </select>
+        </div>
+
+        <div class="field" style="min-width:220px;">
+          <label for="duesSort">Sortiranje</label>
+          <select id="duesSort">
+            <option value="user-asc">Korisnik A–Z</option>
+            <option value="saldo-asc">Najveći dug</option>
+            <option value="saldo-desc">Najveća pretplata</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="duesGrid" id="duesGrid"></div>
+
+      <!-- UPLATA -->
+      <div id="duesPayWrap" style="display:none; margin-top:14px;">
+        <div class="badge" id="duesPayTitle">Uplata</div>
+
+        <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end;">
+          <div class="half field" style="margin-top:0;">
+            <label for="duesPayDate">Datum uplate</label>
+            <input id="duesPayDate" type="date">
+          </div>
+
+          <div class="half field" style="margin-top:0;">
+            <label for="duesPayAmount">Iznos (RSD)</label>
+            <input id="duesPayAmount" type="number" step="0.01" placeholder="npr. 2000">
+          </div>
+
+          <div class="grow field" style="margin-top:0;">
+            <label for="duesPayNote">Napomena (opciono)</label>
+            <input id="duesPayNote" type="text" placeholder="npr. januar 2026 / dug / korekcija">
+          </div>
+        </div>
+
+        <div class="field" style="margin-top:10px;">
+          <label for="duesPayDocs">PDF potvrde (više fajlova, max 10MB)</label>
+          <input id="duesPayDocs" type="file" multiple accept="application/pdf">
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
+          <button class="btn btnPrimary" id="duesPaySaveBtn" type="button">Sačuvaj uplatu</button>
+          <button class="btn btnGhost" id="duesPayCancelBtn" type="button">Otkaži</button>
+        </div>
+
+        <div class="error" id="duesPayError" style="display:none;"></div>
+      </div>
+
+      <!-- IZMJENA / KOREKCIJA -->
+      <div id="duesAdjWrap" style="display:none; margin-top:14px;">
+        <div class="badge" id="duesAdjTitle">Izmena</div>
+
+        <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end;">
+          <div class="half field">
+            <label for="duesAdjDate">Datum izmene</label>
+            <input id="duesAdjDate" type="date">
+          </div>
+
+          <div class="half field">
+            <label for="duesAdjKind">Akcija</label>
+            <select id="duesAdjKind">
+              <option value="plus">Povećaj iznos</option>
+              <option value="minus">Smanji iznos</option>
+            </select>
+          </div>
+
+          <div class="half field">
+            <label for="duesAdjAmount">Iznos (RSD)</label>
+            <input id="duesAdjAmount" type="number" step="0.01">
+          </div>
+
+          <div class="grow field">
+            <label for="duesAdjNote">Razlog</label>
+            <input id="duesAdjNote" type="text" placeholder="npr. korekcija / greška u uplati">
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
+          <button class="btn btnPrimary" id="duesAdjSaveBtn" type="button">Sačuvaj izmenu</button>
+          <button class="btn btnGhost" id="duesAdjCancelBtn" type="button">Otkaži</button>
+        </div>
+
+        <div class="error" id="duesAdjError" style="display:none;"></div>
+      </div>
+
+      <!-- STANAR: moj dug / pretplata -->
+      <div class="smallText" data-role="stanar" id="tenantDuesBox" style="margin-top:14px;">
+        <span class="badge">Moj dug / pretplata</span>
+
+        <div class="fRow" style="margin-top:10px; gap:10px;">
+          <span class="badge status-uplaceno">
+            Uplaćeno: <b id="tPaid">0,00</b> RSD
+          </span>
+
+          <span class="badge status-obaveza">
+            Obaveza: <b id="tExpected">0,00</b> RSD
+          </span>
+
+          <span class="badge status-dug" id="tSaldoBadge">0,00</span>
+        </div>
+
+        <div class="smallText" id="tPeriod" style="margin-top:8px;"></div>
+      </div>
+
     </div>
 
-    <div class="half field">
-      <label for="duesAdjKind">Akcija</label>
-      <select id="duesAdjKind">
-        <option value="plus">Povećaj iznos</option>
-        <option value="minus">Smanji iznos</option>
-      </select>
-    </div>
+  </section>
+</section>
 
-    <div class="half field">
-      <label for="duesAdjAmount">Iznos (RSD)</label>
-      <input id="duesAdjAmount" type="number" step="0.01">
-    </div>
+<!-- OGLASNA -->
+<section class="page" id="page-oglasna">
 
-    <div class="grow field">
-      <label for="duesAdjNote">Razlog</label>
-      <input id="duesAdjNote" type="text" placeholder="npr. korekcija / greška u uplati">
-    </div>
-  </div>
-
-  <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
-    <button class="btn btnPrimary" id="duesAdjSaveBtn" type="button" style="flex:unset;">Sačuvaj izmenu</button>
-    <button class="btn btnGhost" id="duesAdjCancelBtn" type="button" style="flex:unset;">Otkaži</button>
-  </div>
-
-  <div class="error" id="duesAdjError" style="display:none;"></div>
-</div>
-            
-</div><!-- /finDuesWrap -->
-            
-          <!-- ✅ STANAR: moj dug / pretplata (read-only) -->
-<div class="smallText" data-role="stanar" id="tenantDuesBox" style="margin-top:14px;">
-  <span class="badge">Moj dug / pretplata</span>
-
-  <div class="fRow" style="margin-top:10px; gap:10px;">
-    <span class="badge status-uplaceno">
-  Uplaćeno: <b id="tPaid">0,00</b> RSD
-</span>
-
-<span class="badge status-obaveza">
-  Obaveza: <b id="tExpected">0,00</b> RSD
-</span>
-
-<span class="badge status-dug" id="tSaldoBadge">
-  0,00
-</span>
-  </div>
-
-  <div class="smallText" id="tPeriod" style="margin-top:8px;"></div>
-</div>
-
-        </section>
-      </section>
-
-      <!-- OGLASNA -->
-      <section class="page" id="page-oglasna">
         <section class="card">
           <h3>Oglasna tabla</h3>
 
@@ -2703,6 +3033,75 @@ const BUILDINGS = [
   }
 ];
 
+/* ================= BUILDINGS DB (admin dodaje zgrade) ================= */
+const KEY_BUILDINGS_DB = "pu_buildings_db_v1";
+
+function loadBuildingsDB(){
+  try {
+    return JSON.parse(localStorage.getItem(KEY_BUILDINGS_DB)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function saveBuildingsDB(rows){
+  localStorage.setItem(KEY_BUILDINGS_DB, JSON.stringify(rows));
+}
+
+function slugCode(code){
+  return String(code || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+}
+
+/* ubaci zgrade iz DB u runtime BUILDINGS (da rade svuda) */
+function mergeBuildingsFromDB(){
+  const rows = loadBuildingsDB();
+  rows.forEach(b => {
+    if(!b?.id) return;
+    if(!BUILDINGS.some(x => x.id === b.id)){
+      BUILDINGS.push(b);
+    }
+  });
+}
+
+/* pozovi odmah pri startu aplikacije */
+mergeBuildingsFromDB();
+
+/* Admin helper: dodaj novu zgradu (UI u sledećem koraku) */
+function adminAddBuilding({ code, title, street, number, units }){
+  const c = String(code || "").trim().toUpperCase();
+  const t = String(title || "").trim();
+  const s = String(street || "").trim();
+  const n = String(number || "").trim();
+  const u = Number(units || 0);
+
+  if(!c || !t || !s || !n || !u){
+    throw new Error("Popuni sva polja za zgradu.");
+  }
+
+  const id = `b_${slugCode(c)}`; // npr. b_bm25
+
+  // ne dozvoli duplikate
+  if(BUILDINGS.some(x => x.id === id)){
+    throw new Error("Zgrada sa tom šifrom već postoji.");
+  }
+
+  const newB = { id, code: c, title: t, street: s, number: n, units: u };
+
+  // upiši u DB
+  const db = loadBuildingsDB();
+  db.push(newB);
+  saveBuildingsDB(db);
+
+  // odmah ubaci i u runtime
+  BUILDINGS.push(newB);
+
+  return newB;
+}
+
 
 function normalizeBuildingId(id){
   return String(id || "")
@@ -2727,9 +3126,8 @@ function getBuildingById(id){
 const USERS = [
   { username: "ADMIN-001", pass: "123456", role: "admin", buildings: ["b_bm25","b_bp10","b_nč28"] },
   { username: "UPR-001",   pass: "123456", role: "upravnik", buildings: ["b_bp10","b_nč28"] },
-{ username: "UPR-002",   pass: "123456", role: "upravnik", buildings: ["b_bm25"] },
+  { username: "UPR-002",   pass: "123456", role: "upravnik", buildings: ["b_bm25"] },
 
-  
   { username: "BM25-001", pass: "2B3H1", role: "stanar", buildings: ["b_bm25"] },
   { username: "BM25-002", pass: "8K1Q9", role: "stanar", buildings: ["b_bm25"] },
   { username: "BM25-003", pass: "4Z7M2", role: "stanar", buildings: ["b_bm25"] },
@@ -2753,7 +3151,7 @@ function kFirm(bid){ return "pu_finance_firms_v3__" + bid; }
 function kForum(bid){ return "pu_forum_proposals_v2__" + bid; }
 function kBoard(bid){ return "pu_board_posts_v2__" + bid; }
 
-  function normalizeText(str){
+function normalizeText(str){
   return (str || "")
     .toLowerCase()
     .normalize("NFD")
@@ -3397,11 +3795,24 @@ function renderBuildingUI(){
 
   // ako HOĆEŠ da meta ostane, ali samo kad postoji zgrada:
   if(buildingMeta){
-    buildingMeta.innerHTML = b ? `
-      Stambena zajednica: ${b.title}<br>
-      Broj jedinica: ${b.units}
-    ` : "";
-  }
+  const myUnit = String(CURRENT_SESSION?.unitCode || "").trim().toUpperCase();
+
+  // svi vide ID (ako postoji)
+  const idLine = myUnit ? `ID: ${myUnit}` : ``;
+
+  // samo stanar vidi i ime (ako postoji), a upravnik/admin samo ID
+  const namePart =
+    (CURRENT_SESSION?.role === "stanar" && myUnit)
+      ? (getUnitLabel(b?.id, myUnit) || myUnit).replace(myUnit, "").trim()
+      : "";
+
+  // namePart će biti "(Ime Prezime)" ili prazno
+  buildingMeta.innerHTML = b ? `
+    Stambena zajednica: ${b.title}<br>
+    Broj jedinica: ${b.units}
+    ${idLine ? `<br>${idLine}${namePart ? ` ${namePart}` : ``}` : ``}
+  ` : "";
+}
 
   // balans (ako ti je ovo potrebno)
   const bal = computeBalanceFromFinance(bid);
@@ -3422,7 +3833,10 @@ function renderBuildingUI(){
 
 /* ===== login flow ===== */
 function attemptLogin(username, pass){
-  const u = USERS.find(x => x.username === username && x.pass === pass);
+  const uName = (username || "").trim();
+  const p     = (pass || "").trim();
+
+  const u = USERS.find(x => x.username === uName && x.pass === p);
   if(!u){
     errEl.style.display = "block";
     return;
@@ -3430,26 +3844,26 @@ function attemptLogin(username, pass){
   errEl.style.display = "none";
 
   CURRENT_SESSION = {
-  username: u.username,
-  role: u.role,
-  buildings: (u.buildings || []).slice(),
-  activeBuildingId: null
-};
+    username: u.username,
+    role: u.role,
+    buildings: (u.buildings || []).slice(),
+    activeBuildingId: null
+  };
 
-// 🔒 sakrij upravnik blokove stanarima
-document.querySelectorAll('[data-role="upravnik"]').forEach(el => {
-  if (CURRENT_SESSION?.role !== "upravnik") el.style.display = "none";
-});
+  // 🔒 sakrij "upravnik" blokove samo stanarima (admin sme da vidi)
+  document.querySelectorAll('[data-role="upravnik"]').forEach(el => {
+    if(!["upravnik","admin"].includes(CURRENT_SESSION?.role)) el.style.display = "none";
+  });
 
-// stanar ide odmah u svoju zgradu
-if(CURRENT_SESSION.role === "stanar"){
-  CURRENT_SESSION.activeBuildingId = CURRENT_SESSION.buildings[0] || null;
-  saveSession(CURRENT_SESSION);
-  enterPortal();
-  return;
-}
+  // ✅ stanar ide odmah u svoju zgradu
+  if(CURRENT_SESSION.role === "stanar"){
+    CURRENT_SESSION.activeBuildingId = CURRENT_SESSION.buildings[0] || null;
+    saveSession(CURRENT_SESSION);
+    enterPortal();
+    return;
+  }
 
-  // upravnik/admin: ako više zgrada -> izbor, ako jedna -> direktno
+  // ✅ upravnik/admin: ako ima više zgrada -> izbor, inače odmah ulaz
   if((CURRENT_SESSION.buildings || []).length > 1){
     saveSession(CURRENT_SESSION);
     showBuildingSelect();
@@ -3459,19 +3873,65 @@ if(CURRENT_SESSION.role === "stanar"){
     enterPortal();
   }
 }
+  
+// ✅ AUTH: pronađi usera iz DB (pu_users_db_v1)
+function findUserFromDB(username, password){
+  const u = (username || "").trim().toLowerCase();
+  const p = String(password || "").trim();
+
+  if(typeof loadUsersDB !== "function") return null;
+
+  const rows = loadUsersDB() || [];
+  return rows.find(x =>
+    (String(x?.username || "").trim().toLowerCase() === u) &&
+    (String(x?.password || "").trim() === p)
+  ) || null;
+}
+
+// ✅ Wrapper: prvo probaj DB upravnika, pa fallback na postojeći attemptLogin
+function attemptLoginPatched(username, pass){
+  // 1) probaj novog upravnika iz DB
+  const dbUser = findUserFromDB(username, pass);
+  if(dbUser){
+    CURRENT_SESSION = {
+      role: "upravnik",
+      username: dbUser.username,
+      name: dbUser.name || dbUser.username,
+      buildings: dbUser.buildings || [],
+      unitCode: ""
+    };
+
+    // isto ponašanje kao tvoj postojeći kod
+    if((CURRENT_SESSION.buildings || []).length > 1){
+      saveSession(CURRENT_SESSION);
+      showBuildingSelect();
+    }else{
+      CURRENT_SESSION.activeBuildingId = CURRENT_SESSION.buildings[0] || null;
+      saveSession(CURRENT_SESSION);
+      enterPortal();
+    }
+    return;
+  }
+
+  // 2) fallback na postojeći login (admin/stanar/legacy)
+  if(typeof attemptLogin === "function"){
+    attemptLogin(username, pass);
+  }else{
+    alert("Login funkcija nije pronađena (attemptLogin).");
+  }
+}
 
 loginBtn.addEventListener("click", () => {
   saveLoginCredsIfNeeded();
-  attemptLogin((usernameEl.value||"").trim(), (passEl.value||"").trim());
+  attemptLoginPatched((usernameEl.value||"").trim(), (passEl.value||"").trim());
 });
 
 document.addEventListener("keydown", (e) => {
   if(document.body.classList.contains("mode-login") && e.key === "Enter"){
     saveLoginCredsIfNeeded();
-    attemptLogin((usernameEl.value||"").trim(), (passEl.value||"").trim());
+    attemptLoginPatched((usernameEl.value||"").trim(), (passEl.value||"").trim());
   }
 });
-
 
 /* ===== building select screen ===== */
 function showBuildingSelect(){
@@ -4226,6 +4686,12 @@ title.innerHTML = `
         <span class="pill ${typeClass}">${escapeHTML(typeLabel)}</span>
         <span class="pill">${escapeHTML(item.category)}</span>
         ${item.firm ? `<span class="pill">${escapeHTML(item.firm)}</span>` : ``}
+
+        ${
+          (CURRENT_SESSION?.role === "upravnik" || CURRENT_SESSION?.role === "admin")
+            ? `<span class="pill">${escapeHTML(getUnitLabel(activeBid(), item.user || item.unit || item.createdBy || ""))}</span>`
+            : ``
+        }
       </div>
 
       <div class="itemDesc">${escapeHTML(item.desc || "")}</div>
@@ -4718,6 +5184,12 @@ title.innerHTML = `
       <div class="itemMeta">
         <span class="pill">${escapeHTML(dmy)}</span>
         <span class="pill">${escapeHTML(post.title || "")}</span>
+
+        ${
+          (CURRENT_SESSION?.role === "upravnik" || CURRENT_SESSION?.role === "admin")
+            ? `<span class="pill">${escapeHTML(getUnitLabel(activeBid(), post.createdBy || ""))}</span>`
+            : ``
+        }
       </div>
 
       ${post.desc ? `<div class="itemDesc">${escapeHTML(post.desc)}</div>` : ``}
@@ -4932,33 +5404,40 @@ function loadProposals(bid){
         poll: { enabled: true, endsAt: Date.now() - 1000*60*60*24*1, votesYes: ["demo@x"], votesNo: [] }
       }
     ];
-    localStorage.setItem(kForum(bid), JSON.stringify(seed));
+localStorage.setItem(kForum(bid), JSON.stringify(seed));
     return seed;
   }
   try { return JSON.parse(raw) || []; } catch { return []; }
 }
+
 function saveProposals(bid, items){
   localStorage.setItem(kForum(bid), JSON.stringify(items));
 }
+
 function fmtDateTime(ms){
   const d = new Date(ms);
   return d.toLocaleString("sr-RS");
 }
-  function daysLeftUntil(ms){
+
+function daysLeftUntil(ms){
   const diff = Number(ms || 0) - Date.now();
   return Math.max(0, Math.ceil(diff / (1000*60*60*24)));
 }
+
 function fmtDateOnly(ms){
   if(!ms) return "";
   return new Date(ms).toLocaleDateString("sr-RS");
 }
+
 function forumMatches(p, q){
   const hay = `${p.title} ${p.body}`;
   return includesQuery(hay, q);
 }
-  function ensurePollSR(p){
+
+function ensurePollSR(p){
   if(!p || !p.poll) return null;
 
+  // migracija starog tipa u srpski ("da/ne")
   if(Array.isArray(p.poll.votesYes) && !Array.isArray(p.poll.da)) p.poll.da = p.poll.votesYes.slice();
   if(Array.isArray(p.poll.votesNo)  && !Array.isArray(p.poll.ne)) p.poll.ne = p.poll.votesNo.slice();
 
@@ -4970,6 +5449,922 @@ function forumMatches(p, q){
   return p.poll;
 }
 
+/* ✅ KOD 1) — PROCENTI GLASANJA */
+function getVoteStats(poll){
+  const yes = poll?.da?.length || 0;
+  const no  = poll?.ne?.length || 0;
+  const total = yes + no;
+
+  return {
+    yes,
+    no,
+    total,
+    yesPct: total ? Math.round((yes / total) * 100) : 0,
+    noPct: total ? Math.round((no / total) * 100) : 0
+  };
+}
+
+/* ================= VLASNICI STANOVA (PRO+ UX) ================= */
+/* (ostavljamo legacy kUnits/loadUnits/saveUnits zbog fallback-a u getUnitLabel) */
+
+let OWNERS_QUERY = "";
+let OWNERS_ONLY_EMPTY = false;
+
+const OWNERS_LAST = new Map();   // unitCode -> last saved value
+const OWNERS_DIRTY = new Set();  // unitCode
+const OWNER_TIMERS = new Map();  // unitCode -> timeoutId
+
+function kUnits(bid){
+  return `units_${bid}`;
+}
+function loadUnits(bid){
+  try{ return JSON.parse(localStorage.getItem(kUnits(bid))) || {}; }
+  catch{ return {}; }
+}
+function saveUnits(bid, data){
+  localStorage.setItem(kUnits(bid), JSON.stringify(data));
+}
+
+// BM25 prefix iz building.id (b_bm25 -> BM25)
+function ownersPrefixFromBid(bid){
+  const b = BUILDINGS.find(x => x.id === bid);
+  if(!b) return "";
+  return String(b.id || "").toUpperCase().replace("B_","");
+}
+
+function setStatusEl(statusEl, state){
+  if(!statusEl) return;
+  statusEl.classList.remove("saved","dirty");
+
+  if(state === "empty"){ statusEl.textContent = "—"; return; }
+  if(state === "dirty"){ statusEl.textContent = "•"; statusEl.classList.add("dirty"); return; }
+  if(state === "saved"){ statusEl.textContent = "✓"; statusEl.classList.add("saved"); return; }
+}
+
+function updateOwnersProgress(bid){
+  const el = document.getElementById("ownersProgress");
+  if(!el) return;
+
+  const building = BUILDINGS.find(b => b.id === bid);
+  const total = building?.units || 0;
+
+  const rows = loadUnitsDB(bid) || [];
+  const prefix = ownersPrefixFromBid(bid);
+
+  let filled = 0;
+  for(let i=1; i<=total; i++){
+    const code = `${prefix}-${String(i).padStart(3,"0")}`;
+    const hit = rows.find(r => String(r.unitCode||"").toUpperCase() === code);
+    if((hit?.ownerFullName || "").trim()) filled++;
+  }
+  el.textContent = `Popunjeno: ${filled} / ${total}`;
+}
+
+function bindOwnersUIOnce(){
+  const q = document.getElementById("ownersSearchInput");
+  const only = document.getElementById("ownersOnlyEmpty");
+  if(!q || !only) return;
+
+  if(q.dataset.bound === "1") return;
+  q.dataset.bound = "1";
+
+  q.addEventListener("input", () => {
+    OWNERS_QUERY = (q.value || "").trim().toLowerCase();
+    const bid = activeBid();
+    if(bid) renderUnitOwners(bid);
+  });
+
+  only.addEventListener("change", () => {
+    OWNERS_ONLY_EMPTY = !!only.checked;
+    const bid = activeBid();
+    if(bid) renderUnitOwners(bid);
+  });
+}
+
+function scheduleSaveOwner(bid, unitCode, value, statusEl){
+  setStatusEl(statusEl, "dirty");
+  OWNERS_DIRTY.add(unitCode);
+
+  const prev = OWNER_TIMERS.get(unitCode);
+  if(prev) clearTimeout(prev);
+
+  const t = setTimeout(() => {
+    const v = (value || "").trim();
+
+    const rows = loadUnitsDB(bid) || [];
+    const idx = rows.findIndex(x => String(x.unitCode||"").toUpperCase() === unitCode);
+
+    if(v){
+      const payload = { unitCode, ownerFullName: v };
+      if(idx === -1) rows.push(payload);
+      else rows[idx] = { ...rows[idx], ...payload };
+    }else{
+      if(idx !== -1) rows.splice(idx, 1);
+    }
+
+    saveUnitsDB(bid, rows);
+
+    OWNERS_LAST.set(unitCode, v);
+    OWNERS_DIRTY.delete(unitCode);
+
+    setStatusEl(statusEl, v ? "saved" : "empty");
+    updateOwnersProgress(bid);
+  }, 550);
+
+  OWNER_TIMERS.set(unitCode, t);
+}
+
+function renderUnitOwners(bid){
+  const wrap = document.getElementById("unitOwnersWrap");
+  const table = document.getElementById("unitOwnersTable");
+  if(!wrap || !table) return;
+
+  // admin + upravnik smeju da vide/menjaju
+  if(!(CURRENT_SESSION?.role === "admin" || CURRENT_SESSION?.role === "upravnik")){
+    wrap.style.display = "none";
+    return;
+  }
+
+  wrap.style.display = "block";
+  bindOwnersUIOnce();
+
+  const building = BUILDINGS.find(b => b.id === bid);
+  if(!building) return;
+
+  const prefix = ownersPrefixFromBid(bid);
+  const rows = loadUnitsDB(bid) || [];
+  const dbMap = new Map(rows.map(r => [String(r.unitCode||"").toUpperCase(), r]));
+
+  const q = OWNERS_QUERY;
+  const onlyEmpty = OWNERS_ONLY_EMPTY;
+
+  const all = [];
+  for(let i=1; i<=building.units; i++){
+    const code = `${prefix}-${String(i).padStart(3,"0")}`;
+    const name = (dbMap.get(code)?.ownerFullName || "").trim();
+    all.push({ code, name });
+  }
+
+  const filtered = all.filter(x => {
+    const code = x.code.toLowerCase();
+    const name = (x.name || "").toLowerCase();
+
+    if(onlyEmpty && x.name.trim() !== "") return false;
+    if(!q) return true;
+    return code.includes(q) || name.includes(q);
+  });
+
+  table.innerHTML = "";
+
+  if(!filtered.length){
+    table.innerHTML = `<div class="smallText"><span class="badge">Nema rezultata</span></div>`;
+    updateOwnersProgress(bid);
+    return;
+  }
+
+  filtered.forEach(item => {
+    const row = document.createElement("div");
+    row.className = "ownerRow";
+
+    const badge = document.createElement("div");
+    badge.className = "ownerBadge";
+    badge.textContent = item.code;
+
+    const field = document.createElement("div");
+    field.className = "ownerField";
+
+    const inp = document.createElement("input");
+    inp.type = "text";
+    inp.placeholder = "Ime i prezime vlasnika";
+    inp.value = item.name || "";
+
+    const status = document.createElement("div");
+    status.className = "ownerStatus";
+
+    OWNERS_LAST.set(item.code, (item.name || "").trim());
+    setStatusEl(status, (item.name || "").trim() ? "saved" : "empty");
+
+    inp.addEventListener("input", () => {
+      scheduleSaveOwner(bid, item.code, inp.value, status);
+    });
+
+    inp.addEventListener("blur", () => {
+      if(!OWNERS_DIRTY.has(item.code)) return;
+      scheduleSaveOwner(bid, item.code, inp.value, status);
+    });
+
+    inp.addEventListener("keydown", (e) => {
+      if(e.key === "Enter"){
+        e.preventDefault();
+        const inputs = Array.from(table.querySelectorAll("input"));
+        const i = inputs.indexOf(inp);
+        if(i >= 0 && inputs[i+1]) inputs[i+1].focus();
+      }
+      if(e.key === "Escape"){
+        e.preventDefault();
+        const last = OWNERS_LAST.get(item.code) || "";
+        inp.value = last;
+        OWNERS_DIRTY.delete(item.code);
+        setStatusEl(status, last ? "saved" : "empty");
+      }
+    });
+
+    field.appendChild(inp);
+    row.appendChild(badge);
+    row.appendChild(field);
+    row.appendChild(status);
+
+    table.appendChild(row);
+  });
+
+  updateOwnersProgress(bid);
+}
+
+  function kUsersDB(){ return "pu_users_db_v1"; }
+
+function loadUsersDB(){
+  try{ return JSON.parse(localStorage.getItem(kUsersDB())) || []; }
+  catch{ return []; }
+}
+
+function saveUsersDB(rows){
+  localStorage.setItem(kUsersDB(), JSON.stringify(rows));
+}
+
+/* ===== HELPER: PRIKAZ STANA + IME (SAMO UPRAVNIK / ADMIN) ===== */
+function getUnitLabel(bid, unitCode){
+  const role = CURRENT_SESSION?.role;
+  const code = String(unitCode || "").trim().toUpperCase();
+  if(!code) return "";
+
+  // admin i upravnik vide imena za sve stanove
+  const isPrivileged = (role === "upravnik" || role === "admin");
+
+  // stanar vidi ime samo za svoj stan
+  const myUnit = String(CURRENT_SESSION?.unitCode || "").trim().toUpperCase();
+  const canSeeName = isPrivileged || (role === "stanar" && myUnit === code);
+
+  // ako nema pravo da vidi ime -> samo ID stana
+  if(!canSeeName) return code;
+
+  // ✅ GLAVNI IZVOR: admin unos (UnitsDB)
+  const rows = loadUnitsDB(bid);
+  const hit = rows.find(r =>
+    String(r.unitCode || "").trim().toUpperCase() === code
+  );
+
+  const fullName = (hit?.ownerFullName || "").trim();
+  if(fullName) return `${code} (${fullName})`;
+
+  // ⚠️ fallback: stari sistem (ako negde još postoji)
+  const units = loadUnits(bid);
+  const legacyName =
+    units?.[code]?.fullName ||
+    units?.[code]?.ownerFullName ||
+    "";
+
+  return legacyName ? `${code} (${legacyName})` : code;
+}
+
+/* ================= USERS DB (ADMIN: upravnici) ================= */
+function kUsersDB(){ return "pu_users_db_v1"; }
+
+function loadUsersDB(){
+  try{ return JSON.parse(localStorage.getItem(kUsersDB())) || []; }
+  catch{ return []; }
+}
+
+function saveUsersDB(rows){
+  localStorage.setItem(kUsersDB(), JSON.stringify(rows || []));
+}
+
+function listManagers(){
+  return loadUsersDB().filter(u => u && u.role === "upravnik");
+}
+
+function addManagerUser({ name, username, password }){
+  const rows = loadUsersDB();
+
+  const n = (name || "").trim();
+  const u = (username || "").trim();
+  const p = (password || "").trim();
+
+  if(!n || !u || !p) throw new Error("Popuni ime, username i lozinku za upravnika.");
+  if(rows.some(x => (x.username||"").toLowerCase() === u.toLowerCase())){
+    throw new Error("Username već postoji.");
+  }
+
+  const id = "u_" + Math.random().toString(16).slice(2,10);
+
+  const nu = {
+    id,
+    role: "upravnik",
+    name: n,
+    username: u,
+    password: p,   // ⚠️ front-only
+    buildings: []
+  };
+
+  rows.push(nu);
+  saveUsersDB(rows);
+  return nu;
+}
+
+function assignBuildingToManager(managerId, buildingId){
+  const rows = loadUsersDB();
+  const idx = rows.findIndex(u => u.id === managerId && u.role === "upravnik");
+  if(idx === -1) throw new Error("Upravnik nije pronađen.");
+
+  rows[idx].buildings = rows[idx].buildings || [];
+  if(!rows[idx].buildings.includes(buildingId)){
+    rows[idx].buildings.push(buildingId);
+  }
+  saveUsersDB(rows);
+}
+
+/* ================= ADMIN: bind UI za dodavanje zgrade + upravnika ================= */
+function bindAdminBuildingsManagerUI(){
+  const wrap = document.getElementById("adminBuildingsWrap");
+  if(!wrap) return;
+
+  // samo admin
+  if(CURRENT_SESSION?.role !== "admin") return;
+
+  // ne dupliraj bind
+  if(wrap.dataset.boundMgr === "1") return;
+  wrap.dataset.boundMgr = "1";
+
+  const mgrSel = document.getElementById("bMgrSelect");
+  const addMgrBtn = document.getElementById("addMgrBtn");
+  const newMgrWrap = document.getElementById("newMgrWrap");
+
+  const mgrName = document.getElementById("mgrName");
+  const mgrUser = document.getElementById("mgrUser");
+  const mgrPass = document.getElementById("mgrPass");
+  const createMgrBtn = document.getElementById("createMgrBtn");
+
+  const codeI   = document.getElementById("adminBCode");
+  const titleI  = document.getElementById("adminBTitle");
+  const streetI = document.getElementById("adminBStreet");
+  const numberI = document.getElementById("adminBNumber");
+  const unitsI  = document.getElementById("adminBUnits");
+  const addBBtn = document.getElementById("adminAddBuildingBtn");
+
+  function refreshManagersSelect(selectId){
+    if(!mgrSel) return;
+    const ms = listManagers();
+
+    mgrSel.innerHTML = `<option value="">— Izaberi upravnika —</option>`;
+    ms.forEach(m => {
+      const opt = document.createElement("option");
+      opt.value = m.id;
+      opt.textContent = `${m.name} (${m.username})`;
+      mgrSel.appendChild(opt);
+    });
+
+    if(selectId) mgrSel.value = selectId;
+  }
+
+  refreshManagersSelect();
+
+  // toggle: forma novi upravnik
+  if(addMgrBtn && newMgrWrap && !addMgrBtn.dataset.bound){
+    addMgrBtn.addEventListener("click", () => {
+      const isHidden = (newMgrWrap.style.display === "none" || !newMgrWrap.style.display);
+      newMgrWrap.style.display = isHidden ? "block" : "none";
+    });
+    addMgrBtn.dataset.bound = "1";
+  }
+
+  // kreiraj upravnika
+  if(createMgrBtn && !createMgrBtn.dataset.bound){
+    createMgrBtn.addEventListener("click", () => {
+      try{
+        const nu = addManagerUser({
+          name: mgrName?.value || "",
+          username: mgrUser?.value || "",
+          password: mgrPass?.value || ""
+        });
+
+        if(mgrName) mgrName.value = "";
+        if(mgrUser) mgrUser.value = "";
+        if(mgrPass) mgrPass.value = "";
+        if(newMgrWrap) newMgrWrap.style.display = "none";
+
+        refreshManagersSelect(nu.id);
+        alert("Upravnik je kreiran.");
+      }catch(e){
+        alert(e?.message || "Greška pri kreiranju upravnika.");
+      }
+    });
+    createMgrBtn.dataset.bound = "1";
+  }
+
+  // dodaj zgradu + dodeli upravniku
+  if(addBBtn && !addBBtn.dataset.bound){
+    addBBtn.addEventListener("click", () => {
+      try{
+        const code   = (codeI?.value || "").trim();
+        const title  = (titleI?.value || "").trim();
+        const street = (streetI?.value || "").trim();
+        const number = (numberI?.value || "").trim();
+        const units  = Number(unitsI?.value || 0);
+
+        if(!code || !title || !street || !number || !units){
+          alert("Popuni sva polja za zgradu (uključujući broj stanova).");
+          return;
+        }
+
+        const managerId = (mgrSel?.value || "").trim();
+        if(!managerId){
+          alert("Izaberi upravnika za ovu zgradu.");
+          return;
+        }
+
+        // ✅ kreiraj zgradu (tvoja postojeća funkcija mora postojati)
+        const newB = adminAddBuilding({ code, title, street, number, units, managerId });
+
+        // ✅ dodeli zgradu upravniku
+        assignBuildingToManager(managerId, newB.id);
+
+        // očisti polja
+        if(codeI) codeI.value = "";
+        if(titleI) titleI.value = "";
+        if(streetI) streetI.value = "";
+        if(numberI) numberI.value = "";
+        if(unitsI) unitsI.value = "";
+
+        // osveži admin listu zgrada (ako postoji)
+        if(typeof renderAdminBuildings === "function") renderAdminBuildings();
+
+        // prebaci admina na novu zgradu (opciono)
+        if(typeof setActiveBuilding === "function") setActiveBuilding(newB.id);
+        if(typeof applySearchFilter === "function") applySearchFilter();
+
+        alert("Zgrada je dodata i dodeljena upravniku.");
+      }catch(err){
+        alert(err?.message || "Greška pri dodavanju zgrade.");
+      }
+    });
+    addBBtn.dataset.bound = "1";
+  }
+}
+
+function bindAdminFinSwitch(){
+  const host = document.getElementById("adminFinBuildingSwitch");
+  if(!host) return;
+
+  // samo admin
+  if(CURRENT_SESSION?.role !== "admin"){
+    host.style.display = "none";
+    host.innerHTML = "";
+    return;
+  }
+
+  // ako je već bindovano, ne dupliraj
+  if(host.dataset.bound === "1") return;
+
+  host.style.display = "block";
+
+  // ✅ koristimo ISTI markup/klase kao na početnoj
+  host.innerHTML = `
+    <div class="adminTopWrap">
+      <button type="button" class="btn btnGhost" id="adminFinArrowBtn">
+        Promeni zgradu <span style="opacity:.7">▾</span>
+      </button>
+
+      <div class="adminBuildingMenu hidden" id="adminFinBuildingMenu" style="margin-top:10px;">
+        <div class="field">
+          <label>Pretraga zgrade</label>
+          <input type="text" id="adminFinBuildingSearch" placeholder="npr. Bore Markovića 25">
+        </div>
+
+        <div class="adminBuildingGrid" id="adminFinBuildingGrid" style="margin-top:10px;"></div>
+      </div>
+    </div>
+  `;
+
+  const adminArrowBtn = document.getElementById("adminFinArrowBtn");
+  const adminBuildingMenu = document.getElementById("adminFinBuildingMenu");
+  const input = document.getElementById("adminFinBuildingSearch");
+  const grid = document.getElementById("adminFinBuildingGrid");
+
+  function renderForQuery(q){
+    const query = (q || "").trim().toLowerCase();
+    const rows = BUILDINGS.filter(b => {
+      if(!query) return true;
+      const hay = `${b.title} ${b.street} ${b.number}`.toLowerCase();
+      return hay.includes(query);
+    });
+
+    grid.innerHTML = "";
+    if(!rows.length){
+      grid.innerHTML = `<div class="smallText"><span class="badge">Nema rezultata</span></div>`;
+      return;
+    }
+
+    rows.forEach(b => {
+      const el = document.createElement("button");
+      el.type = "button";
+      el.className = "btn btnGhost";
+      el.style.justifyContent = "flex-start";
+      el.textContent = b.title;
+
+      el.addEventListener("click", (e) => {
+        e.stopPropagation();
+        setActiveBuilding(b.id);
+        input.value = b.title;
+
+        updateMonthlyUploadUI(false);
+        applySearchFilter();
+        showPage("finansije");
+
+        adminBuildingMenu.classList.add("hidden");
+      });
+
+      grid.appendChild(el);
+    });
+  }
+
+  // toggle menu
+  adminArrowBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    adminBuildingMenu.classList.toggle("hidden");
+    if(!adminBuildingMenu.classList.contains("hidden")){
+      renderForQuery(input.value);
+    }
+  });
+
+  // input search
+  input.addEventListener("input", () => renderForQuery(input.value));
+
+  // klik van -> zatvori
+  document.addEventListener("click", (e) => {
+    if(adminBuildingMenu.classList.contains("hidden")) return;
+    const wrap = host.querySelector(".adminTopWrap");
+    if(wrap && wrap.contains(e.target)) return;
+    adminBuildingMenu.classList.add("hidden");
+  });
+
+  // init lista
+  renderForQuery("");
+
+  host.dataset.bound = "1";
+}
+
+/* ================= UNITS DB (backend-ready) ================= */
+function kUnitsDB(bid){ return `unitsdb_${bid}`; }
+
+function loadUnitsDB(bid){
+  try{ return JSON.parse(localStorage.getItem(kUnitsDB(bid))) || []; }
+  catch{ return []; }
+}
+
+function saveUnitsDB(bid, rows){
+  localStorage.setItem(kUnitsDB(bid), JSON.stringify(rows));
+}
+
+function findUnitDB(bid, unitCode){
+  return loadUnitsDB(bid).find(x => x.unitCode === unitCode) || null;
+}
+
+function upsertUnitDB(bid, unit){
+  const rows = loadUnitsDB(bid);
+  const idx = rows.findIndex(x => x.unitCode === unit.unitCode);
+  if(idx === -1) rows.push(unit);
+  else rows[idx] = { ...rows[idx], ...unit };
+  saveUnitsDB(bid, rows);
+}
+
+function deleteUnitDB(bid, unitCode){
+  saveUnitsDB(bid, loadUnitsDB(bid).filter(x => x.unitCode !== unitCode));
+}
+
+function nextUnitCodeDB(bid){
+  const building = BUILDINGS.find(b => b.id === bid);
+  if(!building) return null;
+
+  const prefix = building.id.replace("b_","").toUpperCase(); // BM25
+  const rows = loadUnitsDB(bid);
+
+  const nums = rows.map(x => {
+    const m = String(x.unitCode||"").match(/-(\d{3})$/);
+    return m ? Number(m[1]) : null;
+  }).filter(n => Number.isFinite(n));
+
+  const next = (nums.length ? Math.max(...nums) : 0) + 1;
+  return `${prefix}-${String(next).padStart(3,"0")}`;
+}
+
+/* ================= ADMIN: UPRAVLJANJE STANOVIMA ================= */
+function renderAdminUnits(bid){
+  const wrap = document.getElementById("adminUnitsWrap");
+  const list = document.getElementById("adminUnitsList");
+  const form = document.getElementById("adminAddUnitForm");
+
+  const bCodeI    = document.getElementById("adminUnitBCode");
+  const addrI     = document.getElementById("adminUnitAddr");
+  const ownerI    = document.getElementById("adminUnitOwner");
+  const unitI     = document.getElementById("adminUnitCode");
+  const saveBtn   = document.getElementById("adminSaveUnitBtn");
+  const cancelBtn = document.getElementById("adminCancelUnitBtn");
+
+  // mora da postoji UI
+  if(!wrap || !list || !form || !bCodeI || !addrI || !ownerI || !unitI || !saveBtn || !cancelBtn) return;
+
+  // samo admin/upravnik
+  if(!(CURRENT_SESSION?.role === "admin" || CURRENT_SESSION?.role === "upravnik")){
+    wrap.style.display = "none";
+    return;
+  }
+
+  wrap.style.display = "block";
+
+  // forma je stalno vidljiva
+  form.style.display = "block";
+
+  // auto-popuna šifre zgrade i adrese (1x)
+  const building = BUILDINGS.find(b => b.id === bid);
+  if(building){
+    const bcode = building.id.replace("b_","").toUpperCase();
+    const addr = `${building.street || ""} ${building.number || ""}`.trim();
+    bCodeI.value = bcode;
+    addrI.value  = (building.title || addr || "");
+  } else {
+    bCodeI.value = "";
+    addrI.value = "";
+  }
+
+  // MODE: add/edit (preko iste forme)
+  form.dataset.mode = form.dataset.mode || "add";
+  form.dataset.editing = form.dataset.editing || "";
+
+  function setModeAdd(){
+  form.dataset.mode = "add";
+  form.dataset.editing = "";
+  saveBtn.textContent = "Sačuvaj";
+
+  const bcode = (bCodeI.value || "").trim().toUpperCase();
+  unitI.value = nextUnitCodeDB(bid) || (bcode ? `${bcode}-001` : "");
+
+  ownerI.value = "";
+  ownerI.focus();
+}
+
+  function setModeEdit(u){
+    form.dataset.mode = "edit";
+    form.dataset.editing = (u.unitCode || "").toUpperCase();
+    saveBtn.textContent = "Sačuvaj izmene";
+    unitI.value = (u.unitCode || "").toUpperCase();
+    ownerI.value = u.ownerFullName || "";
+    ownerI.focus();
+  }
+
+  function redraw(){
+    const rows = loadUnitsDB(bid).slice()
+      .sort((a,b) => String(a.unitCode).localeCompare(String(b.unitCode)));
+
+    list.innerHTML = "";
+
+    if(!rows.length){
+      list.innerHTML = `<div class="smallText"><span class="badge">Nema unetih stanova</span></div>`;
+      return;
+    }
+
+    rows.forEach(u => {
+      const row = document.createElement("div");
+      row.className = "fRow";
+      row.style.display = "flex";
+      row.style.gap = "10px";
+      row.style.alignItems = "center";
+      row.style.justifyContent = "space-between";
+
+      const left = document.createElement("div");
+      left.innerHTML = `
+        <div style="font-weight:900">${escapeHTML(u.unitCode)}</div>
+        <div class="smallText" style="opacity:.75">
+          Vlasnik: <b>${escapeHTML(u.ownerFullName || "—")}</b>
+        </div>
+      `;
+
+      const actions = document.createElement("div");
+      actions.style.display = "flex";
+      actions.style.gap = "8px";
+
+      const edit = document.createElement("button");
+      edit.type = "button";
+      edit.className = "btn btnGhost";
+      edit.textContent = "Izmeni";
+      edit.addEventListener("click", (e) => {
+        e.stopPropagation();
+        setModeEdit(u);
+      });
+
+      const del = document.createElement("button");
+      del.type = "button";
+      del.className = "btn btnGhost";
+      del.textContent = "Obriši";
+      del.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if(!confirm(`Obrisati ${u.unitCode}?`)) return;
+
+        deleteUnitDB(bid, u.unitCode);
+
+        // ako brišeš onaj koji edituješ, vrati na add
+        if(form.dataset.mode === "edit" && form.dataset.editing === String(u.unitCode).toUpperCase()){
+          setModeAdd();
+        }
+        redraw();
+      });
+
+      actions.appendChild(edit);
+      actions.appendChild(del);
+
+      row.appendChild(left);
+      row.appendChild(actions);
+      list.appendChild(row);
+    });
+  }
+
+  cancelBtn.onclick = () => setModeAdd();
+
+  saveBtn.onclick = () => {
+    const unitCode = (unitI.value || "").trim().toUpperCase();
+    const ownerFullName = (ownerI.value || "").trim();
+
+    if(!unitCode || !ownerFullName){
+      alert("Popuni: ID stana + Ime i prezime.");
+      return;
+    }
+
+    const rows = loadUnitsDB(bid);
+    const mode = form.dataset.mode || "add";
+    const editing = (form.dataset.editing || "").trim().toUpperCase();
+
+    if(mode === "edit" && editing){
+      // ako menjaš ID, spreči duplikat
+      if(editing !== unitCode && rows.some(x => String(x.unitCode).toUpperCase() === unitCode)){
+        alert("Taj ID stana već postoji.");
+        return;
+      }
+      // ako menjaš ID, obriši stari pa upiši novi
+      if(editing !== unitCode){
+        deleteUnitDB(bid, editing);
+      }
+      upsertUnitDB(bid, { unitCode, ownerFullName, active: true });
+      redraw();
+      setModeAdd();
+      return;
+    }
+
+    // add mode
+    if(rows.some(x => String(x.unitCode).toUpperCase() === unitCode)){
+      alert("Taj ID stana već postoji.");
+      return;
+    }
+    upsertUnitDB(bid, { unitCode, ownerFullName, active: true });
+    redraw();
+    setModeAdd();
+  };
+
+  // init
+  setModeAdd();
+  redraw();
+}
+
+  /* ================= ADMIN: UPRAVLJANJE ZGRADAMA ================= */
+function renderAdminBuildings(){
+  const wrap = document.getElementById("adminBuildingsWrap");
+  const list = document.getElementById("adminBuildingsList");
+  const btn  = document.getElementById("adminAddBuildingBtn");
+
+  const codeI   = document.getElementById("adminBCode");
+  const titleI  = document.getElementById("adminBTitle");
+  const streetI = document.getElementById("adminBStreet");
+  const numberI = document.getElementById("adminBNumber");
+  const unitsI  = document.getElementById("adminBUnits");
+
+  if(!wrap || !list || !btn) return;
+
+  if(CURRENT_SESSION?.role !== "admin"){
+    wrap.style.display = "none";
+    return;
+  }
+  wrap.style.display = "block";
+
+  function redraw(){
+  const rows = loadBuildingsDB();
+  list.innerHTML = "";
+
+  if(!rows.length){
+    list.innerHTML = `<div class="smallText"><span class="badge">Nema dodatih zgrada</span></div>`;
+    return;
+  }
+
+  rows.forEach(b => {
+    const row = document.createElement("div");
+    row.className = "fRow";
+    row.style.display = "flex";
+    row.style.justifyContent = "space-between";
+    row.style.alignItems = "center";
+    row.style.gap = "10px";
+
+    const left = document.createElement("div");
+    left.innerHTML = `
+      <div style="font-weight:900">${escapeHTML(b.title || "")}</div>
+      <div class="smallText" style="opacity:.75">
+        ${escapeHTML(b.street || "")} ${escapeHTML(b.number || "")}
+        • šifra: <b>${escapeHTML((b.code||"").toUpperCase())}</b>
+        • stanova: <b>${escapeHTML(String(b.units||0))}</b>
+      </div>
+    `;
+
+    const actions = document.createElement("div");
+    actions.style.display = "flex";
+    actions.style.gap = "8px";
+
+    const del = document.createElement("button");
+    del.type = "button";
+    del.className = "btn btnGhost";
+    del.textContent = "Obriši";
+    del.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if(!confirm(`Obrisati zgradu "${b.title}"?`)) return;
+
+      // 1) izbriši iz DB
+      const leftRows = loadBuildingsDB().filter(x => x.id !== b.id);
+      saveBuildingsDB(leftRows);
+
+      // 2) ukloni iz runtime BUILDINGS
+      const idx = BUILDINGS.findIndex(x => x.id === b.id);
+      if(idx !== -1) BUILDINGS.splice(idx, 1);
+
+      // 3) redraw liste zgrada
+      redraw();
+
+      // 4) osveži sve UI delove koji zavise od BUILDINGS (sigurno)
+      if(typeof applySearchFilter === "function") applySearchFilter();
+      if(typeof renderAdminBuildings === "function") renderAdminBuildings();
+      if(typeof bindAdminBuildingsManagerUI === "function") bindAdminBuildingsManagerUI();
+
+      // 5) ako je obrisana aktivna zgrada, skloni activeBid (da ne bude “prazna” aplikacija)
+      if(typeof activeBid === "function" && typeof setActiveBuilding === "function"){
+        const ab = activeBid();
+        if(ab && ab === b.id){
+          const first = BUILDINGS[0]?.id || "";
+          if(first) setActiveBuilding(first);
+        }
+      }
+    });
+
+    actions.appendChild(del);
+
+    row.appendChild(left);
+    row.appendChild(actions);
+    list.appendChild(row);
+  });
+}
+  
+  btn.onclick = () => {
+    try{
+      const code   = (codeI?.value || "").trim();
+      const title  = (titleI?.value || "").trim();
+      const street = (streetI?.value || "").trim();
+      const number = (numberI?.value || "").trim();
+      const units  = Number(unitsI?.value || 0);
+
+      const newB = adminAddBuilding({ code, title, street, number, units });
+
+// ✅ NOVO: dodaj zgradu u session listu da bude vidljiva u izboru/dropdown-u odmah
+if(CURRENT_SESSION){
+  CURRENT_SESSION.buildings = CURRENT_SESSION.buildings || [];
+  if(!CURRENT_SESSION.buildings.includes(newB.id)){
+    CURRENT_SESSION.buildings.push(newB.id);
+    saveSession(CURRENT_SESSION);
+  }
+}
+
+// očisti polja
+codeI.value = "";
+titleI.value = "";
+streetI.value = "";
+numberI.value = "";
+unitsI.value = "";
+
+redraw();
+
+// prebaci admina na novu zgradu
+setActiveBuilding(newB.id);
+applySearchFilter();
+showPage("finansije");
+    }catch(err){
+      alert(err?.message || "Greška pri dodavanju zgrade.");
+    }
+  };
+
+  redraw();
+}
+  
 function voteOnProposal(bid, proposalId, choice){ // "da" | "ne"
   if(!bid || !proposalId) return;
 
@@ -5008,6 +6403,7 @@ function voteOnProposal(bid, proposalId, choice){ // "da" | "ne"
   renderSearchDropdown(CURRENT_QUERY);
   updateHomeSummary();
 }
+
 function renderForum(bid, q){
   if(!forumList) return;
   const all = loadProposals(bid).slice().sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
@@ -5033,6 +6429,7 @@ function renderForum(bid, q){
     right.style.display = "flex";
     right.style.gap = "8px";
     right.style.alignItems = "center";
+    right.style.flexWrap = "wrap";
 
     const meta = document.createElement("span");
     meta.className = "badge";
@@ -5040,6 +6437,12 @@ function renderForum(bid, q){
 
     right.appendChild(meta);
 
+    // ✅ NOVO: ko je pokrenuo (svima vidljivo, ali ime samo admin/upravnik)
+    const by = document.createElement("span");
+    by.className = "badge";
+    by.textContent = `Pokrenuo: ${getUnitLabel(bid, p.createdBy || "")}`;
+    right.appendChild(by);
+    
     top.appendChild(left);
     top.appendChild(right);
 
@@ -5067,6 +6470,7 @@ if (p.poll?.enabled) {
 
   li.appendChild(pollInfo);
 }
+
 // ✅ GLASANJE (DA / NE) – samo stanar glasa, svi vide rezultate
 const poll = ensurePollSR(p);
 if(poll?.enabled){
@@ -5107,12 +6511,37 @@ if(poll?.enabled){
     ? "Glasanje je zatvoreno."
     : "Klikni DA ili NE (možeš promeniti glas).";
 
+  // ✅ NOVO: PROCENTI + BAR (vidljivo svima)
+  const stats = getVoteStats(poll);
+
+  const statsWrap = document.createElement("div");
+  statsWrap.className = "pollStats";
+  statsWrap.style.width = "100%";         // da bar ide ispod dugmadi u novi red
+  statsWrap.style.marginTop = "6px";
+
+  statsWrap.innerHTML = `
+    <div class="pollBar">
+      <div class="pollYes" style="width:${stats.yesPct}%"></div>
+      <div class="pollNo" style="width:${stats.noPct}%"></div>
+    </div>
+
+    <div class="pollText">
+      <span>👍 Da: <b>${stats.yesPct}%</b> (${stats.yes})</span>
+      <span class="pollSep">•</span>
+      <span>👎 Ne: <b>${stats.noPct}%</b> (${stats.no})</span>
+      <span class="pollSep">•</span>
+      <span>Ukupno: ${stats.total}</span>
+    </div>
+  `;
+
   wrap.appendChild(btnDa);
   wrap.appendChild(btnNe);
   wrap.appendChild(status);
+  wrap.appendChild(statsWrap); // ✅ NOVO
 
   li.appendChild(wrap);
 }
+
 forumList.appendChild(li);
 });
 }
@@ -5204,10 +6633,15 @@ if(!monthlyFeeInput || !duesStartMonth || !saveDuesSettingsBtn || !duesGrid) ret
     row.className = "duesRow";
 
     const left = document.createElement("div");
-    left.innerHTML = `
-      <div class="duesUser">${u.username}</div>
-      <div class="duesMeta">Pregled za aktivnu zgradu</div>
-    `;
+
+const unitLabel = (CURRENT_SESSION?.role === "upravnik" || CURRENT_SESSION?.role === "admin")
+  ? getUnitLabel(activeBid(), u.username)
+  : u.username;
+
+left.innerHTML = `
+  <div class="duesUser">${escapeHTML(unitLabel)}</div>
+  <div class="duesMeta">Pregled za aktivnu zgradu</div>
+`;
 
     const paid = document.createElement("div");
     paid.className = "duesBadges";
@@ -5602,7 +7036,15 @@ function renderSearchDropdown(q){
 function applySearchFilter(){
   const bid = activeBid();
   if(!bid) return;
+
   renderFinanceList(bid, CURRENT_QUERY);
+
+  bindAdminFinSwitch();
+
+  // ✅ admin panel: stanovi + zgrade
+  renderAdminUnits(bid);
+  renderAdminBuildings();
+
   renderBoard(bid, CURRENT_QUERY);
   renderForum(bid, CURRENT_QUERY);
 }
@@ -5827,13 +7269,11 @@ function updateHomeSummary(){
 
   if(!monthSel || !yearSel || !applyBtn || !hidden) return;
 
-  // 1) Napuni godine (npr poslednjih 5 + sledećih 1)
   const now = new Date();
   const thisYear = now.getFullYear();
   const startY = thisYear - 5;
   const endY   = thisYear + 1;
 
-  // Ako select godina nema opcije ili nema dovoljno, popuni
   if (yearSel.options.length <= 1) {
     yearSel.innerHTML = '<option value="">Godina</option>';
     for(let y = endY; y >= startY; y--){
@@ -5844,7 +7284,6 @@ function updateHomeSummary(){
     }
   }
 
-  // 2) Postavi default na trenutni mesec/godinu
   const mm = String(now.getMonth() + 1).padStart(2,"0");
   monthSel.value = mm;
   yearSel.value = String(thisYear);
@@ -5859,36 +7298,26 @@ function updateHomeSummary(){
     }
 
     hidden.value = `${y}-${m}`;
-
-    // okini change event da postojeći kod preradi statistiku
     hidden.dispatchEvent(new Event("change", { bubbles:true }));
 
     if(hint) hint.textContent = `Izabrano: ${m}.${y}`;
   }
 
   applyBtn.addEventListener("click", updateHiddenAndTrigger);
-
-  // opcionalno: kada promeni mesec/godinu odmah upiši hint
   monthSel.addEventListener("change", () => { if(hint) hint.textContent = "Klikni Primeni"; });
   yearSel.addEventListener("change", () => { if(hint) hint.textContent = "Klikni Primeni"; });
 
-  // inicijalno pokreni odmah
   updateHiddenAndTrigger();
 })();
 
-  /* =========================
+/* =========================
    SIDEBAR LOGOUT
 ========================= */
-
 const sidebarLogout = document.getElementById("sidebarLogout");
 
 if (sidebarLogout) {
   sidebarLogout.addEventListener("click", (e) => {
     e.preventDefault();
-
-    // (opciono) potvrda
-    // if (!confirm("Da li ste sigurni da želite da se odjavite?")) return;
-
     clearSessions();
     CURRENT_SESSION = null;
     closeS();
@@ -5902,16 +7331,21 @@ function formatDateDMY(dateStr){
   return `${d}.${m}.${y}`;
 }
 
-  
 function renderUserBadge(){
   const el = document.getElementById("userBadge");
-  if(!el || !CURRENT_SESSION) return;
+  if(!el) return;
 
-  // Prikaži tačno korisničko ime (npr. NC28-003)
-  el.textContent = CURRENT_SESSION.username || "";
+  // prikazi samo adminu i upravniku
+  if(["admin","upravnik"].includes(CURRENT_SESSION?.role)){
+    el.textContent = CURRENT_SESSION?.username || "";
+    el.style.display = "inline-block";
+  }else{
+    el.textContent = "";
+    el.style.display = "none";
+  }
 }
 
-  // ================= ADMIN STATISTIKA: zatvaranje dropdowna klikom van =================
+/* ================= ADMIN STATISTIKA: zatvaranje dropdowna klikom van ================= */
 document.addEventListener("click", (e) => {
   const wrap = document.querySelector("#page-statistika .adminTopWrap");
   const menu = document.getElementById("adminBuildingMenuFin");
@@ -5919,35 +7353,29 @@ document.addEventListener("click", (e) => {
 
   if(!menu) return;
 
-  // klik unutar inputa ili dropdowna -> ne zatvaramo
   if(
     (wrap && wrap.contains(e.target)) ||
     (input && input.contains(e.target)) ||
     menu.contains(e.target)
   ) return;
 
-  // klik van -> zatvori
   menu.classList.add("hidden");
 });
 
-// ================= ADMIN STATISTIKA: otvori/sakrij dropdown po unosu =================
+/* ================= ADMIN STATISTIKA: otvori/sakrij dropdown po unosu ================= */
 (() => {
   const input = document.getElementById("uplAdminSearchFin");
   const menu  = document.getElementById("adminBuildingMenuFin");
   if(!input || !menu) return;
 
-  // kad klikneš u input: ako već ima nešto ukucano, prikaži listu
   input.addEventListener("focus", () => {
     if(input.value.trim().length) menu.classList.remove("hidden");
   });
 
-  // dok kucaš: ako ima teksta -> pokaži, ako je prazno -> sakrij
   input.addEventListener("input", () => {
     const q = input.value.trim();
     if(q.length){
       menu.classList.remove("hidden");
-      // tvoja funkcija koja renderuje/filteruje zgrade
-      // ako se kod tebe zove drugačije, zameni ovu liniju:
       if(typeof renderForQuery === "function") renderForQuery(q);
     }else{
       menu.classList.add("hidden");
@@ -5955,7 +7383,7 @@ document.addEventListener("click", (e) => {
   });
 })();
 
-// ================= ADMIN STATISTIKA: klik na "Otvori" -> zatvori dropdown =================
+/* ================= ADMIN STATISTIKA: klik na dugme u meniju ================= */
 (() => {
   const menu  = document.getElementById("adminBuildingMenuFin");
   const input = document.getElementById("uplAdminSearchFin");
@@ -5964,15 +7392,163 @@ document.addEventListener("click", (e) => {
   menu.addEventListener("click", (e) => {
     const btn = e.target.closest("button");
     if(!btn) return;
-
-    // Ako je klik na bilo koji button u meniju (npr. "Otvori"), zatvori dropdown
     menu.classList.add("hidden");
-
-    // (opciono) skini fokus sa inputa da se ne otvori odmah opet
     if(input) input.blur();
   });
 })();
 
+/* ================= FIN TABOVI (Entries / Owners / Dues) ================= */
+function bindFinanceTabs(){
+  const bEntries = document.getElementById("finTabEntries");
+  const bOwners  = document.getElementById("finTabOwners");
+  const bDues    = document.getElementById("finTabDues");
+
+  const wEntries = document.getElementById("finTabWrapEntries");
+  const wOwners  = document.getElementById("finTabWrapOwners");
+  const wDues    = document.getElementById("finTabWrapDues");
+
+  if(!bEntries || !bOwners || !bDues || !wEntries || !wOwners || !wDues) return;
+
+  if(bEntries.dataset.boundTabs === "1") return;
+  bEntries.dataset.boundTabs = "1";
+
+  function setActive(which){
+    wEntries.style.display = (which === "entries") ? "block" : "none";
+    wOwners.style.display  = (which === "owners")  ? "block" : "none";
+    wDues.style.display    = (which === "dues")    ? "block" : "none";
+
+    bEntries.classList.toggle("btnPrimary", which === "entries");
+    bEntries.classList.toggle("btnGhost",   which !== "entries");
+
+    bOwners.classList.toggle("btnPrimary",  which === "owners");
+    bOwners.classList.toggle("btnGhost",    which !== "owners");
+
+    bDues.classList.toggle("btnPrimary",    which === "dues");
+    bDues.classList.toggle("btnGhost",      which !== "dues");
+
+    // ✅ kad uđeš u tab "Vlasnici stanova"
+if(which === "owners"){
+  // pod-tabovi (Dodaj stan / Dodaj zgradu) odlučuju šta se prikazuje i šta se renderuje
+  if(typeof bindOwnersSubTabs === "function") bindOwnersSubTabs();
+}
+
+    // ✅ sakrij/prikaži admin blokove u zavisnosti od aktivnog taba + role
+    if(typeof applyFinanceRoleUI === "function") applyFinanceRoleUI();
+  }
+
+  bEntries.addEventListener("click", () => setActive("entries"));
+  bOwners.addEventListener("click", () => setActive("owners"));
+  bDues.addEventListener("click", () => setActive("dues"));
+
+  setActive("entries");
+}
+
+function bindOwnersSubTabs(){
+  const bU = document.getElementById("ownTabUnits");
+  const bB = document.getElementById("ownTabBuildings");
+  const wU = document.getElementById("ownWrapUnits");
+  const wB = document.getElementById("ownWrapBuildings");
+  const ownersWrap = document.getElementById("finTabWrapOwners");
+  if(!bU || !bB || !wU || !wB || !ownersWrap) return;
+
+  if(bU.dataset.bound === "1") return;
+  bU.dataset.bound = "1";
+
+  function set(which){
+    // zapamti aktivan pod-tab
+    ownersWrap.dataset.ownTab = which;
+
+    // UI toggle
+    wU.style.display = (which === "units") ? "block" : "none";
+    wB.style.display = (which === "buildings") ? "block" : "none";
+
+    bU.classList.toggle("btnPrimary", which === "units");
+    bU.classList.toggle("btnGhost",   which !== "units");
+
+    bB.classList.toggle("btnPrimary", which === "buildings");
+    bB.classList.toggle("btnGhost",   which !== "buildings");
+
+    // load
+    if(which === "units"){
+      const bid = activeBid();
+      if(bid){
+        if(typeof renderAdminUnits === "function") renderAdminUnits(bid);
+        if(typeof renderUnitOwners === "function") renderUnitOwners(bid);
+      }
+    } else {
+      if(typeof renderAdminBuildings === "function") renderAdminBuildings();
+      if(typeof bindAdminBuildingsManagerUI === "function") bindAdminBuildingsManagerUI();
+    }
+
+    if(typeof applyFinanceRoleUI === "function") applyFinanceRoleUI();
+  }
+
+  bU.addEventListener("click", () => set("units"));
+  bB.addEventListener("click", () => set("buildings"));
+
+  // default (ili sačuvano)
+  const role = CURRENT_SESSION?.role || "";
+  const saved = ownersWrap.dataset.ownTab || "units";
+  if(saved === "buildings" && role !== "admin") set("units");
+  else set(saved);
+}
+  
+/* POZIV */
+bindFinanceTabs();
+
+function applyFinanceRoleUI(){
+  const role = CURRENT_SESSION?.role || "";
+
+  const ownersWrap = document.getElementById("finTabWrapOwners");
+  const ownersActive = ownersWrap && ownersWrap.style.display !== "none";
+
+  // pod-tab UI
+  const bU = document.getElementById("ownTabUnits");
+  const bB = document.getElementById("ownTabBuildings");
+  const wU = document.getElementById("ownWrapUnits");
+  const wB = document.getElementById("ownWrapBuildings");
+
+  // admin wrapovi koji već postoje u kodu
+  const unitsWrap = document.getElementById("adminUnitsWrap");      // Dodaj stan (admin/upravnik)
+  const bldWrap   = document.getElementById("adminBuildingsWrap");  // Dodaj zgradu (admin)
+
+  // ako Owners tab nije otvoren, sakrij oba wrappera (da ne “cure” po UI)
+  if(!ownersActive){
+    if(wU) wU.style.display = "none";
+    if(wB) wB.style.display = "none";
+    return;
+  }
+
+  // dozvole
+  const canBuildings = (role === "admin");
+
+  // dugme/tab “Dodaj zgradu” samo admin
+  if(bB) bB.style.display = canBuildings ? "inline-flex" : "none";
+
+  // koji pod-tab je aktivan (default units)
+  const activeSub = ownersWrap.dataset.ownTab || "units";
+
+  // ako nije admin a stoji buildings, vrati na units
+  const safeSub = (!canBuildings && activeSub === "buildings") ? "units" : activeSub;
+  ownersWrap.dataset.ownTab = safeSub;
+
+  // prikaz wrappera
+  if(wU) wU.style.display = (safeSub === "units") ? "block" : "none";
+  if(wB) wB.style.display = (safeSub === "buildings" && canBuildings) ? "block" : "none";
+
+  // prikaz admin delova unutar wrappera (po ulozi)
+  if(unitsWrap){
+    unitsWrap.style.display =
+      (safeSub === "units" && (role === "admin" || role === "upravnik"))
+        ? "block" : "none";
+  }
+
+  if(bldWrap){
+    bldWrap.style.display =
+      (safeSub === "buildings" && role === "admin")
+        ? "block" : "none";
+  }
+}
   
 </script>
 
@@ -5991,6 +7567,7 @@ document.addEventListener("click", (e) => {
 
   // samo za proveru
   console.log("Supabase connected:", supabaseClient);
+
 </script>
 
 
