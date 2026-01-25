@@ -2528,59 +2528,80 @@ gap: 10px;
   <!-- ✅ POD-TAB: DODAJ ZGRADU -->
   <div id="ownWrapBuildings" style="display:none; margin-top:14px;">
 
-    <!-- ADMIN: Upravljanje zgradama -->
-    <div id="adminBuildingsWrap" data-role="admin" style="display:none; margin-top:14px;">
-      <div class="badge">Upravljanje zgradama (samo admin)</div>
+  <!-- ADMIN: Upravljanje zgradama -->
+  <div id="adminBuildingsWrap" data-role="admin" style="display:none; margin-top:14px;">
+    <div class="badge">Upravljanje zgradama (samo admin)</div>
+
+    <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+      <div class="field" style="min-width:160px;">
+        <label>Šifra zgrade (npr. BM25)</label>
+        <input id="adminBCode" type="text" placeholder="BM25">
+      </div>
+
+      <div class="field" style="min-width:260px; flex:1;">
+        <label>Naziv zgrade</label>
+        <input id="adminBTitle" type="text" placeholder="Bore Markovića 25">
+      </div>
+
+      <div class="field" style="min-width:220px; flex:1;">
+        <label>Ulica</label>
+        <input id="adminBStreet" type="text" placeholder="Bore Markovića">
+      </div>
+
+      <div class="field" style="min-width:120px;">
+        <label>Broj</label>
+        <input id="adminBNumber" type="text" placeholder="25">
+      </div>
+
+      <div class="field" style="min-width:120px;">
+        <label>Broj stanova</label>
+        <input id="adminBUnits" type="number" min="1" placeholder="25">
+      </div>
+
+      <div class="field" style="min-width:240px; flex:1;">
+        <label>Upravnik</label>
+        <select id="bMgrSelect">
+          <option value="">— Izaberi upravnika —</option>
+        </select>
+      </div>
+
+      <button class="btn btnGhost" type="button" id="addMgrBtn">+ Novi upravnik</button>
+
+      <button class="btn btnPrimary" type="button" id="adminAddBuildingBtn">
+        Dodaj zgradu
+      </button>
+    </div>
+
+    <!-- ✅ forma za dodavanje novog upravnika (mora biti UNUTAR adminBuildingsWrap zbog click delegation) -->
+    <div id="newMgrWrap" style="display:none; margin-top:10px;">
+      <div class="badge">Novi upravnik</div>
 
       <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
-        <div class="field" style="min-width:160px;">
-          <label>Šifra zgrade (npr. BM25)</label>
-          <input id="adminBCode" type="text" placeholder="BM25">
+        <div class="field" style="min-width:260px; flex:1;">
+          <label>Username (UPR-001)</label>
+          <input id="mgrUser" type="text" placeholder="UPR-003">
+        </div>
+
+        <div class="field" style="min-width:220px;">
+          <label>Lozinka</label>
+          <input id="mgrPass" type="text" placeholder="npr. 123456">
         </div>
 
         <div class="field" style="min-width:260px; flex:1;">
-          <label>Naziv zgrade</label>
-          <input id="adminBTitle" type="text" placeholder="Bore Markovića 25">
+          <label>Ime i prezime (opciono)</label>
+          <input id="mgrName" type="text" placeholder="npr. Marko Marković">
         </div>
 
-        <div class="field" style="min-width:220px; flex:1;">
-          <label>Ulica</label>
-          <input id="adminBStreet" type="text" placeholder="Bore Markovića">
-        </div>
+        <button class="btn btnPrimary" type="button" id="createMgrBtn">Kreiraj upravnika</button>
+      </div>
 
-        <div class="field" style="min-width:120px;">
-          <label>Broj</label>
-          <input id="adminBNumber" type="text" placeholder="25">
-        </div>
-
-        <div class="field" style="min-width:120px;">
-          <label>Broj stanova</label>
-          <input id="adminBUnits" type="number" min="1" placeholder="25">
-        </div>
-
-        <div class="field" style="min-width:240px; flex:1;">
-          <label>Upravnik</label>
-          <select id="bMgrSelect">
-            <option value="">— Izaberi upravnika —</option>
-          </select>
-        </div>
-
-        <button class="btn btnGhost" type="button" id="addMgrBtn">+ Novi upravnik</button>
-
-        <button class="btn btnPrimary" type="button" id="adminAddBuildingBtn">
-          Dodaj zgradu
-        </button>
+      <div class="smallText" style="opacity:.75; margin-top:8px;">
+        Format username-a mora biti <b>UPR-001</b>, <b>UPR-002</b>...
       </div>
     </div>
-
-    <!-- forma za dodavanje novog upravnika -->
-    <div id="newMgrWrap" style="display:none; margin-top:10px;">
-      <!-- (OVDE ostaje tvoj postojeći sadržaj newMgrWrap, ništa ne menjaj u njemu) -->
-    </div>
-
-    <div id="adminBuildingsList" class="list" style="margin-top:10px;"></div>
-
   </div>
+
+  <div id="adminBuildingsList" class="list" style="margin-top:10px;"></div>
 
 </div>
 
@@ -7334,10 +7355,47 @@ function saveUsersDB(rows){
   localStorage.setItem("PORTAL_USERS_DB", JSON.stringify(rows || []));
 }
 
+/* ✅ Seed: ubaci seed upravnike iz USERS u PORTAL_USERS_DB
+   - da dropdown ima UPR-001/UPR-002 odmah
+   - da assignBuildingToManager ne pukne kad dodeljuješ zgradu postojećem upravniku */
+function seedManagersFromUSERS(){
+  if(!Array.isArray(USERS)) return;
+
+  const db = loadUsersDB();
+  let changed = false;
+
+  USERS
+    .filter(u => u && u.role === "upravnik")
+    .forEach(u => {
+      const uname = String(u.username || "").trim().toUpperCase();
+      if(!/^UPR-\d{3}$/.test(uname)) return;
+
+      const exists = db.some(x => String(x.username||"").trim().toUpperCase() === uname);
+      if(exists) return;
+
+      const pass =
+        (u.pass != null) ? String(u.pass) :
+        (u.password != null) ? String(u.password) : "";
+
+      db.push({
+        username: uname,
+        password: pass,
+        role: "upravnik",
+        buildings: Array.isArray(u.buildings) ? u.buildings.slice() : []
+      });
+      changed = true;
+    });
+
+  if(changed) saveUsersDB(db);
+}
+
 /* Create/find upravnik user */
 function ensureManagerUser(username, password){
   const u = (username || "").trim().toUpperCase();
   if(!/^UPR-\d{3}$/.test(u)) throw new Error("Format upravnika mora biti UPR-001, UPR-002...");
+
+  // ✅ obezbedi da seed upravnici postoje u DB
+  seedManagersFromUSERS();
 
   const users = loadUsersDB();
   let user = users.find(x => String(x.username||"").toUpperCase() === u);
@@ -7357,6 +7415,9 @@ function assignBuildingToManager(buildingId, managerUsername){
   const mu  = String(managerUsername || "").toUpperCase();
   if(!bid || !mu) return;
 
+  // ✅ obezbedi da seed upravnici postoje u DB
+  seedManagersFromUSERS();
+
   // 1) building.managerUsername
   const buildings = loadBuildingsDB();
   const b = buildings.find(x => x.id === bid);
@@ -7374,7 +7435,7 @@ function assignBuildingToManager(buildingId, managerUsername){
   // 3) add to new manager cache
   const users = loadUsersDB();
   const u = users.find(x => String(x.username||"").toUpperCase() === mu);
-  if(!u) throw new Error("Upravnik ne postoji: " + mu);
+  if(!u) throw new Error("Upravnik ne postoji u DB: " + mu);
 
   if(!Array.isArray(u.buildings)) u.buildings = [];
   if(!u.buildings.includes(bid)) u.buildings.push(bid);
@@ -7386,6 +7447,9 @@ function unassignBuildingFromOldManager(buildingId, oldManagerUsername){
   const ou  = String(oldManagerUsername || "").toUpperCase();
   if(!bid || !ou) return;
 
+  // ✅ obezbedi da seed upravnici postoje u DB
+  seedManagersFromUSERS();
+
   const users = loadUsersDB();
   const u = users.find(x => String(x.username||"").toUpperCase() === ou);
   if(!u || !Array.isArray(u.buildings)) return;
@@ -7396,12 +7460,16 @@ function unassignBuildingFromOldManager(buildingId, oldManagerUsername){
 
 /* helper: list existing managers */
 function listManagers(){
+  // ✅ uvek osveži seed -> DB pre listanja
+  seedManagersFromUSERS();
   return loadUsersDB().filter(u => u && u.role === "upravnik");
 }
   
 /* INIT */
 (function init(){
   ensureStaticSids();
+
+  seedManagersFromUSERS();
 
   const session = getSession();
   if(session && session.username && session.role){
