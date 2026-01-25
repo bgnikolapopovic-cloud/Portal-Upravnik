@@ -135,17 +135,13 @@ function kFinanceItems(bid) {
 
 /**
  * Load finance items for a building
+ * Note: Seed data should be provided by the main application
  * @param {string} bid - building ID
+ * @param {Array} seedData - optional seed data to initialize storage
  * @returns {Array} array of finance item objects
  */
-function loadItems(bid) {
-  const seed = [
-    { id: cryptoRandom(), createdAt: Date.now() - 1000 * 60 * 60 * 24 * 2, date: "2026-01-02", type: "rashod", category: "tekuće održavanje", firm: "Servis DOO", desc: "Uplata servisu", amount: 24000, docs: [] },
-    { id: cryptoRandom(), createdAt: Date.now() - 1000 * 60 * 60 * 24 * 6, date: "2025-12-28", type: "prihod", category: "ostalo", firm: "", desc: "Uplata stanara", amount: 120000, docs: [] },
-    { id: cryptoRandom(), createdAt: Date.now() - 1000 * 60 * 60 * 24 * 20, date: "2025-12-15", type: "rashod", category: "hitna intervencija", firm: "Vodoinstalater", desc: "Hitna intervencija", amount: 18000, docs: [] }
-  ];
-  
-  return loadFromStorage(kFinanceItems(bid), [], seed);
+function loadItems(bid, seedData = null) {
+  return loadFromStorage(kFinanceItems(bid), [], seedData);
 }
 
 /**
@@ -170,11 +166,11 @@ function kFirms(bid) {
 /**
  * Load firms for a building
  * @param {string} bid - building ID
+ * @param {Array} seedData - optional seed data to initialize storage
  * @returns {Array} array of firm names
  */
-function loadFirms(bid) {
-  const seed = ["Servis DOO", "Vodoinstalater", "Lift Servis"];
-  return loadFromStorage(kFirms(bid), [], seed);
+function loadFirms(bid, seedData = null) {
+  return loadFromStorage(kFirms(bid), [], seedData);
 }
 
 /**
@@ -193,21 +189,18 @@ function saveFirms(bid, firms) {
  * @returns {string} storage key
  */
 function kBoard(bid) {
-  return "pu_board_posts_v1__" + bid;
+  return "pu_board_posts_v2__" + bid;
 }
 
 /**
  * Load board posts for a building
+ * Note: Seed data should be provided by the main application
  * @param {string} bid - building ID
+ * @param {Array} seedData - optional seed data to initialize storage
  * @returns {Array} array of board post objects
  */
-function loadBoardPosts(bid) {
-  const seed = [
-    { id: cryptoRandom(), createdAt: Date.now() - 1000 * 60 * 60 * 24 * 3, date: "2026-01-01", title: "Akcija čišcenja", desc: "Obaveštenje o terminu akcije čišcenja", docs: [] },
-    { id: cryptoRandom(), createdAt: Date.now() - 1000 * 60 * 60 * 24 * 7, date: "2025-12-28", title: "Popravka krova", desc: "Plan radova i obaveštenje", docs: [] }
-  ];
-  
-  return loadFromStorage(kBoard(bid), [], seed);
+function loadBoardPosts(bid, seedData = null) {
+  return loadFromStorage(kBoard(bid), [], seedData);
 }
 
 /**
@@ -226,35 +219,18 @@ function saveBoardPosts(bid, items) {
  * @returns {string} storage key
  */
 function kForum(bid) {
-  return "pu_forum_proposals_v1__" + bid;
+  return "pu_forum_proposals_v2__" + bid;
 }
 
 /**
  * Load forum proposals for a building
+ * Note: Seed data should be provided by the main application
  * @param {string} bid - building ID
+ * @param {Array} seedData - optional seed data to initialize storage
  * @returns {Array} array of proposal objects
  */
-function loadProposals(bid) {
-  const seed = [
-    {
-      id: cryptoRandom(),
-      createdAt: Date.now() - 1000 * 60 * 60 * 24 * 3,
-      title: "Nova rasveta u hodniku",
-      body: "Predlog da se zamene sijalice LED rasvetom zbog ustede.",
-      createdBy: "BM25-001",
-      poll: { enabled: true, endsAt: Date.now() + 1000 * 60 * 60 * 24 * 4, votesYes: [], votesNo: [] }
-    },
-    {
-      id: cryptoRandom(),
-      createdAt: Date.now() - 1000 * 60 * 60 * 24 * 10,
-      title: "Zamena interfona",
-      body: "Predlog da se proveri ponuda za zamenu interfona u zgradi.",
-      createdBy: "BM25-002",
-      poll: { enabled: true, endsAt: Date.now() - 1000 * 60 * 60 * 24 * 1, votesYes: ["demo@x"], votesNo: [] }
-    }
-  ];
-  
-  return loadFromStorage(kForum(bid), [], seed);
+function loadProposals(bid, seedData = null) {
+  return loadFromStorage(kForum(bid), [], seedData);
 }
 
 /**
