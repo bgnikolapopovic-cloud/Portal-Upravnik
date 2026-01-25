@@ -3070,8 +3070,8 @@ function mergeBuildingsFromDB(){
 /* pozovi odmah pri startu aplikacije */
 mergeBuildingsFromDB();
 
-/* Admin helper: dodaj novu zgradu (UI u sledećem koraku) */
-function adminAddBuilding({ code, title, street, number, units }){
+/* Admin helper: dodaj novu zgradu + (opciono) dodeli upravnika (CONCEPT B) */
+function adminAddBuilding({ code, title, street, number, units, managerUsername, managerPassword }){
   const c = String(code || "").trim().toUpperCase();
   const t = String(title || "").trim();
   const s = String(street || "").trim();
@@ -3089,7 +3089,18 @@ function adminAddBuilding({ code, title, street, number, units }){
     throw new Error("Zgrada sa tom šifrom već postoji.");
   }
 
+  // (opciono) pripremi upravnika
+  let mu = String(managerUsername || "").trim().toUpperCase();
+  if(mu){
+    // ako je prosleđen, mora biti UPR-xxx
+    // ako ne postoji user, kreiraće ga (zahteva password)
+    ensureManagerUser(mu, managerPassword);
+  }
+
   const newB = { id, code: c, title: t, street: s, number: n, units: u };
+
+  // upiši upravnika i u samu zgradu (single source of truth)
+  if(mu) newB.managerUsername = mu;
 
   // upiši u DB
   const db = loadBuildingsDB();
@@ -3099,9 +3110,13 @@ function adminAddBuilding({ code, title, street, number, units }){
   // odmah ubaci i u runtime
   BUILDINGS.push(newB);
 
+  // (opciono) veži upravnika <-> zgradu (oba smera)
+  if(mu){
+    assignBuildingToManager(newB.id, mu);
+  }
+
   return newB;
 }
-
 
 function normalizeBuildingId(id){
   return String(id || "")
@@ -3140,6 +3155,99 @@ const USERS = [
   { username: "NC28-003", pass: "Z4R8W", role: "stanar", buildings: ["b_nč28"] }
 ];
 
+  /* ================= USERS: seed (USERS) + DB merge (PORTAL_USERS_DB) ================= */
+
+// OVAJ KEY koristi loadUsersDB/saveUsersDB iz Concept B core-a
+// (PORTAL_USERS_DB)
+const KEY_USERS_DB = "PORTAL_USERS_DB";
+
+function loadUsersDB_safe(){
+  if(typeof loadUsersDB === "function") return loadUsersDB();
+  try{
+    return JSON.parse(localStorage.getItem(KEY_USERS_DB)) || [];
+  }catch{
+    return [];
+  }
+}
+function saveUsersDB_safe(rows){
+  if(typeof saveUsersDB === "function") return saveUsersDB(rows);
+  localStorage.setItem(KEY_USERS_DB, JSON.stringify(rows || []));
+}
+
+/* Normalizacija username-a */
+function normUser(u){
+  return String(u || "").trim().toUpperCase();
+}
+
+/* Merge: USERS (seed) + DB (dinamički). DB pobeđuje seed ako se poklapaju. */
+function getAllUsers(){
+  const seed = Array.isArray(USERS) ? USERS : [];
+  const db = loadUsersDB_safe();
+
+  const map = new Map();
+
+  // seed prvo
+  seed.forEach(u => {
+    const key = normUser(u?.username);
+    if(!key) return;
+    map.set(key, { ...u, username: key });
+  });
+
+  // DB preko seed-a
+  db.forEach(u => {
+    const key = normUser(u?.username);
+    if(!key) return;
+
+    const pass = (u.pass != null) ? String(u.pass) : (u.password != null ? String(u.password) : "");
+    const role = String(u.role || "").trim();
+
+    const merged = {
+      ...u,
+      username: key,
+      role: role || "upravnik",
+      // standardizuj:
+      pass,
+      password: pass,
+      buildings: Array.isArray(u.buildings) ? u.buildings : []
+    };
+
+    map.set(key, merged);
+  });
+
+  return Array.from(map.values());
+}
+
+function findUserByUsername(username){
+  const key = normUser(username);
+  if(!key) return null;
+  return getAllUsers().find(u => normUser(u.username) === key) || null;
+}
+
+function listManagers(){
+  return getAllUsers().filter(u => u && u.role === "upravnik");
+}
+
+function upsertUserToDB(user){
+  if(!user || !user.username) return;
+
+  const db = loadUsersDB_safe();
+  const key = normUser(user.username);
+
+  const idx = db.findIndex(x => normUser(x.username) === key);
+
+  const pass = (user.pass != null) ? String(user.pass) : (user.password != null ? String(user.password) : "");
+  const payload = {
+    username: key,
+    role: user.role || "upravnik",
+    password: pass,
+    buildings: Array.isArray(user.buildings) ? user.buildings : []
+  };
+
+  if(idx >= 0) db[idx] = { ...db[idx], ...payload };
+  else db.push(payload);
+
+  saveUsersDB_safe(db);
+}
 
 /* ===== session keys ===== */
 const KEY_PERSIST = "pu_session_persist_v8";
@@ -3831,23 +3939,36 @@ function renderBuildingUI(){
   if(switchBuildingBtn) switchBuildingBtn.style.display = multi ? "" : "none";
 }
 
-/* ===== login flow ===== */
+/* ===== login flow (MERGED: USERS seed + DB) ===== */
 function attemptLogin(username, pass){
-  const uName = (username || "").trim();
+  const uName = (username || "").trim().toUpperCase();
   const p     = (pass || "").trim();
 
-  const u = USERS.find(x => x.username === uName && x.pass === p);
-  if(!u){
+  // koristi merged korisnike (seed + DB)
+  const u = (typeof findUserByUsername === "function")
+    ? findUserByUsername(uName)
+    : null;
+
+  const user = u || (Array.isArray(USERS) ? USERS.find(x => (String(x.username||"").trim().toUpperCase() === uName)) : null);
+
+  // proveri password: podrži i pass i password
+  const storedPass =
+    user
+      ? (user.pass != null ? String(user.pass) : (user.password != null ? String(user.password) : ""))
+      : "";
+
+  if(!user || storedPass !== p){
     errEl.style.display = "block";
     return;
   }
   errEl.style.display = "none";
 
   CURRENT_SESSION = {
-    username: u.username,
-    role: u.role,
-    buildings: (u.buildings || []).slice(),
-    activeBuildingId: null
+    username: String(user.username || "").trim().toUpperCase(),
+    role: user.role,
+    buildings: (user.buildings || []).slice(),
+    activeBuildingId: null,
+    unitCode: user.unitCode || ""
   };
 
   // 🔒 sakrij "upravnik" blokove samo stanarima (admin sme da vidi)
@@ -3873,63 +3994,16 @@ function attemptLogin(username, pass){
     enterPortal();
   }
 }
-  
-// ✅ AUTH: pronađi usera iz DB (pu_users_db_v1)
-function findUserFromDB(username, password){
-  const u = (username || "").trim().toLowerCase();
-  const p = String(password || "").trim();
-
-  if(typeof loadUsersDB !== "function") return null;
-
-  const rows = loadUsersDB() || [];
-  return rows.find(x =>
-    (String(x?.username || "").trim().toLowerCase() === u) &&
-    (String(x?.password || "").trim() === p)
-  ) || null;
-}
-
-// ✅ Wrapper: prvo probaj DB upravnika, pa fallback na postojeći attemptLogin
-function attemptLoginPatched(username, pass){
-  // 1) probaj novog upravnika iz DB
-  const dbUser = findUserFromDB(username, pass);
-  if(dbUser){
-    CURRENT_SESSION = {
-      role: "upravnik",
-      username: dbUser.username,
-      name: dbUser.name || dbUser.username,
-      buildings: dbUser.buildings || [],
-      unitCode: ""
-    };
-
-    // isto ponašanje kao tvoj postojeći kod
-    if((CURRENT_SESSION.buildings || []).length > 1){
-      saveSession(CURRENT_SESSION);
-      showBuildingSelect();
-    }else{
-      CURRENT_SESSION.activeBuildingId = CURRENT_SESSION.buildings[0] || null;
-      saveSession(CURRENT_SESSION);
-      enterPortal();
-    }
-    return;
-  }
-
-  // 2) fallback na postojeći login (admin/stanar/legacy)
-  if(typeof attemptLogin === "function"){
-    attemptLogin(username, pass);
-  }else{
-    alert("Login funkcija nije pronađena (attemptLogin).");
-  }
-}
 
 loginBtn.addEventListener("click", () => {
   saveLoginCredsIfNeeded();
-  attemptLoginPatched((usernameEl.value||"").trim(), (passEl.value||"").trim());
+  attemptLogin((usernameEl.value||"").trim(), (passEl.value||"").trim());
 });
 
 document.addEventListener("keydown", (e) => {
   if(document.body.classList.contains("mode-login") && e.key === "Enter"){
     saveLoginCredsIfNeeded();
-    attemptLoginPatched((usernameEl.value||"").trim(), (passEl.value||"").trim());
+    attemptLogin((usernameEl.value||"").trim(), (passEl.value||"").trim());
   }
 });
 
@@ -5810,21 +5884,30 @@ function bindAdminBuildingsManagerUI(){
   const unitsI  = document.getElementById("adminBUnits");
   const addBBtn = document.getElementById("adminAddBuildingBtn");
 
-  function refreshManagersSelect(selectId){
+  function refreshManagersSelect(selectUsername){
     if(!mgrSel) return;
-    const ms = listManagers();
+
+    const ms = listManagers(); // očekuje {username, role:"upravnik", ...}
 
     mgrSel.innerHTML = `<option value="">— Izaberi upravnika —</option>`;
-    ms.forEach(m => {
-      const opt = document.createElement("option");
-      opt.value = m.id;
-      opt.textContent = `${m.name} (${m.username})`;
-      mgrSel.appendChild(opt);
-    });
 
-    if(selectId) mgrSel.value = selectId;
+    ms
+      .slice()
+      .sort((a,b) => String(a.username||"").localeCompare(String(b.username||"")))
+      .forEach(m => {
+        const uname = String(m.username || "").toUpperCase();
+        if(!uname) return;
+
+        const opt = document.createElement("option");
+        opt.value = uname;
+        opt.textContent = uname;
+        mgrSel.appendChild(opt);
+      });
+
+    if(selectUsername) mgrSel.value = String(selectUsername).toUpperCase();
   }
 
+  // inicijalno napuni select
   refreshManagersSelect();
 
   // toggle: forma novi upravnik
@@ -5836,22 +5919,24 @@ function bindAdminBuildingsManagerUI(){
     addMgrBtn.dataset.bound = "1";
   }
 
-  // kreiraj upravnika
+  // kreiraj upravnika (Concept B)
   if(createMgrBtn && !createMgrBtn.dataset.bound){
     createMgrBtn.addEventListener("click", () => {
       try{
-        const nu = addManagerUser({
-          name: mgrName?.value || "",
-          username: mgrUser?.value || "",
-          password: mgrPass?.value || ""
-        });
+        const uname = (mgrUser?.value || "").trim().toUpperCase();
+        const pass  = (mgrPass?.value || "").trim();
+
+        // opcionalno: ime (za sada ga ne koristimo u skeletonu; može kasnije)
+        // const fullName = (mgrName?.value || "").trim();
+
+        const user = ensureManagerUser(uname, pass); // kreira ako ne postoji
 
         if(mgrName) mgrName.value = "";
         if(mgrUser) mgrUser.value = "";
         if(mgrPass) mgrPass.value = "";
         if(newMgrWrap) newMgrWrap.style.display = "none";
 
-        refreshManagersSelect(nu.id);
+        refreshManagersSelect(user.username);
         alert("Upravnik je kreiran.");
       }catch(e){
         alert(e?.message || "Greška pri kreiranju upravnika.");
@@ -5860,7 +5945,7 @@ function bindAdminBuildingsManagerUI(){
     createMgrBtn.dataset.bound = "1";
   }
 
-  // dodaj zgradu + dodeli upravniku
+  // dodaj zgradu + dodeli upravniku (Concept B)
   if(addBBtn && !addBBtn.dataset.bound){
     addBBtn.addEventListener("click", () => {
       try{
@@ -5875,17 +5960,20 @@ function bindAdminBuildingsManagerUI(){
           return;
         }
 
-        const managerId = (mgrSel?.value || "").trim();
-        if(!managerId){
+        const managerUsername = (mgrSel?.value || "").trim().toUpperCase();
+        if(!managerUsername){
           alert("Izaberi upravnika za ovu zgradu.");
           return;
         }
 
-        // ✅ kreiraj zgradu (tvoja postojeća funkcija mora postojati)
-        const newB = adminAddBuilding({ code, title, street, number, units, managerId });
+        // ✅ kreiraj zgradu + upiši managerUsername u zgradu
+        const newB = adminAddBuilding({
+          code, title, street, number, units,
+          managerUsername
+        });
 
-        // ✅ dodeli zgradu upravniku
-        assignBuildingToManager(managerId, newB.id);
+        // ✅ veži zgradu upravniku (oba smera)
+        assignBuildingToManager(newB.id, managerUsername);
 
         // očisti polja
         if(codeI) codeI.value = "";
@@ -5909,6 +5997,7 @@ function bindAdminBuildingsManagerUI(){
     addBBtn.dataset.bound = "1";
   }
 }
+
 
 function bindAdminFinSwitch(){
   const host = document.getElementById("adminFinBuildingSwitch");
@@ -7218,6 +7307,82 @@ function updateHomeSummary(){
     homeForum.dataset.page = "";
     homeForum.dataset.sid  = "";
   }
+}
+
+/* ================= CONCEPT B CORE (Admin -> Add building -> Assign manager) ================= */
+
+/* USERS DB (fallback / skeleton) */
+function loadUsersDB(){
+  const raw = localStorage.getItem("PORTAL_USERS_DB");
+  return raw ? JSON.parse(raw) : [];
+}
+function saveUsersDB(rows){
+  localStorage.setItem("PORTAL_USERS_DB", JSON.stringify(rows || []));
+}
+
+/* Create/find upravnik user */
+function ensureManagerUser(username, password){
+  const u = (username || "").trim().toUpperCase();
+  if(!/^UPR-\d{3}$/.test(u)) throw new Error("Format upravnika mora biti UPR-001, UPR-002...");
+
+  const users = loadUsersDB();
+  let user = users.find(x => String(x.username||"").toUpperCase() === u);
+
+  if(!user){
+    if(!password) throw new Error("Lozinka je obavezna za novog upravnika.");
+    user = { username: u, password: String(password), role: "upravnik", buildings: [] };
+    users.push(user);
+    saveUsersDB(users);
+  }
+  return user;
+}
+
+/* Assign building -> manager (both directions) */
+function assignBuildingToManager(buildingId, managerUsername){
+  const bid = String(buildingId || "");
+  const mu  = String(managerUsername || "").toUpperCase();
+  if(!bid || !mu) return;
+
+  // 1) building.managerUsername
+  const buildings = loadBuildingsDB();
+  const b = buildings.find(x => x.id === bid);
+  if(!b) throw new Error("Zgrada nije pronađena: " + bid);
+
+  const old = String(b.managerUsername || "").toUpperCase();
+  b.managerUsername = mu;
+  saveBuildingsDB(buildings);
+
+  // 2) remove from old manager cache (if any)
+  if(old && old !== mu){
+    unassignBuildingFromOldManager(bid, old);
+  }
+
+  // 3) add to new manager cache
+  const users = loadUsersDB();
+  const u = users.find(x => String(x.username||"").toUpperCase() === mu);
+  if(!u) throw new Error("Upravnik ne postoji: " + mu);
+
+  if(!Array.isArray(u.buildings)) u.buildings = [];
+  if(!u.buildings.includes(bid)) u.buildings.push(bid);
+  saveUsersDB(users);
+}
+
+function unassignBuildingFromOldManager(buildingId, oldManagerUsername){
+  const bid = String(buildingId || "");
+  const ou  = String(oldManagerUsername || "").toUpperCase();
+  if(!bid || !ou) return;
+
+  const users = loadUsersDB();
+  const u = users.find(x => String(x.username||"").toUpperCase() === ou);
+  if(!u || !Array.isArray(u.buildings)) return;
+
+  u.buildings = u.buildings.filter(x => x !== bid);
+  saveUsersDB(users);
+}
+
+/* helper: list existing managers */
+function listManagers(){
+  return loadUsersDB().filter(u => u && u.role === "upravnik");
 }
   
 /* INIT */
