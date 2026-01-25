@@ -82,42 +82,49 @@ body::before{
 
 /* TOP RIGHT */
 .topRightBar{
-  position:absolute;
+  position:fixed; /* da bude profesionalno i uvek gore */
   top:calc(10px + env(safe-area-inset-top));
   right:calc(var(--main-pad) + env(safe-area-inset-right));
   display:flex;
   align-items:center;
   gap:12px;
   z-index:95;
-  pointer-events:none;
-}
-.topRightTitle{
-  text-align:left;
-  font-weight:900;
-  line-height:1.05;
-}
-.topRightTitle span{
-  display:block;
-  font-size:18px;
-}
-.topRightLogo{
-  padding:6px;
-  background:rgba(255,255,255,.72);
-  border:1px solid var(--border);
-  border-radius:22px;
-  box-shadow:var(--shadow);
-}
-.topRightLogo img{
-  height:56px;
-  width:auto;
-  display:block;
-  border-radius:16px;
-}
-@media(min-width:900px){
-  .topRightTitle span{font-size:22px;}
-  .topRightLogo img{height:92px;}
+  pointer-events:auto; /* BITNO: bez ovoga input/dugme ne rade */
 }
 
+.topRightTools{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.topRightTools .topSearch{
+  border-radius:999px;
+  padding:10px 12px;
+  background:rgba(255,255,255,.72);
+  border:1px solid rgba(15,23,42,.14);
+  box-shadow:var(--shadow);
+  min-width:320px;
+  max-width:420px;
+}
+
+.topRightTools .topSearch input{
+  border:none;
+  background:transparent;
+  width:100%;
+  outline:none;
+  font-size:14px;
+}
+
+/* na login ekranu sakrij alate */
+body.mode-login #topRightTools{ display:none; }
+
+@media (max-width: 900px){
+  .topRightBar{ flex-wrap:wrap; justify-content:flex-end; }
+  .topRightTools{ width:100%; justify-content:flex-end; }
+  .topRightTools .topSearch{ min-width:260px; max-width:100%; }
+}
+  
 /* SCREENS */
 .loginWrap{
   min-height:100vh;
@@ -2087,6 +2094,71 @@ gap: 10px;
     width:100%;
   }
 }
+
+/* ===== TOP HEADER: stvarno FIXED + “floating” (nije zalepljen uz ivice) ===== */
+.topRightBar{
+  position: fixed !important;
+  top: calc(10px + env(safe-area-inset-top)) !important;
+
+  /* umesto da bude samo desno, ograniči širinu i centriraj */
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+
+  width: min(1180px, calc(100vw - 24px)) !important; /* 12px margin levo/desno */
+  padding: 0 12px !important;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end; /* sve ide ka desnoj strani unutar bara */
+  gap: 12px;
+
+  z-index: 9999 !important;
+  pointer-events: auto !important;
+}
+
+/* Alati (Promeni zgradu + pretraga) */
+.topRightTools{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 1 560px;        /* ne preširoko na desktopu */
+  min-width: 0;
+}
+
+.topRightTools .topSearch{
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 420px;       /* da ne pojede ceo bar */
+}
+
+/* ===== MOBILE: da ne prelazi preko hamburgera/sidebara ===== */
+@media (max-width: 900px){
+  .topRightBar{
+    width: calc(100vw - 16px) !important;
+    padding: 0 8px !important;
+
+    /* prostor za hamburger dugme (prilagodi ako treba) */
+    padding-left: 64px !important;
+
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  .topRightTools{
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .topRightTools .topSearch{
+    max-width: none;
+    width: 100%;
+  }
+}
+
+/* baš mali telefoni: sakrij logo da oslobodi prostor */
+@media (max-width: 520px){
+  .topRightLogo{ display:none !important; }
+  .topRightBar{ padding-left: 56px !important; }
+}
   
 </style>
 </head>
@@ -2096,11 +2168,20 @@ gap: 10px;
 
 <!-- TOP RIGHT BRAND -->
 <div class="topRightBar">
-  <div class="topRightTitle">
 
+  <!-- TOOLS: promena zgrade + globalna pretraga (uvek gore, na svim stranicama) -->
+  <div class="topRightTools" id="topRightTools">
+    <div class="pill pillBtn" id="switchBuildingBtn" style="display:none;">Promeni zgradu</div>
+
+    <div class="searchInline topSearch" style="position:relative;">
+      <input id="globalSearch" placeholder="Pretraga (finansije, dokumenti, forum)">
+      <div class="searchResults" id="searchResults" style="display:none;"></div>
+    </div>
+  </div>
+
+  <div class="topRightTitle">
     <!-- USER ID BADGE -->
     <div class="userBadge" id="userBadge"></div>
-
     <span>Portal</span>
     <span>Upravnik</span>
   </div>
@@ -2109,7 +2190,6 @@ gap: 10px;
     <img src="logo.png" alt="Portal Upravnik logo">
   </div>
 </div>
-
 
 <!-- LOGIN SCREEN -->
 <section class="loginWrap" id="loginScreen">
@@ -2220,25 +2300,14 @@ gap: 10px;
         </div>
 
         <div class="rightCol">
-          <div class="topMini">
-            <div class="pill" id="userPill">Korisnik</div>
-            <div class="pill" id="buildingPill">Zgrada</div>
-            <div class="pill pillBtn" id="switchBuildingBtn" style="display:none;">Promeni zgradu</div>
-          </div>
-
-          <div class="searchInline" style="position:relative;">
-            <input id="globalSearch" placeholder="Pretraga (finansije, dokumenti, forum)">
-            <div class="searchResults" id="searchResults" style="display:none;"></div>
-          </div>
-
-          <div class="balanceCard">
-            <span class="label">Stanje računa</span>
-            <div class="balanceAmount">
-              <span class="value" id="balanceValue">0,00</span>
-              <span class="currency">RSD</span>
-            </div>
-          </div>
-        </div>
+  <div class="balanceCard">
+    <span class="label">Stanje računa</span>
+    <div class="balanceAmount">
+      <span class="value" id="balanceValue">0,00</span>
+      <span class="currency">RSD</span>
+    </div>
+  </div>
+</div>
       </section>
 
       <section class="page active" id="page-home">
@@ -2251,8 +2320,6 @@ gap: 10px;
             <li id="homeForum">Forum: (nema)</li>
           </ul>
 
-
-          
           <div class="smallText" data-role="admin" style="margin-top:12px;">
             Admin: placeholder (upravljanje korisnicima, regulativama i kontaktima).
           </div>
@@ -3753,33 +3820,53 @@ function applyRoleUI(role){
   const roleEls = document.querySelectorAll("[data-role]");
 
   roleEls.forEach(el => {
-  const need = el.getAttribute("data-role");
+    const need = el.getAttribute("data-role");
 
-  // ✅ manage = upravnik ili admin
-  if(need === "manage"){
-    el.style.display = (role === "upravnik" || role === "admin") ? "" : "none";
-    return;
+    // ✅ manage = upravnik ili admin
+    if(need === "manage"){
+      el.style.display = (role === "upravnik" || role === "admin") ? "" : "none";
+      return;
+    }
+
+    // Admin vidi i admin i upravnik blokove
+    if(role === "admin"){
+      el.style.display = (need === "admin" || need === "upravnik") ? "" : "none";
+      return;
+    }
+
+    // Ostali: samo svoje
+    el.style.display = (need === role) ? "" : "none";
+  });
+
+  // ✅ Promeni zgradu dugme (samo admin/upravnik)
+  const sw = document.getElementById("switchBuildingBtn");
+  if(sw){
+    sw.style.display = (role === "admin" || role === "upravnik") ? "inline-flex" : "none";
   }
-
-  // Admin vidi i admin i upravnik blokove
-  if(role === "admin"){
-    el.style.display = (need === "admin" || need === "upravnik") ? "" : "none";
-    return;
-  }
-
-  // Ostali: samo svoje
-  el.style.display = (need === role) ? "" : "none";
-});
 }
+  
+function resetGlobalSearchUI(){
+  CURRENT_QUERY = "";
+  const gs = document.getElementById("globalSearch");
+  const sr = document.getElementById("searchResults");
+  if(gs) gs.value = "";
+  if(sr) sr.style.display = "none";
+}
+  
 /* ===== building context UI ===== */
 function setActiveBuilding(bid){
   if(!CURRENT_SESSION) return;
+
   CURRENT_SESSION.activeBuildingId = bid;
   saveSession(CURRENT_SESSION);
+
+  // reset pretrage kad promenimo zgradu (da ne ostanu stari rezultati/filteri)
+  resetGlobalSearchUI();
+
   renderBuildingUI();
   refreshAllModules();
 }
-
+  
 function renderBuildingUI(){
   const bid = CURRENT_SESSION?.activeBuildingId;
   const b = getBuildingById(bid);
@@ -7098,38 +7185,57 @@ function scrollToSid(sid){
   });
 }
   
+// ===== GLOBAL SEARCH (bind samo jednom) =====
 if(globalSearch){
-  globalSearch.addEventListener("input", () => {
-    CURRENT_QUERY = (globalSearch.value || "").trim();
-    applySearchFilter();
-    renderSearchDropdown(CURRENT_QUERY);
-  });
+  if(globalSearch.dataset.bound !== "1"){
+    globalSearch.addEventListener("input", () => {
+      CURRENT_QUERY = (globalSearch.value || "").trim();
+      applySearchFilter();
+      renderSearchDropdown(CURRENT_QUERY);
+    });
 
-  globalSearch.addEventListener("focus", () => {
-    renderSearchDropdown((globalSearch.value || "").trim());
-  });
+    globalSearch.addEventListener("focus", () => {
+      renderSearchDropdown((globalSearch.value || "").trim());
+    });
 
-  globalSearch.addEventListener("keydown", (e) => {
-    if(e.key === "Escape"){
-      if(searchResults) searchResults.style.display = "none";
-    }
-  });
+    globalSearch.addEventListener("keydown", (e) => {
+      if(e.key === "Escape"){
+        if(searchResults) searchResults.style.display = "none";
+      }
+    });
+
+    globalSearch.dataset.bound = "1";
+  }
 }
+
 if(searchResults){
-  searchResults.addEventListener("click", (e) => {
-    const row = e.target.closest(".srItem");
-    if(!row) return;
-    const page = row.getAttribute("data-page");
-    const sid  = row.getAttribute("data-sid");
-    if(page) goToHit(page, sid);
-  });
+  if(searchResults.dataset.bound !== "1"){
+    searchResults.addEventListener("click", (e) => {
+      const row = e.target.closest(".srItem");
+      if(!row) return;
+      const page = row.getAttribute("data-page");
+      const sid  = row.getAttribute("data-sid");
+      if(page) goToHit(page, sid);
+    });
+
+    searchResults.dataset.bound = "1";
+  }
 }
-document.addEventListener("click", (e) => {
-  if(!searchResults || !globalSearch) return;
-  const wrap = globalSearch.closest(".searchInline");
-  if(wrap && wrap.contains(e.target)) return;
-  searchResults.style.display = "none";
-});
+
+// zatvori dropdown klikom van (bind samo jednom)
+if(!document.documentElement.dataset.searchBound){
+  document.addEventListener("click", (e) => {
+    const sr = document.getElementById("searchResults");
+    const gs = document.getElementById("globalSearch");
+    if(!sr || !gs) return;
+
+    const wrap = gs.closest(".searchInline");
+    if(wrap && wrap.contains(e.target)) return;
+
+    sr.style.display = "none";
+  });
+  document.documentElement.dataset.searchBound = "1";
+}
 
 /* ===== refresh modules for active building ===== */
 function refreshAllModules(){
@@ -7227,8 +7333,12 @@ function updateHomeSummary(){
   const session = getSession();
   if(session && session.username && session.role){
     CURRENT_SESSION = session;
-    userPill.textContent = session.username;
-    applyRoleUI(session.role);
+
+// userPill je uklonjen iz UI (sad je gore userBadge), ali ostavljamo kompatibilnost:
+if(userPill) userPill.textContent = session.username;
+
+applyRoleUI(session.role);
+renderUserBadge();
 
     if(!CURRENT_SESSION.activeBuildingId){
       if(CURRENT_SESSION.role === "stanar"){
