@@ -6159,6 +6159,8 @@ function bindAdminFinSwitch(){
   // init lista
   renderForQuery("");
 
+  window.__refreshAdminFinSwitch = () => renderForQuery(input.value || "");
+  
   host.dataset.bound = "1";
 }
 
@@ -6441,17 +6443,20 @@ function renderAdminBuildings(){
       e.stopPropagation();
       if(!confirm(`Obrisati zgradu "${b.title}"?`)) return;
 
-      // 1) izbriši iz DB
+      if(b.managerUsername){
+  unassignBuildingFromOldManager(b.id, b.managerUsername);
+}
+
       const leftRows = loadBuildingsDB().filter(x => x.id !== b.id);
       saveBuildingsDB(leftRows);
 
-      // 2) ukloni iz runtime BUILDINGS
       const idx = BUILDINGS.findIndex(x => x.id === b.id);
       if(idx !== -1) BUILDINGS.splice(idx, 1);
 
-      // 3) redraw liste zgrada
       redraw();
 
+if(window.__refreshAdminFinSwitch) window.__refreshAdminFinSwitch();
+      
       // 4) osveži sve UI delove koji zavise od BUILDINGS (sigurno)
       if(typeof applySearchFilter === "function") applySearchFilter();
       if(typeof renderAdminBuildings === "function") renderAdminBuildings();
@@ -6475,43 +6480,6 @@ function renderAdminBuildings(){
   });
 }
   
-  btn.onclick = () => {
-    try{
-      const code   = (codeI?.value || "").trim();
-      const title  = (titleI?.value || "").trim();
-      const street = (streetI?.value || "").trim();
-      const number = (numberI?.value || "").trim();
-      const units  = Number(unitsI?.value || 0);
-
-      const newB = adminAddBuilding({ code, title, street, number, units });
-
-// ✅ NOVO: dodaj zgradu u session listu da bude vidljiva u izboru/dropdown-u odmah
-if(CURRENT_SESSION){
-  CURRENT_SESSION.buildings = CURRENT_SESSION.buildings || [];
-  if(!CURRENT_SESSION.buildings.includes(newB.id)){
-    CURRENT_SESSION.buildings.push(newB.id);
-    saveSession(CURRENT_SESSION);
-  }
-}
-
-// očisti polja
-codeI.value = "";
-titleI.value = "";
-streetI.value = "";
-numberI.value = "";
-unitsI.value = "";
-
-redraw();
-
-// prebaci admina na novu zgradu
-setActiveBuilding(newB.id);
-applySearchFilter();
-showPage("finansije");
-    }catch(err){
-      alert(err?.message || "Greška pri dodavanju zgrade.");
-    }
-  };
-
   redraw();
 }
   
