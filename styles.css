@@ -1,0 +1,67 @@
+/**
+ * styles.css - Shared CSS styles
+ * Centralizes common style classes for reusability
+ * 
+ * Note: This file documents the button styles that are defined in index.html
+ * The styles are already centralized in the main HTML file's <style> section.
+ * This file serves as documentation and can be used if styles are later extracted.
+ */
+
+/*
+ * Button Base Styles
+ * Applied to all buttons via .btn class
+ */
+.btn {
+  flex: 1;
+  border: none;
+  cursor: pointer;
+  border-radius: 18px;
+  padding: 14px 16px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  transition: 0.15s;
+}
+
+/*
+ * Primary Button Style
+ * Used for primary actions (submit, save, confirm)
+ */
+.btnPrimary {
+  background: rgba(15, 23, 42, 0.92);
+  color: white;
+  box-shadow: 0 18px 36px rgba(2, 6, 23, 0.18);
+}
+
+.btnPrimary:hover {
+  transform: translateY(-1px);
+}
+
+/*
+ * Ghost Button Style
+ * Used for secondary actions (cancel, close, optional actions)
+ */
+.btnGhost {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  box-shadow: var(--shadow);
+  color: rgba(15, 23, 42, 0.92);
+}
+
+/*
+ * Usage Guidelines:
+ * 
+ * 1. Always use .btn as base class
+ * 2. Add either .btnPrimary or .btnGhost for styling
+ * 3. Primary buttons should be used for main actions
+ * 4. Ghost buttons should be used for secondary actions
+ * 
+ * Example:
+ * <button class="btn btnPrimary">Save</button>
+ * <button class="btn btnGhost">Cancel</button>
+ * 
+ * In JavaScript:
+ * button.className = "btn btnPrimary";
+ * // or toggle between states:
+ * button.classList.toggle("btnPrimary", isActive);
+ * button.classList.toggle("btnGhost", !isActive);
+ */
