@@ -2529,79 +2529,107 @@ gap: 10px;
   <div id="ownWrapBuildings" style="display:none; margin-top:14px;">
 
   <!-- ADMIN: Upravljanje zgradama -->
-  <div id="adminBuildingsWrap" data-role="admin" style="display:none; margin-top:14px;">
-    <div class="badge">Upravljanje zgradama (samo admin)</div>
+<div id="adminBuildingsWrap" data-role="admin" style="display:none; margin-top:14px;">
+  <div class="badge">Upravljanje zgradama (samo admin)</div>
+
+  <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+    <div class="field" style="min-width:160px;">
+      <label>Šifra zgrade (npr. BM25)</label>
+      <input id="adminBCode" type="text" placeholder="BM25">
+    </div>
+
+    <div class="field" style="min-width:260px; flex:1;">
+      <label>Naziv zgrade</label>
+      <input id="adminBTitle" type="text" placeholder="Bore Markovića 25">
+    </div>
+
+    <div class="field" style="min-width:220px; flex:1;">
+      <label>Ulica</label>
+      <input id="adminBStreet" type="text" placeholder="Bore Markovića">
+    </div>
+
+    <div class="field" style="min-width:120px;">
+      <label>Broj</label>
+      <input id="adminBNumber" type="text" placeholder="25">
+    </div>
+
+    <div class="field" style="min-width:120px;">
+      <label>Broj stanova</label>
+      <input id="adminBUnits" type="number" min="1" placeholder="25">
+    </div>
+
+    <div class="field" style="min-width:240px; flex:1;">
+      <label>Upravnik</label>
+      <select id="bMgrSelect">
+        <option value="">— Izaberi upravnika —</option>
+      </select>
+    </div>
+
+    <button class="btn btnGhost" type="button" id="addMgrBtn">+ Novi upravnik</button>
+
+    <button class="btn btnPrimary" type="button" id="adminAddBuildingBtn">
+      Dodaj zgradu
+    </button>
+  </div>
+
+  <div id="newMgrWrap" style="display:none; margin-top:10px;">
+    <div class="badge">Novi upravnik</div>
 
     <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
-      <div class="field" style="min-width:160px;">
-        <label>Šifra zgrade (npr. BM25)</label>
-        <input id="adminBCode" type="text" placeholder="BM25">
+      <div class="field" style="min-width:260px; flex:1;">
+        <label>Username (UPR-001)</label>
+        <input id="mgrUser" type="text" placeholder="UPR-003">
+      </div>
+
+      <div class="field" style="min-width:220px;">
+        <label>Lozinka</label>
+        <input id="mgrPass" type="text" placeholder="npr. 123456">
       </div>
 
       <div class="field" style="min-width:260px; flex:1;">
-        <label>Naziv zgrade</label>
-        <input id="adminBTitle" type="text" placeholder="Bore Markovića 25">
+        <label>Ime i prezime (opciono)</label>
+        <input id="mgrName" type="text" placeholder="npr. Marko Marković">
       </div>
 
-      <div class="field" style="min-width:220px; flex:1;">
-        <label>Ulica</label>
-        <input id="adminBStreet" type="text" placeholder="Bore Markovića">
-      </div>
-
-      <div class="field" style="min-width:120px;">
-        <label>Broj</label>
-        <input id="adminBNumber" type="text" placeholder="25">
-      </div>
-
-      <div class="field" style="min-width:120px;">
-        <label>Broj stanova</label>
-        <input id="adminBUnits" type="number" min="1" placeholder="25">
-      </div>
-
-      <div class="field" style="min-width:240px; flex:1;">
-        <label>Upravnik</label>
-        <select id="bMgrSelect">
-          <option value="">— Izaberi upravnika —</option>
-        </select>
-      </div>
-
-      <button class="btn btnGhost" type="button" id="addMgrBtn">+ Novi upravnik</button>
-
-      <button class="btn btnPrimary" type="button" id="adminAddBuildingBtn">
-        Dodaj zgradu
-      </button>
+      <button class="btn btnPrimary" type="button" id="createMgrBtn">Kreiraj upravnika</button>
     </div>
 
-    <!-- ✅ forma za dodavanje novog upravnika (mora biti UNUTAR adminBuildingsWrap zbog click delegation) -->
-    <div id="newMgrWrap" style="display:none; margin-top:10px;">
-      <div class="badge">Novi upravnik</div>
-
-      <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
-        <div class="field" style="min-width:260px; flex:1;">
-          <label>Username (UPR-001)</label>
-          <input id="mgrUser" type="text" placeholder="UPR-003">
-        </div>
-
-        <div class="field" style="min-width:220px;">
-          <label>Lozinka</label>
-          <input id="mgrPass" type="text" placeholder="npr. 123456">
-        </div>
-
-        <div class="field" style="min-width:260px; flex:1;">
-          <label>Ime i prezime (opciono)</label>
-          <input id="mgrName" type="text" placeholder="npr. Marko Marković">
-        </div>
-
-        <button class="btn btnPrimary" type="button" id="createMgrBtn">Kreiraj upravnika</button>
-      </div>
-
-      <div class="smallText" style="opacity:.75; margin-top:8px;">
-        Format username-a mora biti <b>UPR-001</b>, <b>UPR-002</b>...
-      </div>
+    <div class="smallText" style="opacity:.75; margin-top:8px;">
+      Format username-a mora biti <b>UPR-001</b>, <b>UPR-002</b>...
     </div>
   </div>
 
-  <div id="adminBuildingsList" class="list" style="margin-top:10px;"></div>
+  <!-- ================= ADMIN: Export / Import / Wipe (localStorage snapshot) ================= -->
+  <div id="adminDataToolsWrap" data-role="admin" style="display:none; margin-top:14px;">
+    <div class="badge">Backup / Restore (Admin)</div>
+
+    <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+      <button class="btn btnGhost" type="button" id="btnExportData">
+        Export (preuzmi backup .json)
+      </button>
+
+      <div class="field" style="min-width:280px;">
+        <label>Import backup (.json)</label>
+        <input type="file" id="importFileInput" accept="application/json">
+      </div>
+
+      <button class="btn btnPrimary" type="button" id="btnImportData">
+        Import (restore)
+      </button>
+
+      <button class="btn btnDanger" type="button" id="btnWipeData">
+        Obriši SVE podatke (wipe)
+      </button>
+    </div>
+
+    <div class="smallText" style="opacity:.75; margin-top:8px;">
+      Export/Import čuva i vraća sve podatke iz localStorage (zgrade, stanove, korisnike, finansije, forum, oglasnu...).
+      Session/login se ne prenosi namerno.
+    </div>
+  </div>
+</div>
+
+<div id="adminBuildingsList" class="list" style="margin-top:10px;"></div>
 
 </div>
 
@@ -7155,6 +7183,180 @@ function renderSearchDropdown(q){
   searchResults.innerHTML = html;
   searchResults.style.display = "block";
 }
+
+/* ================= ADMIN: Export / Import / Wipe (localStorage snapshot) ================= */
+
+function isAdmin(){
+  return CURRENT_SESSION?.role === "admin";
+}
+
+/* Koje ključeve snimamo:
+   - sve što počinje sa "pu_" i "PORTAL_"
+   - IZUZETAK: session / login creds (ne želimo da prenosimo u backup)
+*/
+function shouldBackupKey(k){
+  if(!k) return false;
+  const key = String(k);
+
+  // include
+  const include = key.startsWith("pu_") || key.startsWith("PORTAL_");
+
+  if(!include) return false;
+
+  // exclude session + login creds (namerno)
+  if(key.startsWith("pu_session_")) return false;
+  if(key.includes("session_persist")) return false;
+  if(key.includes("session_session")) return false;
+  if(key.includes("login_creds")) return false;
+
+  return true;
+}
+
+function buildBackupObject(){
+  const data = {};
+  for(let i=0; i<localStorage.length; i++){
+    const k = localStorage.key(i);
+    if(!shouldBackupKey(k)) continue;
+    data[k] = localStorage.getItem(k);
+  }
+
+  return {
+    schema: "PORTAL_UPRAVNIK_BACKUP_V1",
+    createdAt: Date.now(),
+    app: "PortalUpravnik",
+    keysCount: Object.keys(data).length,
+    data
+  };
+}
+
+function downloadJSON(obj, filename){
+  const json = JSON.stringify(obj, null, 2);
+  const blob = new Blob([json], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  setTimeout(() => URL.revokeObjectURL(url), 500);
+}
+
+function wipePortalData(){
+  const keysToRemove = [];
+  for(let i=0; i<localStorage.length; i++){
+    const k = localStorage.key(i);
+    if(shouldBackupKey(k)) keysToRemove.push(k);
+  }
+  keysToRemove.forEach(k => localStorage.removeItem(k));
+}
+
+function importBackupObject(obj){
+  if(!obj || obj.schema !== "PORTAL_UPRAVNIK_BACKUP_V1" || typeof obj.data !== "object"){
+    throw new Error("Backup fajl nije validan (pogrešna schema).");
+  }
+
+  // 1) backup current state (sigurnosna kopija pre restore)
+  const current = buildBackupObject();
+  localStorage.setItem("PORTAL_BACKUP_LAST_BEFORE_IMPORT", JSON.stringify(current));
+
+  // 2) wipe stari portal data (da nema duplikata)
+  wipePortalData();
+
+  // 3) restore
+  const entries = Object.entries(obj.data || {});
+  entries.forEach(([k, v]) => {
+    if(shouldBackupKey(k)){
+      localStorage.setItem(k, v);
+    }
+  });
+}
+
+/* Admin UI bind */
+function bindAdminExportImportUI(){
+  const wrap = document.getElementById("adminDataToolsWrap");
+  if(!wrap) return;
+
+  if(!isAdmin()){
+    wrap.style.display = "none";
+    return;
+  }
+  wrap.style.display = "block";
+
+  if(wrap.dataset.bound === "1") return;
+  wrap.dataset.bound = "1";
+
+  const btnExport = document.getElementById("btnExportData");
+  const fileInput = document.getElementById("importFileInput");
+  const btnImport = document.getElementById("btnImportData");
+  const btnWipe   = document.getElementById("btnWipeData");
+
+  if(btnExport){
+    btnExport.addEventListener("click", () => {
+      try{
+        const backup = buildBackupObject();
+        const stamp = new Date().toISOString().slice(0,19).replace(/[:T]/g, "-");
+        downloadJSON(backup, `portal-backup-${stamp}.json`);
+        alert("Export gotov. Backup je preuzet kao .json fajl.");
+      }catch(e){
+        alert(e?.message || "Greška pri export-u.");
+      }
+    });
+  }
+
+  if(btnImport){
+    btnImport.addEventListener("click", async () => {
+      try{
+        const f = fileInput?.files?.[0];
+        if(!f){
+          alert("Izaberi backup .json fajl prvo.");
+          return;
+        }
+
+        const ok = confirm(
+          "UPOZORENJE: Import će PREPISATI sve portal podatke u ovom browseru.\n" +
+          "Preporuka: uradi Export pre Import-a.\n\n" +
+          "Nastaviti?"
+        );
+        if(!ok) return;
+
+        const text = await f.text();
+        const obj = JSON.parse(text);
+
+        importBackupObject(obj);
+
+        alert("Import završen. Stranica će se osvežiti.");
+        location.reload();
+      }catch(e){
+        alert(e?.message || "Greška pri import-u (proveri da li je fajl ispravan JSON backup).");
+      }
+    });
+  }
+
+  if(btnWipe){
+    btnWipe.addEventListener("click", () => {
+      const ok1 = confirm("UPOZORENJE: Ovo briše SVE portal podatke iz ovog browsera.\nNastaviti?");
+      if(!ok1) return;
+      const ok2 = confirm("Poslednja potvrda: obrisati sve podatke?");
+      if(!ok2) return;
+
+      try{
+        // backup pre wipe (da možeš da vratiš)
+        const current = buildBackupObject();
+        localStorage.setItem("PORTAL_BACKUP_LAST_BEFORE_WIPE", JSON.stringify(current));
+
+        wipePortalData();
+        alert("Podaci obrisani. Stranica će se osvežiti.");
+        location.reload();
+      }catch(e){
+        alert(e?.message || "Greška pri wipe-u.");
+      }
+    });
+  }
+}
+  
 function applySearchFilter(){
   const bid = activeBid();
   if(!bid) return;
@@ -7163,7 +7365,7 @@ function applySearchFilter(){
 
   bindAdminFinSwitch();
   bindAdminBuildingsManagerUI();
-  
+  bindAdminExportImportUI();
 
   // ✅ admin panel: stanovi + zgrade
   renderAdminUnits(bid);
