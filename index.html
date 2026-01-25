@@ -5864,31 +5864,15 @@ function bindAdminBuildingsManagerUI(){
   // samo admin
   if(CURRENT_SESSION?.role !== "admin") return;
 
-  // ne dupliraj bind
+  // bind samo jednom na WRAP (delegation)
   if(wrap.dataset.boundMgr === "1") return;
   wrap.dataset.boundMgr = "1";
 
-  const mgrSel = document.getElementById("bMgrSelect");
-  const addMgrBtn = document.getElementById("addMgrBtn");
-  const newMgrWrap = document.getElementById("newMgrWrap");
-
-  const mgrName = document.getElementById("mgrName");
-  const mgrUser = document.getElementById("mgrUser");
-  const mgrPass = document.getElementById("mgrPass");
-  const createMgrBtn = document.getElementById("createMgrBtn");
-
-  const codeI   = document.getElementById("adminBCode");
-  const titleI  = document.getElementById("adminBTitle");
-  const streetI = document.getElementById("adminBStreet");
-  const numberI = document.getElementById("adminBNumber");
-  const unitsI  = document.getElementById("adminBUnits");
-  const addBBtn = document.getElementById("adminAddBuildingBtn");
-
   function refreshManagersSelect(selectUsername){
+    const mgrSel = document.getElementById("bMgrSelect");
     if(!mgrSel) return;
 
-    const ms = listManagers(); // očekuje {username, role:"upravnik", ...}
-
+    const ms = (typeof listManagers === "function") ? listManagers() : [];
     mgrSel.innerHTML = `<option value="">— Izaberi upravnika —</option>`;
 
     ms
@@ -5907,48 +5891,78 @@ function bindAdminBuildingsManagerUI(){
     if(selectUsername) mgrSel.value = String(selectUsername).toUpperCase();
   }
 
-  // inicijalno napuni select
+  // inicijalno napuni select (ako postoji)
   refreshManagersSelect();
 
-  // toggle: forma novi upravnik
-  if(addMgrBtn && newMgrWrap && !addMgrBtn.dataset.bound){
-    addMgrBtn.addEventListener("click", () => {
-      const isHidden = (newMgrWrap.style.display === "none" || !newMgrWrap.style.display);
-      newMgrWrap.style.display = isHidden ? "block" : "none";
-    });
-    addMgrBtn.dataset.bound = "1";
+  // SVE KLIKOVE HENDLUJEMO PREKO WRAP-a (radi i posle rerender-a)
+  wrap.addEventListener("click", (e) => {
+    const t = e.target;
+
+    // 1) Toggle forma "Novi upravnik"
+    const addMgrBtn = t.closest("#addMgrBtn");
+if(addMgrBtn){
+  const newMgrWrap = document.getElementById("newMgrWrap");
+  if(!newMgrWrap){
+    alert("Nedostaje element #newMgrWrap u HTML-u.");
+    return;
   }
 
-  // kreiraj upravnika (Concept B)
-  if(createMgrBtn && !createMgrBtn.dataset.bound){
-    createMgrBtn.addEventListener("click", () => {
+  // Ako koristiš klasu "hidden" (ili slično), ovo radi i posle rerender-a
+  const hasHiddenClass = newMgrWrap.classList.contains("hidden");
+
+  // pouzdano proveri stvarno stanje (ne samo inline style)
+  const isActuallyHidden = (getComputedStyle(newMgrWrap).display === "none");
+
+  // Preferiraj toggle klase ako postoji
+  if(hasHiddenClass || newMgrWrap.classList.contains("hidden")){
+    newMgrWrap.classList.toggle("hidden");
+  } else {
+    // fallback: inline display toggle
+    newMgrWrap.style.display = isActuallyHidden ? "block" : "none";
+  }
+
+  return;
+}
+
+    // 2) Kreiraj upravnika
+    const createMgrBtn = t.closest("#createMgrBtn");
+    if(createMgrBtn){
       try{
+        const mgrUser = document.getElementById("mgrUser");
+        const mgrPass = document.getElementById("mgrPass");
+        const mgrName = document.getElementById("mgrName"); // opcionalno
+
         const uname = (mgrUser?.value || "").trim().toUpperCase();
         const pass  = (mgrPass?.value || "").trim();
-
-        // opcionalno: ime (za sada ga ne koristimo u skeletonu; može kasnije)
-        // const fullName = (mgrName?.value || "").trim();
 
         const user = ensureManagerUser(uname, pass); // kreira ako ne postoji
 
         if(mgrName) mgrName.value = "";
         if(mgrUser) mgrUser.value = "";
         if(mgrPass) mgrPass.value = "";
+
+        const newMgrWrap = document.getElementById("newMgrWrap");
         if(newMgrWrap) newMgrWrap.style.display = "none";
 
         refreshManagersSelect(user.username);
         alert("Upravnik je kreiran.");
-      }catch(e){
-        alert(e?.message || "Greška pri kreiranju upravnika.");
+      }catch(err){
+        alert(err?.message || "Greška pri kreiranju upravnika.");
       }
-    });
-    createMgrBtn.dataset.bound = "1";
-  }
+      return;
+    }
 
-  // dodaj zgradu + dodeli upravniku (Concept B)
-  if(addBBtn && !addBBtn.dataset.bound){
-    addBBtn.addEventListener("click", () => {
+    // 3) Dodaj zgradu + dodeli upravniku
+    const addBBtn = t.closest("#adminAddBuildingBtn");
+    if(addBBtn){
       try{
+        const codeI   = document.getElementById("adminBCode");
+        const titleI  = document.getElementById("adminBTitle");
+        const streetI = document.getElementById("adminBStreet");
+        const numberI = document.getElementById("adminBNumber");
+        const unitsI  = document.getElementById("adminBUnits");
+        const mgrSel  = document.getElementById("bMgrSelect");
+
         const code   = (codeI?.value || "").trim();
         const title  = (titleI?.value || "").trim();
         const street = (streetI?.value || "").trim();
@@ -5966,13 +5980,12 @@ function bindAdminBuildingsManagerUI(){
           return;
         }
 
-        // ✅ kreiraj zgradu + upiši managerUsername u zgradu
         const newB = adminAddBuilding({
           code, title, street, number, units,
           managerUsername
         });
 
-        // ✅ veži zgradu upravniku (oba smera)
+        // veži zgradu upravniku (oba smera)
         assignBuildingToManager(newB.id, managerUsername);
 
         // očisti polja
@@ -5993,11 +6006,10 @@ function bindAdminBuildingsManagerUI(){
       }catch(err){
         alert(err?.message || "Greška pri dodavanju zgrade.");
       }
-    });
-    addBBtn.dataset.bound = "1";
-  }
+      return;
+    }
+  });
 }
-
 
 function bindAdminFinSwitch(){
   const host = document.getElementById("adminFinBuildingSwitch");
@@ -7129,6 +7141,8 @@ function applySearchFilter(){
   renderFinanceList(bid, CURRENT_QUERY);
 
   bindAdminFinSwitch();
+  bindAdminBuildingsManagerUI();
+  
 
   // ✅ admin panel: stanovi + zgrade
   renderAdminUnits(bid);
