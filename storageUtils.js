@@ -104,7 +104,10 @@ function loadDues(bid) {
   const startMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
   const defaultSeed = { monthlyFee: 2000, startMonth, paymentsByUser: {} };
   
-  const data = loadFromStorage(kDues(bid), defaultSeed, defaultSeed);
+  const data = loadFromStorage(kDues(bid), null, defaultSeed);
+  
+  // If loadFromStorage returns null (error case), use defaultSeed
+  if (!data) return defaultSeed;
   
   // Normalize data structure
   data.monthlyFee = Number(data.monthlyFee ?? 2000);

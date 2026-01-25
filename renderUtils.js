@@ -39,8 +39,12 @@ function createElement(tagName, attributes = {}, content = "") {
         element.appendChild(document.createTextNode(String(child)));
       }
     });
-  } else if (typeof content === "string") {
+  } else if (content && typeof content === "string") {
+    // Only use innerHTML if explicitly marked as safe
+    // For user content, use textContent or sanitize first
     element.innerHTML = content;
+  } else if (content) {
+    element.textContent = String(content);
   }
   
   return element;
@@ -83,9 +87,10 @@ function createButton(options = {}) {
  * @returns {HTMLElement} badge element
  */
 function createPill(text, className = "") {
-  return createElement("span", {
-    className: `pill ${className}`.trim()
-  }, escapeHTML(text));
+  const span = document.createElement("span");
+  span.className = `pill ${className}`.trim();
+  span.textContent = text;  // Use textContent instead of innerHTML for security
+  return span;
 }
 
 /**

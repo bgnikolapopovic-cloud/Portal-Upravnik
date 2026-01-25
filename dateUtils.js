@@ -113,19 +113,21 @@ function parseDate(dateStr) {
 /**
  * Check if a date is in the past
  * @param {number|string} date - timestamp or date string
- * @returns {boolean} true if date is in the past
+ * @returns {boolean} true if date is in the past, false if invalid or future
  */
 function isPast(date) {
   const timestamp = typeof date === 'string' ? parseDate(date)?.getTime() : date;
-  return timestamp ? timestamp < Date.now() : false;
+  if (!timestamp || !Number.isFinite(timestamp)) return false;
+  return timestamp < Date.now();
 }
 
 /**
  * Check if a date is in the future
  * @param {number|string} date - timestamp or date string
- * @returns {boolean} true if date is in the future
+ * @returns {boolean} true if date is in the future, false if invalid or past
  */
 function isFuture(date) {
   const timestamp = typeof date === 'string' ? parseDate(date)?.getTime() : date;
-  return timestamp ? timestamp > Date.now() : false;
+  if (!timestamp || !Number.isFinite(timestamp)) return false;
+  return timestamp > Date.now();
 }

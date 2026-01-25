@@ -148,12 +148,13 @@ function validateFileType(file, allowedTypes = []) {
   const fileName = file.name.toLowerCase();
   
   const isValid = allowedTypes.some(type => {
-    if (type.startsWith('.')) {
+    const lowerType = type.toLowerCase();
+    if (lowerType.startsWith('.')) {
       // Extension check
-      return fileName.endsWith(type.toLowerCase());
+      return fileName.endsWith(lowerType);
     } else {
       // MIME type check
-      return fileType === type.toLowerCase() || fileType.startsWith(type.toLowerCase() + '/');
+      return fileType === lowerType || fileType.startsWith(lowerType + '/');
     }
   });
   
