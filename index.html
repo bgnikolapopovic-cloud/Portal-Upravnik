@@ -82,49 +82,42 @@ body::before{
 
 /* TOP RIGHT */
 .topRightBar{
-  position:fixed; /* da bude profesionalno i uvek gore */
+  position:absolute;
   top:calc(10px + env(safe-area-inset-top));
   right:calc(var(--main-pad) + env(safe-area-inset-right));
   display:flex;
   align-items:center;
   gap:12px;
   z-index:95;
-  pointer-events:auto; /* BITNO: bez ovoga input/dugme ne rade */
+  pointer-events:none;
 }
-
-.topRightTools{
-  display:flex;
-  align-items:center;
-  gap:10px;
+.topRightTitle{
+  text-align:left;
+  font-weight:900;
+  line-height:1.05;
 }
-
-.topRightTools .topSearch{
-  border-radius:999px;
-  padding:10px 12px;
+.topRightTitle span{
+  display:block;
+  font-size:18px;
+}
+.topRightLogo{
+  padding:6px;
   background:rgba(255,255,255,.72);
-  border:1px solid rgba(15,23,42,.14);
+  border:1px solid var(--border);
+  border-radius:22px;
   box-shadow:var(--shadow);
-  min-width:320px;
-  max-width:420px;
+}
+.topRightLogo img{
+  height:56px;
+  width:auto;
+  display:block;
+  border-radius:16px;
+}
+@media(min-width:900px){
+  .topRightTitle span{font-size:22px;}
+  .topRightLogo img{height:92px;}
 }
 
-.topRightTools .topSearch input{
-  border:none;
-  background:transparent;
-  width:100%;
-  outline:none;
-  font-size:14px;
-}
-
-/* na login ekranu sakrij alate */
-body.mode-login #topRightTools{ display:none; }
-
-@media (max-width: 900px){
-  .topRightBar{ flex-wrap:wrap; justify-content:flex-end; }
-  .topRightTools{ width:100%; justify-content:flex-end; }
-  .topRightTools .topSearch{ min-width:260px; max-width:100%; }
-}
-  
 /* SCREENS */
 .loginWrap{
   min-height:100vh;
@@ -2094,71 +2087,6 @@ gap: 10px;
     width:100%;
   }
 }
-
-/* ===== TOP HEADER: stvarno FIXED + “floating” (nije zalepljen uz ivice) ===== */
-.topRightBar{
-  position: fixed !important;
-  top: calc(10px + env(safe-area-inset-top)) !important;
-
-  /* umesto da bude samo desno, ograniči širinu i centriraj */
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-
-  width: min(1180px, calc(100vw - 24px)) !important; /* 12px margin levo/desno */
-  padding: 0 12px !important;
-
-  display: flex;
-  align-items: center;
-  justify-content: flex-end; /* sve ide ka desnoj strani unutar bara */
-  gap: 12px;
-
-  z-index: 9999 !important;
-  pointer-events: auto !important;
-}
-
-/* Alati (Promeni zgradu + pretraga) */
-.topRightTools{
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex: 0 1 560px;        /* ne preširoko na desktopu */
-  min-width: 0;
-}
-
-.topRightTools .topSearch{
-  flex: 1 1 auto;
-  min-width: 0;
-  max-width: 420px;       /* da ne pojede ceo bar */
-}
-
-/* ===== MOBILE: da ne prelazi preko hamburgera/sidebara ===== */
-@media (max-width: 900px){
-  .topRightBar{
-    width: calc(100vw - 16px) !important;
-    padding: 0 8px !important;
-
-    /* prostor za hamburger dugme (prilagodi ako treba) */
-    padding-left: 64px !important;
-
-    justify-content: flex-end;
-    gap: 10px;
-  }
-
-  .topRightTools{
-    flex: 1 1 auto;
-    min-width: 0;
-  }
-  .topRightTools .topSearch{
-    max-width: none;
-    width: 100%;
-  }
-}
-
-/* baš mali telefoni: sakrij logo da oslobodi prostor */
-@media (max-width: 520px){
-  .topRightLogo{ display:none !important; }
-  .topRightBar{ padding-left: 56px !important; }
-}
   
 </style>
 </head>
@@ -2168,20 +2096,11 @@ gap: 10px;
 
 <!-- TOP RIGHT BRAND -->
 <div class="topRightBar">
-
-  <!-- TOOLS: promena zgrade + globalna pretraga (uvek gore, na svim stranicama) -->
-  <div class="topRightTools" id="topRightTools">
-    <div class="pill pillBtn" id="switchBuildingBtn" style="display:none;">Promeni zgradu</div>
-
-    <div class="searchInline topSearch" style="position:relative;">
-      <input id="globalSearch" placeholder="Pretraga (finansije, dokumenti, forum)">
-      <div class="searchResults" id="searchResults" style="display:none;"></div>
-    </div>
-  </div>
-
   <div class="topRightTitle">
+
     <!-- USER ID BADGE -->
     <div class="userBadge" id="userBadge"></div>
+
     <span>Portal</span>
     <span>Upravnik</span>
   </div>
@@ -2190,6 +2109,7 @@ gap: 10px;
     <img src="logo.png" alt="Portal Upravnik logo">
   </div>
 </div>
+
 
 <!-- LOGIN SCREEN -->
 <section class="loginWrap" id="loginScreen">
@@ -2300,14 +2220,25 @@ gap: 10px;
         </div>
 
         <div class="rightCol">
-  <div class="balanceCard">
-    <span class="label">Stanje računa</span>
-    <div class="balanceAmount">
-      <span class="value" id="balanceValue">0,00</span>
-      <span class="currency">RSD</span>
-    </div>
-  </div>
-</div>
+          <div class="topMini">
+            <div class="pill" id="userPill">Korisnik</div>
+            <div class="pill" id="buildingPill">Zgrada</div>
+            <div class="pill pillBtn" id="switchBuildingBtn" style="display:none;">Promeni zgradu</div>
+          </div>
+
+          <div class="searchInline" style="position:relative;">
+            <input id="globalSearch" placeholder="Pretraga (finansije, dokumenti, forum)">
+            <div class="searchResults" id="searchResults" style="display:none;"></div>
+          </div>
+
+          <div class="balanceCard">
+            <span class="label">Stanje računa</span>
+            <div class="balanceAmount">
+              <span class="value" id="balanceValue">0,00</span>
+              <span class="currency">RSD</span>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section class="page active" id="page-home">
@@ -2320,14 +2251,8 @@ gap: 10px;
             <li id="homeForum">Forum: (nema)</li>
           </ul>
 
-          <!-- STANAR: Moj dug / pretplata (brza kartica) -->
-          <div data-role="stanar" id="homeDueCard" class="card" style="margin-top:12px; cursor:pointer; display:none;">
-            <div class="badge">Moj dug / pretplata</div>
-            <div style="margin-top:8px; font-weight:900; font-size:18px;" id="homeDueText">—</div>
-            <div class="smallText" style="opacity:.75; margin-top:4px;">Klikni da otvoriš Finansije</div>
-          </div>
 
-
+          
           <div class="smallText" data-role="admin" style="margin-top:12px;">
             Admin: placeholder (upravljanje korisnicima, regulativama i kontaktima).
           </div>
@@ -2386,17 +2311,6 @@ gap: 10px;
               <option value="drugo">Drugo</option>
             </select>
           </div>
-
-          <div class="half field">
-            <label for="finDateFrom">Od</label>
-            <input id="finDateFrom" type="date">
-          </div>
-
-          <div class="half field">
-            <label for="finDateTo">Do</label>
-            <input id="finDateTo" type="date">
-          </div>
-
 
           <div class="grow field">
             <label for="finLocalSearch">Pretraga</label>
@@ -2749,7 +2663,6 @@ gap: 10px;
         </div>
 
         <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
-          <button class="btn btnGhost" id="duesPayQuickBtn" type="button">Brza uplata (tekući mesec)</button>
           <button class="btn btnPrimary" id="duesPaySaveBtn" type="button">Sačuvaj uplatu</button>
           <button class="btn btnGhost" id="duesPayCancelBtn" type="button">Otkaži</button>
         </div>
@@ -2992,7 +2905,7 @@ gap: 10px;
 </div>
 <!-- ================= /ADMIN ================= -->
 
-<div data-role="manage" style="margin-top:12px;">
+<div data-role="upravnik" style="margin-top:12px;">
   <div class="half field" style="margin-top:0; min-width:220px;">
    <div class="monthPick">
   <label class="mpLabel" for="uplMonthMonth">Mesec (obračun upload-a)</label>
@@ -3346,19 +3259,19 @@ tSaldoBadge.classList.remove(
 if (r.saldo < 0) {
   // dug → crveno
   tSaldoBadge.textContent =
-    `Duguješ: ${formatRSD(-r.saldo)} RSD`;
+    `Potraživanje SZ: ${formatRSD(-r.saldo)} RSD`;
   tSaldoBadge.classList.add("status-dug");
 
 } else if (r.saldo === 0) {
   // nula → žuto
   tSaldoBadge.textContent =
-    `Saldo: 0,00 RSD`;
+    `Potraživanje SZ: 0,00 RSD`;
   tSaldoBadge.classList.add("status-obaveza");
 
 } else {
   // pretplata → zeleno + znak
   tSaldoBadge.textContent =
-    `Pretplata: +${formatRSD(r.saldo)} RSD`;
+    `Potraživanje SZ: +${formatRSD(r.saldo)} RSD`;
   tSaldoBadge.classList.add("status-uplaceno");
 }
 
@@ -3387,46 +3300,21 @@ function renderTenantFinanceHeaderBadge(bid){
 
 if (r.saldo < 0) {
   textEl.textContent =
-    `Duguješ: ${formatRSD(-r.saldo)} RSD`;
+    `Potraživanje SZ: ${formatRSD(-r.saldo)} RSD`;
   badge.classList.add("status-dug");
 
 } else if (r.saldo === 0) {
   textEl.textContent =
-    `Saldo: 0,00 RSD`;
+    `Potraživanje SZ: 0,00 RSD`;
   badge.classList.add("status-obaveza");
 
 } else {
   textEl.textContent =
-    `Pretplata: +${formatRSD(r.saldo)} RSD`;
+    `Potraživanje SZ: +${formatRSD(r.saldo)} RSD`;
   badge.classList.add("status-uplaceno");
 }
 
 badge.style.display = "";
-}
-
-
-function renderTenantHomeDueCard(bid){
-  if(CURRENT_SESSION?.role !== "stanar") return;
-
-  const buildingId = bid || activeBid();
-  if(!buildingId) return;
-
-  const card = document.getElementById("homeDueCard");
-  const textEl = document.getElementById("homeDueText");
-  if(!card || !textEl) return;
-
-  const r = computeUserDue(buildingId, CURRENT_SESSION.username);
-
-  if (r.saldo < 0) {
-    textEl.textContent = `Duguješ: ${formatRSD(-r.saldo)} RSD`;
-  } else if (r.saldo === 0) {
-    textEl.textContent = `Saldo: 0,00 RSD`;
-  } else {
-    textEl.textContent = `Pretplata: +${formatRSD(r.saldo)} RSD`;
-  }
-
-  card.style.display = "";
-  card.onclick = () => showPage("finansije");
 }
   
 /* ===== DOM refs ===== */
@@ -3564,7 +3452,6 @@ const duesPayDate = document.getElementById("duesPayDate");
 const duesPayAmount = document.getElementById("duesPayAmount");
 const duesPayNote = document.getElementById("duesPayNote");
 const duesPayDocs = document.getElementById("duesPayDocs");
-const duesPayQuickBtn = document.getElementById("duesPayQuickBtn");
 const duesPaySaveBtn = document.getElementById("duesPaySaveBtn");
 const duesPayCancelBtn = document.getElementById("duesPayCancelBtn");
 const duesPayError = document.getElementById("duesPayError");
@@ -3721,8 +3608,6 @@ const finLocalSearch = document.getElementById("finLocalSearch");
 const finFilterType = document.getElementById("finFilterType");
 const finFilterCategory = document.getElementById("finFilterCategory");
 const finSortBy = document.getElementById("finSortBy");
-const finDateFrom = document.getElementById("finDateFrom");
-const finDateTo = document.getElementById("finDateTo");
   
   const existingDocsWrap = document.getElementById("existingDocsWrap");
 const existingDocsList = document.getElementById("existingDocsList");
@@ -3768,8 +3653,6 @@ let EDIT_DOCS = [];
   // ===== FINANSIJE: filter/sort state =====
 let FIN_FILTER_TYPE = "svi";        // "svi" | "prihod" | "rashod"
 let FIN_FILTER_CATEGORY = "";       // npr. "lift"
-let FIN_FILTER_FROM = "";           // YYYY-MM-DD
-let FIN_FILTER_TO = "";             // YYYY-MM-DD
 let FIN_SORT_BY = "date-desc";      // "date-desc" | "date-asc" | "amount-desc" | "amount-asc"
 
 
@@ -3870,53 +3753,33 @@ function applyRoleUI(role){
   const roleEls = document.querySelectorAll("[data-role]");
 
   roleEls.forEach(el => {
-    const need = el.getAttribute("data-role");
+  const need = el.getAttribute("data-role");
 
-    // ✅ manage = upravnik ili admin
-    if(need === "manage"){
-      el.style.display = (role === "upravnik" || role === "admin") ? "" : "none";
-      return;
-    }
-
-    // Admin vidi i admin i upravnik blokove
-    if(role === "admin"){
-      el.style.display = (need === "admin" || need === "upravnik") ? "" : "none";
-      return;
-    }
-
-    // Ostali: samo svoje
-    el.style.display = (need === role) ? "" : "none";
-  });
-
-  // ✅ Promeni zgradu dugme (samo admin/upravnik)
-  const sw = document.getElementById("switchBuildingBtn");
-  if(sw){
-    sw.style.display = (role === "admin" || role === "upravnik") ? "inline-flex" : "none";
+  // ✅ manage = upravnik ili admin
+  if(need === "manage"){
+    el.style.display = (role === "upravnik" || role === "admin") ? "" : "none";
+    return;
   }
+
+  // Admin vidi i admin i upravnik blokove
+  if(role === "admin"){
+    el.style.display = (need === "admin" || need === "upravnik") ? "" : "none";
+    return;
+  }
+
+  // Ostali: samo svoje
+  el.style.display = (need === role) ? "" : "none";
+});
 }
-  
-function resetGlobalSearchUI(){
-  CURRENT_QUERY = "";
-  const gs = document.getElementById("globalSearch");
-  const sr = document.getElementById("searchResults");
-  if(gs) gs.value = "";
-  if(sr) sr.style.display = "none";
-}
-  
 /* ===== building context UI ===== */
 function setActiveBuilding(bid){
   if(!CURRENT_SESSION) return;
-
   CURRENT_SESSION.activeBuildingId = bid;
   saveSession(CURRENT_SESSION);
-
-  // reset pretrage kad promenimo zgradu (da ne ostanu stari rezultati/filteri)
-  resetGlobalSearchUI();
-
   renderBuildingUI();
   refreshAllModules();
 }
-  
+
 function renderBuildingUI(){
   const bid = CURRENT_SESSION?.activeBuildingId;
   const b = getBuildingById(bid);
@@ -4200,8 +4063,7 @@ document.body.classList.remove(
   "page-oglasna",
   "page-forum",
   "page-regulative",
-  "page-statistika",
-  "page-kontakt"
+  "page-statistika"
 );
 
 // dodaj klasu za trenutnu stranu
@@ -4221,10 +4083,6 @@ if(name === "finansije" && CURRENT_SESSION?.role === "upravnik"){
 
   if(name === "finansije"){
   renderTenantFinanceHeaderBadge(activeBid());
-}
-
-if(name === "home"){
-  renderTenantHomeDueCard(activeBid());
 }
 
 if(name === "statistika"){
@@ -4786,14 +4644,6 @@ if(FIN_FILTER_CATEGORY){
   items = items.filter(it => it.category === FIN_FILTER_CATEGORY);
 }
 
-// 3.5) period (od/do) po datumu
-if(FIN_FILTER_FROM){
-  items = items.filter(it => (it.date||"") >= FIN_FILTER_FROM);
-}
-if(FIN_FILTER_TO){
-  items = items.filter(it => (it.date||"") <= FIN_FILTER_TO);
-}
-
 // 4) sortiranje
 items.sort((a,b) => {
   if(FIN_SORT_BY === "date-desc") return (b.date||"").localeCompare(a.date||"");
@@ -4968,21 +4818,6 @@ if(finFilterCategory){
     applyFinanceControls();
   });
 }
-
-// period (od/do)
-if(finDateFrom){
-  finDateFrom.addEventListener("change", (e) => {
-    FIN_FILTER_FROM = e.target.value || "";
-    applyFinanceControls();
-  });
-}
-if(finDateTo){
-  finDateTo.addEventListener("change", (e) => {
-    FIN_FILTER_TO = e.target.value || "";
-    applyFinanceControls();
-  });
-}
-
 
 // sortiranje
 if(finSortBy){
@@ -6357,13 +6192,6 @@ function renderAdminUnits(bid){
     const unitCode = (unitI.value || "").trim().toUpperCase();
     const ownerFullName = (ownerI.value || "").trim();
 
-
-    // osnovna validacija formata (npr. BM25-001)
-    if(!/^[A-Z0-9]{2,10}-\d{3}$/.test(unitCode)){
-      alert("Format ID stana nije dobar. Primer: BM25-001");
-      return;
-    }
-
     if(!unitCode || !ownerFullName){
       alert("Popuni: ID stana + Ime i prezime.");
       return;
@@ -6372,21 +6200,6 @@ function renderAdminUnits(bid){
     const rows = loadUnitsDB(bid);
     const mode = form.dataset.mode || "add";
     const editing = (form.dataset.editing || "").trim().toUpperCase();
-
-
-    // upozorenje ako ID ne odgovara šifri zgrade (npr. BM25-xxx)
-    const building = BUILDINGS.find(b => b.id === bid);
-    const bPrefix = building ? building.id.replace("b_","").toUpperCase() : "";
-    if(bPrefix && !unitCode.startsWith(bPrefix + "-")){
-      const ok = confirm(`ID stana (${unitCode}) ne odgovara šifri zgrade (${bPrefix}-XXX).\nŽeliš li ipak da nastaviš?`);
-      if(!ok) return;
-    }
-
-    // ako menjaš postojeći ID (edit), upozori na posledice
-    if(mode === "edit" && editing && editing !== unitCode){
-      const ok2 = confirm("Menjaš ID stana. Ovo može uticati na dugovanja, glasanja i status pročitano.\nPreporuka: menjaj ID samo ako mora.\n\nNastavi?");
-      if(!ok2) return;
-    }
 
     if(mode === "edit" && editing){
       // ako menjaš ID, spreči duplikat
@@ -6653,7 +6466,7 @@ if (p.poll?.enabled) {
   pollInfo.textContent =
     daysLeft > 0
       ? `Anketa traje 30 dana • preostalo ${daysLeft} dana`
-      : `Anketa je završena (${formatDateDMY(p.poll.endsAt)})`;
+      : `Anketa je završena`;
 
   li.appendChild(pollInfo);
 }
@@ -6695,7 +6508,7 @@ if(poll?.enabled){
   status.className = "smallText";
   status.style.opacity = ".75";
   status.textContent = ended
-    ? `Glasanje je zatvoreno (${formatDateDMY(poll.endsAt)}).`
+    ? "Glasanje je zatvoreno."
     : "Klikni DA ili NE (možeš promeniti glas).";
 
   // ✅ NOVO: PROCENTI + BAR (vidljivo svima)
@@ -6854,7 +6667,7 @@ left.innerHTML = `
     if(u.saldo < 0){
       salBadge.textContent = `Potraživanje SZ: ${formatRSD(-u.saldo)} RSD`;
     }else if(u.saldo === 0){
-      salBadge.textContent = `Saldo: 0,00 RSD`;
+      salBadge.textContent = `Potraživanje SZ: 0,00 RSD`;
     }else{
       salBadge.textContent = `Potraživanje SZ: +${formatRSD(u.saldo)} RSD`;
     }
@@ -7000,26 +6813,6 @@ function cancelDuesPay(){
 
 if(duesPaySaveBtn) duesPaySaveBtn.addEventListener("click", saveDuesPay);
 if(duesPayCancelBtn) duesPayCancelBtn.addEventListener("click", cancelDuesPay);
-
-if(duesPayQuickBtn) duesPayQuickBtn.addEventListener("click", () => {
-  const bid = activeBid();
-  if(!bid) return;
-
-  const dues = loadDues(bid);
-  const fee = Number(dues.monthlyFee || 0);
-
-  const now = new Date();
-  const yyyy = now.getFullYear();
-  const mm = String(now.getMonth()+1).padStart(2,"0");
-  const dd = String(now.getDate()).padStart(2,"0");
-
-  if(duesPayDate) duesPayDate.value = `${yyyy}-${mm}-${dd}`;
-  if(duesPayAmount) duesPayAmount.value = fee ? String(fee) : "";
-
-  const months = ["januar","februar","mart","april","maj","jun","jul","avgust","septembar","oktobar","novembar","decembar"];
-  const mName = months[now.getMonth()];
-  if(duesPayNote) duesPayNote.value = `${mName} ${yyyy}`;
-});
   
 function resetProposalForm(){
   if(!pTitle) return;
@@ -7305,57 +7098,38 @@ function scrollToSid(sid){
   });
 }
   
-// ===== GLOBAL SEARCH (bind samo jednom) =====
 if(globalSearch){
-  if(globalSearch.dataset.bound !== "1"){
-    globalSearch.addEventListener("input", () => {
-      CURRENT_QUERY = (globalSearch.value || "").trim();
-      applySearchFilter();
-      renderSearchDropdown(CURRENT_QUERY);
-    });
-
-    globalSearch.addEventListener("focus", () => {
-      renderSearchDropdown((globalSearch.value || "").trim());
-    });
-
-    globalSearch.addEventListener("keydown", (e) => {
-      if(e.key === "Escape"){
-        if(searchResults) searchResults.style.display = "none";
-      }
-    });
-
-    globalSearch.dataset.bound = "1";
-  }
-}
-
-if(searchResults){
-  if(searchResults.dataset.bound !== "1"){
-    searchResults.addEventListener("click", (e) => {
-      const row = e.target.closest(".srItem");
-      if(!row) return;
-      const page = row.getAttribute("data-page");
-      const sid  = row.getAttribute("data-sid");
-      if(page) goToHit(page, sid);
-    });
-
-    searchResults.dataset.bound = "1";
-  }
-}
-
-// zatvori dropdown klikom van (bind samo jednom)
-if(!document.documentElement.dataset.searchBound){
-  document.addEventListener("click", (e) => {
-    const sr = document.getElementById("searchResults");
-    const gs = document.getElementById("globalSearch");
-    if(!sr || !gs) return;
-
-    const wrap = gs.closest(".searchInline");
-    if(wrap && wrap.contains(e.target)) return;
-
-    sr.style.display = "none";
+  globalSearch.addEventListener("input", () => {
+    CURRENT_QUERY = (globalSearch.value || "").trim();
+    applySearchFilter();
+    renderSearchDropdown(CURRENT_QUERY);
   });
-  document.documentElement.dataset.searchBound = "1";
+
+  globalSearch.addEventListener("focus", () => {
+    renderSearchDropdown((globalSearch.value || "").trim());
+  });
+
+  globalSearch.addEventListener("keydown", (e) => {
+    if(e.key === "Escape"){
+      if(searchResults) searchResults.style.display = "none";
+    }
+  });
 }
+if(searchResults){
+  searchResults.addEventListener("click", (e) => {
+    const row = e.target.closest(".srItem");
+    if(!row) return;
+    const page = row.getAttribute("data-page");
+    const sid  = row.getAttribute("data-sid");
+    if(page) goToHit(page, sid);
+  });
+}
+document.addEventListener("click", (e) => {
+  if(!searchResults || !globalSearch) return;
+  const wrap = globalSearch.closest(".searchInline");
+  if(wrap && wrap.contains(e.target)) return;
+  searchResults.style.display = "none";
+});
 
 /* ===== refresh modules for active building ===== */
 function refreshAllModules(){
@@ -7453,12 +7227,8 @@ function updateHomeSummary(){
   const session = getSession();
   if(session && session.username && session.role){
     CURRENT_SESSION = session;
-
-// userPill je uklonjen iz UI (sad je gore userBadge), ali ostavljamo kompatibilnost:
-if(userPill) userPill.textContent = session.username;
-
-applyRoleUI(session.role);
-renderUserBadge();
+    userPill.textContent = session.username;
+    applyRoleUI(session.role);
 
     if(!CURRENT_SESSION.activeBuildingId){
       if(CURRENT_SESSION.role === "stanar"){
