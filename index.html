@@ -2087,6 +2087,26 @@ gap: 10px;
     width:100%;
   }
 }
+
+/* FIX: dugovanja se renderuju ali su bila sakrivena/odsečena */
+#finTabWrapDues, .finTabWrapDues, #finDuesWrap, .finDuesWrap{
+  display: block;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+#duesGrid, .duesGrid{
+  display: block;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  padding-bottom: 24px;
+}
+
+.duesRow{
+  margin-top: 10px;
+}
   
 </style>
 </head>
