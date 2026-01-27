@@ -2562,110 +2562,122 @@ gap: 10px;
   <!-- ✅ POD-TAB: DODAJ ZGRADU -->
   <div id="ownWrapBuildings" style="display:none; margin-top:14px;">
 
-  <!-- ADMIN: Upravljanje zgradama -->
-<div id="adminBuildingsWrap" data-role="admin" style="display:none; margin-top:14px;">
-  <div class="badge">Upravljanje zgradama (samo admin)</div>
+    <!-- ADMIN: Upravljanje zgradama -->
+    <div id="adminBuildingsWrap" data-role="admin" style="display:none; margin-top:14px;">
+      <div class="badge">Upravljanje zgradama (samo admin)</div>
 
-  <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
-    <div class="field" style="min-width:160px;">
-      <label>Šifra zgrade (npr. BM25)</label>
-      <input id="adminBCode" type="text" placeholder="BM25">
-    </div>
+      <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+        <div class="field" style="min-width:160px;">
+          <label>Šifra zgrade (npr. BM25)</label>
+          <input id="adminBCode" type="text" placeholder="BM25">
+        </div>
 
-    <div class="field" style="min-width:260px; flex:1;">
-      <label>Naziv zgrade</label>
-      <input id="adminBTitle" type="text" placeholder="Bore Markovića 25">
-    </div>
+        <div class="field" style="min-width:260px; flex:1;">
+          <label>Naziv zgrade</label>
+          <input id="adminBTitle" type="text" placeholder="Bore Markovića 25">
+        </div>
 
-    <div class="field" style="min-width:220px; flex:1;">
-      <label>Ulica</label>
-      <input id="adminBStreet" type="text" placeholder="Bore Markovića">
-    </div>
+        <div class="field" style="min-width:220px; flex:1;">
+          <label>Ulica</label>
+          <input id="adminBStreet" type="text" placeholder="Bore Markovića">
+        </div>
 
-    <div class="field" style="min-width:120px;">
-      <label>Broj</label>
-      <input id="adminBNumber" type="text" placeholder="25">
-    </div>
+        <div class="field" style="min-width:120px;">
+          <label>Broj</label>
+          <input id="adminBNumber" type="text" placeholder="25">
+        </div>
 
-    <div class="field" style="min-width:120px;">
-      <label>Broj stanova</label>
-      <input id="adminBUnits" type="number" min="1" placeholder="25">
-    </div>
+        <div class="field" style="min-width:120px;">
+          <label>Broj stanova</label>
+          <input id="adminBUnits" type="number" min="1" placeholder="25">
+        </div>
 
-    <div class="field" style="min-width:240px; flex:1;">
-      <label>Upravnik</label>
-      <select id="bMgrSelect">
-        <option value="">— Izaberi upravnika —</option>
-      </select>
-    </div>
+        <div class="field" style="min-width:240px; flex:1;">
+          <label>Upravnik</label>
+          <select id="bMgrSelect">
+            <option value="">— Izaberi upravnika —</option>
+          </select>
+        </div>
 
-    <button class="btn btnGhost" type="button" id="addMgrBtn">+ Novi upravnik</button>
+        <button class="btn btnGhost" type="button" id="addMgrBtn">+ Novi upravnik</button>
 
-    <button class="btn btnPrimary" type="button" id="adminAddBuildingBtn">
-      Dodaj zgradu
-    </button>
-  </div>
-
-  <div id="newMgrWrap" style="display:none; margin-top:10px;">
-    <div class="badge">Novi upravnik</div>
-
-    <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
-      <div class="field" style="min-width:260px; flex:1;">
-        <label>Username (UPR-001)</label>
-        <input id="mgrUser" type="text" placeholder="UPR-003">
+        <button class="btn btnPrimary" type="button" id="adminAddBuildingBtn">
+          Dodaj zgradu
+        </button>
       </div>
 
-      <div class="field" style="min-width:220px;">
-        <label>Lozinka</label>
-        <input id="mgrPass" type="text" placeholder="npr. 123456">
+      <div id="newMgrWrap" style="display:none; margin-top:10px;">
+        <div class="badge">Novi upravnik</div>
+
+        <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+          <div class="field" style="min-width:260px; flex:1;">
+            <label>Username (UPR-001)</label>
+            <input id="mgrUser" type="text" placeholder="UPR-003">
+          </div>
+
+          <div class="field" style="min-width:220px;">
+            <label>Lozinka</label>
+            <input id="mgrPass" type="text" placeholder="npr. 123456">
+          </div>
+
+          <div class="field" style="min-width:260px; flex:1;">
+            <label>Ime i prezime (opciono)</label>
+            <input id="mgrName" type="text" placeholder="npr. Marko Marković">
+          </div>
+
+          <button class="btn btnPrimary" type="button" id="createMgrBtn">Kreiraj upravnika</button>
+        </div>
+
+        <div class="smallText" style="opacity:.75; margin-top:8px;">
+          Format username-a mora biti <b>UPR-001</b>, <b>UPR-002</b>...
+        </div>
       </div>
 
-      <div class="field" style="min-width:260px; flex:1;">
-        <label>Ime i prezime (opciono)</label>
-        <input id="mgrName" type="text" placeholder="npr. Marko Marković">
+      <!-- ================= ADMIN: Export / Import / Wipe (localStorage snapshot) ================= -->
+      <div id="adminDataToolsWrap" data-role="admin" style="display:none; margin-top:14px;">
+        <div class="badge">Backup / Restore (Admin)</div>
+
+        <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+          <button class="btn btnGhost" type="button" id="btnExportData">
+            Export (preuzmi backup .json)
+          </button>
+
+          <div class="field" style="min-width:280px;">
+            <label>Import backup (.json)</label>
+            <input type="file" id="importFileInput" accept="application/json">
+          </div>
+
+          <button class="btn btnPrimary" type="button" id="btnImportData">
+            Import (restore)
+          </button>
+
+          <button class="btn btnDanger" type="button" id="btnWipeData">
+            Obriši SVE podatke (wipe)
+          </button>
+        </div>
+
+        <div class="smallText" style="opacity:.75; margin-top:8px;">
+          Export/Import čuva i vraća sve podatke iz localStorage (zgrade, stanove, korisnike, finansije, forum, oglasnu...).
+          Session/login se ne prenosi namerno.
+        </div>
       </div>
-
-      <button class="btn btnPrimary" type="button" id="createMgrBtn">Kreiraj upravnika</button>
     </div>
 
-    <div class="smallText" style="opacity:.75; margin-top:8px;">
-      Format username-a mora biti <b>UPR-001</b>, <b>UPR-002</b>...
-    </div>
-  </div>
+    <div id="adminBuildingsList" class="list" style="margin-top:10px;"></div>
 
-  <!-- ================= ADMIN: Export / Import / Wipe (localStorage snapshot) ================= -->
-  <div id="adminDataToolsWrap" data-role="admin" style="display:none; margin-top:14px;">
-    <div class="badge">Backup / Restore (Admin)</div>
+  </div> <!-- ✅ ZATVARA ownWrapBuildings -->
 
-    <div class="fRow" style="margin-top:10px; gap:10px; align-items:flex-end; flex-wrap:wrap;">
-      <button class="btn btnGhost" type="button" id="btnExportData">
-        Export (preuzmi backup .json)
-      </button>
+</div> <!-- ✅ ZATVARA finTabWrapOwners -->
 
-      <div class="field" style="min-width:280px;">
-        <label>Import backup (.json)</label>
-        <input type="file" id="importFileInput" accept="application/json">
-      </div>
 
-      <button class="btn btnPrimary" type="button" id="btnImportData">
-        Import (restore)
-      </button>
+<!-- ✅ TAB: DUGOVANJA STANARA -->
+<div id="finTabWrapDues" style="display:none; margin-top:14px;">
 
-      <button class="btn btnDanger" type="button" id="btnWipeData">
-        Obriši SVE podatke (wipe)
-      </button>
-    </div>
+  <!-- Ostatak tvog Dues UI ide OVDE (monthlyFeeInput, duesStartMonth, duesGrid, itd.) -->
+  <!-- Samo prekopiraj tvoj postojeći sadržaj dugovanja u ovaj wrapper -->
 
-    <div class="smallText" style="opacity:.75; margin-top:8px;">
-      Export/Import čuva i vraća sve podatke iz localStorage (zgrade, stanove, korisnike, finansije, forum, oglasnu...).
-      Session/login se ne prenosi namerno.
-    </div>
-  </div>
 </div>
 
-<div id="adminBuildingsList" class="list" style="margin-top:10px;"></div>
-
-</div>
 
           <!-- ✅ TAB: DUGOVANJA -->
     <div id="finTabWrapDues" style="display:none;">
