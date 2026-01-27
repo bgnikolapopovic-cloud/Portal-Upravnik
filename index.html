@@ -2107,6 +2107,20 @@ gap: 10px;
 .duesRow{
   margin-top: 10px;
 }
+
+  /* === FIX: Dugovanja renderuje ali roditelj seče/sakriva === */
+#finTabWrapDues, #finDuesWrap{
+  display: block !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+#duesGrid{
+  overflow: visible !important;
+  height: auto !important;
+  max-height: none !important;
+}
   
 </style>
 </head>
