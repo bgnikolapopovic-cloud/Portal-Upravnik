@@ -7983,12 +7983,12 @@ function bindFinanceTabs(){
   bEntries.dataset.boundTabs = "1";
 
   function setActive(which){
-    // 1) prikaži aktivan tab
+    // prikaži aktivan tab
     wEntries.style.display = (which === "entries") ? "block" : "none";
     wOwners.style.display  = (which === "owners")  ? "block" : "none";
     wDues.style.display    = (which === "dues")    ? "block" : "none";
 
-    // 2) aktivna dugmad
+    // aktivna dugmad
     bEntries.classList.toggle("btnPrimary", which === "entries");
     bEntries.classList.toggle("btnGhost",   which !== "entries");
 
@@ -7998,20 +7998,20 @@ function bindFinanceTabs(){
     bDues.classList.toggle("btnPrimary",    which === "dues");
     bDues.classList.toggle("btnGhost",      which !== "dues");
 
-    // 3) owners sub-tabovi
+    // owners sub-tabovi
     if(which === "owners"){
       if(typeof bindOwnersSubTabs === "function") bindOwnersSubTabs();
     }
 
-    // 4) role UI (ovo ume da prepiše display)
+    // role UI (sme da radi samo owners stvari)
     if(typeof applyFinanceRoleUI === "function") applyFinanceRoleUI();
 
-    // 5) ✅ ENFORCE posle applyFinanceRoleUI (da dues ne padne na none)
+    // ✅ enforce posle role UI
     wEntries.style.display = (which === "entries") ? "block" : "none";
     wOwners.style.display  = (which === "owners")  ? "block" : "none";
     wDues.style.display    = (which === "dues")    ? "block" : "none";
 
-    // 6) dues render
+    // dues render
     if(which === "dues"){
       if(typeof renderDuesAdmin === "function") renderDuesAdmin();
       const bid = (typeof activeBid === "function") ? activeBid() : null;
@@ -8026,11 +8026,13 @@ function bindFinanceTabs(){
 
   // default
   setActive("entries");
-}
+} // ✅ OBAVEZNO: zatvaranje bindFinanceTabs()
 
 /* POZIV */
 bindFinanceTabs();
 
+
+/* ================= ROLE UI (samo Owners pod-tabovi) ================= */
 function applyFinanceRoleUI(){
   const role = CURRENT_SESSION?.role || "";
 
@@ -8038,40 +8040,36 @@ function applyFinanceRoleUI(){
   const ownersActive = ownersWrap && ownersWrap.style.display !== "none";
 
   // pod-tab UI
-  const bU = document.getElementById("ownTabUnits");
   const bB = document.getElementById("ownTabBuildings");
   const wU = document.getElementById("ownWrapUnits");
   const wB = document.getElementById("ownWrapBuildings");
 
-  // admin wrapovi koji već postoje u kodu
-  const unitsWrap = document.getElementById("adminUnitsWrap");      // Dodaj stan (admin/upravnik)
-  const bldWrap   = document.getElementById("adminBuildingsWrap");  // Dodaj zgradu (admin)
+  // admin wrapovi
+  const unitsWrap = document.getElementById("adminUnitsWrap");
+  const bldWrap   = document.getElementById("adminBuildingsWrap");
 
-  // ako Owners tab nije otvoren, sakrij oba wrappera (da ne “cure” po UI)
+  // ako Owners tab nije otvoren, sakrij samo owners pod-wrapove
   if(!ownersActive){
     if(wU) wU.style.display = "none";
     if(wB) wB.style.display = "none";
     return;
   }
 
-  // dozvole
   const canBuildings = (role === "admin");
 
   // dugme/tab “Dodaj zgradu” samo admin
   if(bB) bB.style.display = canBuildings ? "inline-flex" : "none";
 
-  // koji pod-tab je aktivan (default units)
+  // aktivan pod-tab
   const activeSub = ownersWrap.dataset.ownTab || "units";
-
-  // ako nije admin a stoji buildings, vrati na units
   const safeSub = (!canBuildings && activeSub === "buildings") ? "units" : activeSub;
   ownersWrap.dataset.ownTab = safeSub;
 
-  // prikaz wrappera
+  // prikaz owners pod-wrapova
   if(wU) wU.style.display = (safeSub === "units") ? "block" : "none";
   if(wB) wB.style.display = (safeSub === "buildings" && canBuildings) ? "block" : "none";
 
-  // prikaz admin delova unutar wrappera (po ulozi)
+  // prikaz admin delova
   if(unitsWrap){
     unitsWrap.style.display =
       (safeSub === "units" && (role === "admin" || role === "upravnik"))
@@ -8084,6 +8082,7 @@ function applyFinanceRoleUI(){
         ? "block" : "none";
   }
 }
+
   
 </script>
 
