@@ -3379,9 +3379,27 @@ function sumPayments(payments){
 }
 
 function listResidentsForBuilding(bid){
-  return USERS
-    .filter(u => u.role === "stanar" && (u.buildings||[]).includes(bid))
-    .map(u => u.username);
+  const b = BUILDINGS.find(x => x.id === bid);
+  if(!b) return [];
+
+  // osnovni prefix (BM25, BP10...)
+  const prefix = ownersPrefixFromBid(bid) || String(b.id||"").toUpperCase().replace("B_","").replace("B-","");
+
+  // 1) svi “standardni” stanovi 001..N (po building.units)
+  const set = new Set();
+  const total = Number(b.units || 0);
+  for(let i=1; i<=total; i++){
+    set.add(`${prefix}-${String(i).padStart(3,"0")}`);
+  }
+
+  // 2) + svi stanovi koje si ručno dodao kroz Admin/Upravnik formu (UnitsDB)
+  const rows = loadUnitsDB(bid) || [];
+  rows.forEach(r => {
+    const code = String(r.unitCode || "").trim().toUpperCase();
+    if(code) set.add(code);
+  });
+
+  return Array.from(set).sort((a,b) => a.localeCompare(b));
 }
 
 function computeUserDue(bid, username){
