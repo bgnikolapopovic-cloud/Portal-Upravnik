@@ -3379,32 +3379,29 @@ function sumPayments(payments){
 }
 
 function listResidentsForBuilding(bid){
-  const b = BUILDINGS.find(x => x.id === bid);
-  if(!b) return [];
-
-  const prefix = ownersPrefixFromBid(bid) || String(b.id||"").toUpperCase().replace("B_","");
-
   const set = new Set();
 
-  // 1) standardni stanovi 001..N (po building.units)
-  const total = Number(b.units || 0);
-  for(let i=1; i<=total; i++){
-    set.add(`${prefix}-${String(i).padStart(3,"0")}`);
+  // 1) standardni stanovi 001..N (po BUILDINGS.units)
+  const b = BUILDINGS.find(x => x.id === bid);
+  if(b){
+    const prefix = ownersPrefixFromBid(bid) || "";
+    const total = Number(b.units || 0);
+    for(let i=1; i<=total; i++){
+      set.add(`${prefix}-${String(i).padStart(3,"0")}`);
+    }
   }
 
-  // 2) + svi ručno dodati stanovi (UnitsDB - backend-ready)
-  try{
-    (loadUnitsDB(bid) || []).forEach(r => {
-      const code = normUser(r.unitCode || "");
-      if(code) set.add(code);
-    });
-  }catch{}
+  // 2) + svi stanovi koje si dodao kroz "Dodaj stan" (UnitsDB)
+  (loadUnitsDB(bid) || []).forEach(r => {
+    const code = String(r.unitCode || "").trim().toUpperCase();
+    if(code) set.add(code);
+  });
 
-  // 3) + legacy “units_<bid>” (ako si dodavao preko starog Owners modula)
+  // 3) + legacy owners/units (ako postoji u tvom kodu)
   try{
-    const legacy = loadUnits(bid) || {};
+    const legacy = (typeof loadUnits === "function") ? (loadUnits(bid) || {}) : {};
     Object.keys(legacy).forEach(code => {
-      const c = normUser(code);
+      const c = String(code || "").trim().toUpperCase();
       if(c) set.add(c);
     });
   }catch{}
