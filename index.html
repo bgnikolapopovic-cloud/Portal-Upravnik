@@ -3382,24 +3382,34 @@ function listResidentsForBuilding(bid){
   const b = BUILDINGS.find(x => x.id === bid);
   if(!b) return [];
 
-  // osnovni prefix (BM25, BP10...)
-  const prefix = ownersPrefixFromBid(bid) || String(b.id||"").toUpperCase().replace("B_","").replace("B-","");
+  const prefix = ownersPrefixFromBid(bid) || String(b.id||"").toUpperCase().replace("B_","");
 
-  // 1) svi “standardni” stanovi 001..N (po building.units)
   const set = new Set();
+
+  // 1) standardni stanovi 001..N (po building.units)
   const total = Number(b.units || 0);
   for(let i=1; i<=total; i++){
     set.add(`${prefix}-${String(i).padStart(3,"0")}`);
   }
 
-  // 2) + svi stanovi koje si ručno dodao kroz Admin/Upravnik formu (UnitsDB)
-  const rows = loadUnitsDB(bid) || [];
-  rows.forEach(r => {
-    const code = String(r.unitCode || "").trim().toUpperCase();
-    if(code) set.add(code);
-  });
+  // 2) + svi ručno dodati stanovi (UnitsDB - backend-ready)
+  try{
+    (loadUnitsDB(bid) || []).forEach(r => {
+      const code = normUser(r.unitCode || "");
+      if(code) set.add(code);
+    });
+  }catch{}
 
-  return Array.from(set).sort((a,b) => a.localeCompare(b));
+  // 3) + legacy “units_<bid>” (ako si dodavao preko starog Owners modula)
+  try{
+    const legacy = loadUnits(bid) || {};
+    Object.keys(legacy).forEach(code => {
+      const c = normUser(code);
+      if(c) set.add(c);
+    });
+  }catch{}
+
+  return Array.from(set).sort((a,b)=>a.localeCompare(b));
 }
 
 function computeUserDue(bid, username){
