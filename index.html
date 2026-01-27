@@ -2088,53 +2088,6 @@ gap: 10px;
   }
 }
 
-  /* =========================
-   TRAJNI LAYOUT FIX (anti-cut / stable scroll)
-   - uklanja fiksne visine koje seku sadržaj
-   - obezbeđuje da postoji scroll kad je sadržaj duži
-========================= */
-
-html, body{
-  height: auto !important;
-  min-height: 100% !important;
-  overflow-x: hidden !important;
-}
-
-.main{
-  height: auto !important;
-  min-height: 100vh !important;
-  overflow-y: auto !important;   /* ključno: ako je negde ranije ugašen scroll */
-}
-
-.contentWrap{
-  height: auto !important;
-  min-height: calc(100vh - 120px) !important;
-  max-height: none !important;
-  overflow: visible !important;
-  padding-bottom: 28px;
-}
-
-/* stranice + kartice ne smeju imati fiksnu visinu tipa 216px */
-.page,
-.page.active,
-.card{
-  height: auto !important;
-  max-height: none !important;
-  overflow: visible !important;
-}
-
-/* finansije tab wrapperi */
-#page-finansije,
-#page-finansije .card,
-#finTabWrapEntries,
-#finTabWrapOwners,
-#finTabWrapDues{
-  height: auto !important;
-  max-height: none !important;
-  overflow: visible !important;
-}
-
-  
 </style>
 </head>
 
