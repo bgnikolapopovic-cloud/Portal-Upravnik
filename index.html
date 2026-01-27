@@ -2087,9 +2087,6 @@ gap: 10px;
     width:100%;
   }
 }
-
-#finTabWrapDues{ display:block !important; }
-#duesGrid{ display:block !important; }
   
 </style>
 </head>
@@ -7984,28 +7981,38 @@ function bindFinanceTabs(){
   bEntries.dataset.boundTabs = "1";
 
   function setActive(which){
-    wEntries.style.display = (which === "entries") ? "block" : "none";
-    wOwners.style.display  = (which === "owners")  ? "block" : "none";
-    wDues.style.display    = (which === "dues")    ? "block" : "none";
+  wEntries.style.display = (which === "entries") ? "block" : "none";
+  wOwners.style.display  = (which === "owners")  ? "block" : "none";
+  wDues.style.display    = (which === "dues")    ? "block" : "none";
 
-    bEntries.classList.toggle("btnPrimary", which === "entries");
-    bEntries.classList.toggle("btnGhost",   which !== "entries");
+  bEntries.classList.toggle("btnPrimary", which === "entries");
+  bEntries.classList.toggle("btnGhost",   which !== "entries");
 
-    bOwners.classList.toggle("btnPrimary",  which === "owners");
-    bOwners.classList.toggle("btnGhost",    which !== "owners");
+  bOwners.classList.toggle("btnPrimary",  which === "owners");
+  bOwners.classList.toggle("btnGhost",    which !== "owners");
 
-    bDues.classList.toggle("btnPrimary",    which === "dues");
-    bDues.classList.toggle("btnGhost",      which !== "dues");
+  bDues.classList.toggle("btnPrimary",    which === "dues");
+  bDues.classList.toggle("btnGhost",      which !== "dues");
 
-    // ✅ kad uđeš u tab "Vlasnici stanova"
-if(which === "owners"){
-  // pod-tabovi (Dodaj stan / Dodaj zgradu) odlučuju šta se prikazuje i šta se renderuje
-  if(typeof bindOwnersSubTabs === "function") bindOwnersSubTabs();
-}
-
-    // ✅ sakrij/prikaži admin blokove u zavisnosti od aktivnog taba + role
-    if(typeof applyFinanceRoleUI === "function") applyFinanceRoleUI();
+  // ✅ kad uđeš u tab "Vlasnici stanova"
+  if(which === "owners"){
+    // pod-tabovi (Dodaj stan / Dodaj zgradu)
+    if(typeof bindOwnersSubTabs === "function") bindOwnersSubTabs();
   }
+
+  // ✅ kad uđeš u tab "Dugovanja stanara"
+  if(which === "dues"){
+    // za upravnika/admin
+    if(typeof renderDuesAdmin === "function") renderDuesAdmin();
+
+    // ako imaš i stanarski prikaz (ne smeta ako ne postoji)
+    const bid = (typeof activeBid === "function") ? activeBid() : null;
+    if(bid && typeof renderDuesTenant === "function") renderDuesTenant(bid);
+  }
+
+  // ✅ sakrij/prikaži admin blokove u zavisnosti od aktivnog taba + role
+  if(typeof applyFinanceRoleUI === "function") applyFinanceRoleUI();
+}
 
   bEntries.addEventListener("click", () => setActive("entries"));
   bOwners.addEventListener("click", () => setActive("owners"));
