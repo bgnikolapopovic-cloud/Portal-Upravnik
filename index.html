@@ -3217,16 +3217,20 @@ const USERS = [
 const KEY_USERS_DB = "pu_users_db_v1";
 
 function loadUsersDB_safe(){
-  if(typeof loadUsersDB === "function") return loadUsersDB();
   try{
     return JSON.parse(localStorage.getItem(KEY_USERS_DB)) || [];
   }catch{
     return [];
   }
 }
+  
 function saveUsersDB_safe(rows){
-  if(typeof saveUsersDB === "function") return saveUsersDB(rows);
-  localStorage.setItem(KEY_USERS_DB, JSON.stringify(rows || []));
+  try{
+    localStorage.setItem(KEY_USERS_DB, JSON.stringify(rows || []));
+  }catch(e){
+    console.error("saveUsersDB_safe failed:", e);
+    alert("Nema dovoljno prostora u browser storage-u (localStorage). Obriši dokumente ili pređi na backend/IndexedDB.");
+  }
 }
 
 (function migrateUsersDBKeyOnce(){
@@ -3243,6 +3247,104 @@ function normUser(u){
   return String(u || "").trim().toUpperCase();
 }
 
+/* ================= DUGOVANJA CORE (Fees + Payments) ================= */
+
+// sigurni key za bid (skida kvačice)
+function bidKey(bid){
+  return String(bid || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g,"dj").replace(/Đ/g,"DJ");
+}
+
+function kFeeGlobal(){ return "pu_fee_global_v1"; }
+function kFeeBuilding(bid){ return "pu_fee_building_" + bidKey(bid); }
+function kFeeUnit(bid){ return "pu_fee_unit_" + bidKey(bid); }     // map: { "BM25-001": 3000, ... }
+function kPayments(bid){ return "pu_payments_" + bidKey(bid); }    // array ledger
+
+function parseMoney(x){
+  const n = Number(String(x || "").replace(",", "."));
+  return Number.isFinite(n) ? Math.round(n) : 0;
+}
+function money(n){ return (Number(n||0)).toFixed(0); } // bez decimala (RSD)
+
+function ymNow(){
+  const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0");
+}
+function ymFromDateStr(s){
+  // očekuje "YYYY-MM-DD" ili Date.toISOString().slice(0,10)
+  const t = String(s || "");
+  return (t.length >= 7) ? t.slice(0,7) : ymNow();
+}
+
+function getFeeGlobal(){
+  try{ return parseMoney(localStorage.getItem(kFeeGlobal())) || 0; }catch{ return 0; }
+}
+function setFeeGlobal(amount){
+  localStorage.setItem(kFeeGlobal(), String(parseMoney(amount)));
+}
+
+function getFeeBuilding(bid){
+  try{
+    const v = localStorage.getItem(kFeeBuilding(bid));
+    if(v === null || v === undefined || v === "") return null;
+    return parseMoney(v);
+  }catch{ return null; }
+}
+function setFeeBuilding(bid, amount){
+  localStorage.setItem(kFeeBuilding(bid), String(parseMoney(amount)));
+}
+
+function getFeeUnitMap(bid){
+  try{ return JSON.parse(localStorage.getItem(kFeeUnit(bid)) || "{}") || {}; }catch{ return {}; }
+}
+function setFeeUnit(bid, unitCode, amount){
+  const map = getFeeUnitMap(bid);
+  map[String(unitCode||"").trim().toUpperCase()] = parseMoney(amount);
+  localStorage.setItem(kFeeUnit(bid), JSON.stringify(map));
+}
+
+function getFeeForUnit(bid, unitCode){
+  const uc = String(unitCode||"").trim().toUpperCase();
+  const unitMap = getFeeUnitMap(bid);
+  if(unitMap[uc] != null) return parseMoney(unitMap[uc]);
+  const fb = getFeeBuilding(bid);
+  if(fb != null) return parseMoney(fb);
+  return getFeeGlobal();
+}
+
+// --- payments ledger ---
+function loadPayments(bid){
+  try{ return JSON.parse(localStorage.getItem(kPayments(bid)) || "[]") || []; }catch{ return []; }
+}
+function savePayments(bid, rows){
+  localStorage.setItem(kPayments(bid), JSON.stringify(rows || []));
+}
+function addPayment(bid, unitCode, amount, dateStr, note){
+  const rows = loadPayments(bid);
+  rows.push({
+    id: (crypto?.randomUUID ? crypto.randomUUID() : (Date.now()+"_"+Math.random())),
+    unitCode: String(unitCode||"").trim().toUpperCase(),
+    amount: parseMoney(amount),
+    date: dateStr || new Date().toISOString().slice(0,10),
+    note: String(note||"").trim()
+  });
+  savePayments(bid, rows);
+}
+
+function sumPaymentsForUnitMonth(bid, unitCode, ym){
+  const uc = String(unitCode||"").trim().toUpperCase();
+  const rows = loadPayments(bid);
+  let sum = 0;
+  rows.forEach(p => {
+    if(String(p.unitCode||"").toUpperCase() !== uc) return;
+    const pym = ymFromDateStr(p.date);
+    if(pym === ym) sum += parseMoney(p.amount);
+  });
+  return sum;
+}
+  
 /* Merge: USERS (seed) + DB (dinamički). DB pobeđuje seed ako se poklapaju. */
 function getAllUsers(){
   const seed = Array.isArray(USERS) ? USERS : [];
@@ -3380,31 +3482,22 @@ function sumPayments(payments){
 
 function listResidentsForBuilding(bid){
   const set = new Set();
-
-  // 1) standardni stanovi 001..N (po BUILDINGS.units)
   const b = BUILDINGS.find(x => x.id === bid);
-  if(b){
-    const prefix = ownersPrefixFromBid(bid) || "";
-    const total = Number(b.units || 0);
-    for(let i=1; i<=total; i++){
-      set.add(`${prefix}-${String(i).padStart(3,"0")}`);
-    }
+  if(!b) return [];
+
+  const prefix = ownersPrefixFromBid(bid) || "";
+
+  // standardni 001..N
+  const total = Number(b.units || 0);
+  for(let i=1; i<=total; i++){
+    set.add(`${prefix}-${String(i).padStart(3,"0")}`);
   }
 
-  // 2) + svi stanovi koje si dodao kroz "Dodaj stan" (UnitsDB)
+  // + ručno dodati stanovi
   (loadUnitsDB(bid) || []).forEach(r => {
     const code = String(r.unitCode || "").trim().toUpperCase();
     if(code) set.add(code);
   });
-
-  // 3) + legacy owners/units (ako postoji u tvom kodu)
-  try{
-    const legacy = (typeof loadUnits === "function") ? (loadUnits(bid) || {}) : {};
-    Object.keys(legacy).forEach(code => {
-      const c = String(code || "").trim().toUpperCase();
-      if(c) set.add(c);
-    });
-  }catch{}
 
   return Array.from(set).sort((a,b)=>a.localeCompare(b));
 }
@@ -6727,6 +6820,13 @@ if(!canManage()) return;
 
 if(!monthlyFeeInput || !duesStartMonth || !saveDuesSettingsBtn || !duesGrid) return;
   const dues = loadDues(bid);
+// mapa vlasnika po stanu (UnitsDB) – da bismo prikazali ime i prezime u dugovanjima
+  const unitsRows = loadUnitsDB(bid) || [];
+  const ownerMap = {};
+  unitsRows.forEach(x => {
+    const code = String(x.unitCode || "").trim().toUpperCase();
+    if(code) ownerMap[code] = String(x.ownerFullName || "").trim();
+  });
 
   // podešavanja (mesečna obaveza + start mesec)
   monthlyFeeInput.value = String(Number(dues.monthlyFee || 2000));
@@ -6805,7 +6905,10 @@ const unitLabel = (CURRENT_SESSION?.role === "upravnik" || CURRENT_SESSION?.role
 
 left.innerHTML = `
   <div class="duesUser">${escapeHTML(unitLabel)}</div>
-  <div class="duesMeta">Pregled za aktivnu zgradu</div>
+  <div class="duesMeta">
+    Vlasnik: <b>${escapeHTML(u.ownerFullName || "—")}</b>
+    • Pregled za aktivnu zgradu
+  </div>
 `;
 
     const paid = document.createElement("div");
