@@ -3571,7 +3571,8 @@ const finTabEntries = document.getElementById("finTabEntries");
 const finTabDues    = document.getElementById("finTabDues");
 const finEntriesWrap= document.getElementById("finEntriesWrap");
 const finDuesWrap   = document.getElementById("finDuesWrap");
-function showFinTab(tab){
+
+  function showFinTab(tab){
   if(!finEntriesWrap || !finDuesWrap || !finTabEntries || !finTabDues) return;
 
   if(tab === "entries"){
@@ -3584,6 +3585,10 @@ function showFinTab(tab){
     finDuesWrap.style.display = "";
     finTabEntries.className = "btn btnGhost";
     finTabDues.className = "btn btnPrimary";
+
+    if(typeof renderDuesAdmin === "function") renderDuesAdmin();
+    const bid = activeBid();
+    if(bid && typeof renderDuesTenant === "function") renderDuesTenant(bid);
   }
 }
   
@@ -6404,9 +6409,10 @@ function renderAdminUnits(bid){
         deleteUnitDB(bid, editing);
       }
       upsertUnitDB(bid, { unitCode, ownerFullName, active: true });
-      redraw();
-      setModeAdd();
-      return;
+redraw();
+setModeAdd();
+if(typeof renderDuesAdmin === "function") renderDuesAdmin();
+return;
     }
 
     // add mode
@@ -6415,8 +6421,9 @@ function renderAdminUnits(bid){
       return;
     }
     upsertUnitDB(bid, { unitCode, ownerFullName, active: true });
-    redraw();
-    setModeAdd();
+redraw();
+setModeAdd();
+if(typeof renderDuesAdmin === "function") renderDuesAdmin();
   };
 
   // init
