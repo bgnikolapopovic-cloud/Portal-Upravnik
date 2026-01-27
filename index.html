@@ -3210,11 +3210,11 @@ const USERS = [
   { username: "NC28-003", pass: "Z4R8W", role: "stanar", buildings: ["b_nč28"] }
 ];
 
-  /* ================= USERS: seed (USERS) + DB merge (PORTAL_USERS_DB) ================= */
+  /* ================= USERS: seed (USERS) + DB merge (PORTAL_USERS_pu_users_db_v1) ================= */
 
 // OVAJ KEY koristi loadUsersDB/saveUsersDB iz Concept B core-a
-// (PORTAL_USERS_DB)
-const KEY_USERS_DB = "PORTAL_USERS_DB";
+// (PORTAL_USERS_pu_users_db_v1)
+const KEY_USERS_DB = "pu_users_db_v1";
 
 function loadUsersDB_safe(){
   if(typeof loadUsersDB === "function") return loadUsersDB();
@@ -3229,6 +3229,15 @@ function saveUsersDB_safe(rows){
   localStorage.setItem(KEY_USERS_DB, JSON.stringify(rows || []));
 }
 
+(function migrateUsersDBKeyOnce(){
+  const oldKey = "PORTAL_USERS_DB";
+  const newKey = "pu_users_db_v1";
+  const oldVal = localStorage.getItem(oldKey);
+  if(oldVal && !localStorage.getItem(newKey)){
+    localStorage.setItem(newKey, oldVal);
+  }
+})();
+  
 /* Normalizacija username-a */
 function normUser(u){
   return String(u || "").trim().toUpperCase();
@@ -7520,18 +7529,7 @@ function updateHomeSummary(){
   }
 }
 
-/* ================= CONCEPT B CORE (Admin -> Add building -> Assign manager) ================= */
-
-/* USERS DB (fallback / skeleton) */
-function loadUsersDB(){
-  const raw = localStorage.getItem("PORTAL_USERS_DB");
-  return raw ? JSON.parse(raw) : [];
-}
-function saveUsersDB(rows){
-  localStorage.setItem("PORTAL_USERS_DB", JSON.stringify(rows || []));
-}
-
-/* ✅ Seed: ubaci seed upravnike iz USERS u PORTAL_USERS_DB
+/* ✅ Seed: ubaci seed upravnike iz USERS u PORTAL_USERS_pu_users_db_v1
    - da dropdown ima UPR-001/UPR-002 odmah
    - da assignBuildingToManager ne pukne kad dodeljuješ zgradu postojećem upravniku */
 function seedManagersFromUSERS(){
