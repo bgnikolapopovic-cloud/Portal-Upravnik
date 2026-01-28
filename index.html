@@ -7981,18 +7981,17 @@ function bindFinanceTabs(){
     bDues.classList.toggle("btnGhost",      which !== "dues");
 
     // owners sub-tabovi
-    if(which === "owners"){
-      if(typeof bindOwnersSubTabs === "function") bindOwnersSubTabs();
-    }
+   wEntries.style.display = (which === "entries") ? "block" : "none";
+wOwners.style.display  = (which === "owners")  ? "block" : "none";
+wDues.style.display    = (which === "dues")    ? "block" : "none";
 
-    // role UI (sme da radi samo owners stvari)
-    if(typeof applyFinanceRoleUI === "function") applyFinanceRoleUI();
+// owners sub-tabovi
+if(which === "owners"){
+  if(typeof bindOwnersSubTabs === "function") bindOwnersSubTabs();
+}
 
-    // ✅ enforce posle role UI
-    wEntries.style.display = (which === "entries") ? "block" : "none";
-    wOwners.style.display  = (which === "owners")  ? "block" : "none";
-    wDues.style.display    = (which === "dues")    ? "block" : "none";
-
+// ✅ role UI tek sad (kad je Owners stvarno prikazan)
+if(typeof applyFinanceRoleUI === "function") applyFinanceRoleUI();
     // dues render
     if(which === "dues"){
       if(typeof renderDuesAdmin === "function") renderDuesAdmin();
