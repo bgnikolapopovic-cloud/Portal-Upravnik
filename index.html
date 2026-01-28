@@ -6033,18 +6033,6 @@ function addManagerUser({ name, username, password }){
   return nu;
 }
 
-function assignBuildingToManager(managerId, buildingId){
-  const rows = loadUsersDB();
-  const idx = rows.findIndex(u => u.id === managerId && u.role === "upravnik");
-  if(idx === -1) throw new Error("Upravnik nije pronađen.");
-
-  rows[idx].buildings = rows[idx].buildings || [];
-  if(!rows[idx].buildings.includes(buildingId)){
-    rows[idx].buildings.push(buildingId);
-  }
-  saveUsersDB(rows);
-}
-
 /* ================= ADMIN: bind UI za dodavanje zgrade + upravnika ================= */
 function bindAdminBuildingsManagerUI(){
   const wrap = document.getElementById("adminBuildingsWrap");
