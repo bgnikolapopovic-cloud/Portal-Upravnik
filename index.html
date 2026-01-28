@@ -6085,8 +6085,9 @@ function bindAdminBuildingsManagerUI(){
 
   // SVE KLIKOVE HENDLUJEMO PREKO WRAP-a (radi i posle rerender-a)
   wrap.addEventListener("click", (e) => {
-    const t = e.target;
-
+  const t = (e.target instanceof Element) ? e.target : e.target?.parentElement;
+  if(!t) return;
+    
     // 1) Toggle forma "Novi upravnik"
     const addMgrBtn = t.closest("#addMgrBtn");
 if(addMgrBtn){
@@ -7478,22 +7479,26 @@ function bindAdminExportImportUI(){
 }
   
 function applySearchFilter(){
+  // ✅ admin UI treba da se binduje i kad nema aktivne zgrade
+  bindAdminFinSwitch();
+  bindAdminBuildingsManagerUI();
+  bindAdminExportImportUI();
+
+  // ✅ admin lista zgrada ne mora da zavisi od bid
+  renderAdminBuildings();
+
   const bid = activeBid();
   if(!bid) return;
 
   renderFinanceList(bid, CURRENT_QUERY);
 
-  bindAdminFinSwitch();
-  bindAdminBuildingsManagerUI();
-  bindAdminExportImportUI();
-
-  // ✅ admin panel: stanovi + zgrade
+  // ✅ admin stanovi zavise od bid
   renderAdminUnits(bid);
-  renderAdminBuildings();
 
   renderBoard(bid, CURRENT_QUERY);
   renderForum(bid, CURRENT_QUERY);
 }
+  
 function scrollToSid(sid){
   if(!sid) return;
   const el = document.querySelector(`[data-sid="${sid}"]`);
