@@ -4128,6 +4128,33 @@ function renderBuildingUI(){
   if(switchBuildingBtn) switchBuildingBtn.style.display = multi ? "" : "none";
 }
 
+function findUnitLogin(uName){
+  const name = String(uName||"").trim().toUpperCase();
+
+  // 1) zgrade iz localStorage (ako postoji)
+  if(typeof loadBuildingsDB === "function"){
+    const bld = loadBuildingsDB() || [];
+    for(const b of bld){
+      const bid = b.id;
+      const units = (typeof loadUnitsDB === "function") ? (loadUnitsDB(bid) || []) : [];
+      const hit = units.find(x => String(x.username || x.unitCode || "").trim().toUpperCase() === name);
+      if(hit) return { bid, unit: hit };
+    }
+  }
+
+  // 2) fallback na seed BUILDINGS
+  if(typeof BUILDINGS !== "undefined" && Array.isArray(BUILDINGS)){
+    for(const b of BUILDINGS){
+      const bid = b.id;
+      const units = (typeof loadUnitsDB === "function") ? (loadUnitsDB(bid) || []) : [];
+      const hit = units.find(x => String(x.username || x.unitCode || "").trim().toUpperCase() === name);
+      if(hit) return { bid, unit: hit };
+    }
+  }
+
+  return null;
+}
+  
 /* ===== login flow (MERGED: USERS seed + DB) ===== */
 function attemptLogin(username, pass){
   const uName = (username || "").trim().toUpperCase();
@@ -4146,10 +4173,46 @@ function attemptLogin(username, pass){
       ? (user.pass != null ? String(user.pass) : (user.password != null ? String(user.password) : ""))
       : "";
 
-  if(!user || storedPass !== p){
-    errEl.style.display = "block";
+  // ako nije nađen user u seed/DB korisnicima, probaj stanara iz UnitsDB (stanovi)
+if(!user){
+  const found = findUnitLogin(uName);
+  if(found){
+    const stored = String(found.unit.password || found.unit.pass || "");
+    if(stored !== p){
+      errEl.style.display = "block";
+      return;
+    }
+
+    errEl.style.display = "none";
+
+    CURRENT_SESSION = {
+      username: String(found.unit.username || found.unit.unitCode || "").trim().toUpperCase(),
+      role: "stanar",
+      buildings: [found.bid],
+      activeBuildingId: found.bid,
+      unitCode: String(found.unit.unitCode || "").trim().toUpperCase()
+    };
+
+    // 🔒 sakrij "upravnik" blokove samo stanarima (admin sme da vidi)
+    document.querySelectorAll('[data-role="upravnik"]').forEach(el => {
+      if(!["upravnik","admin"].includes(CURRENT_SESSION?.role)) el.style.display = "none";
+    });
+
+    saveSession(CURRENT_SESSION);
+    enterPortal();
     return;
   }
+
+  // nije user ni stan iz UnitsDB
+  errEl.style.display = "block";
+  return;
+}
+
+// user postoji (admin/upravnik/seed stanar) -> proveri šifru kao i do sada
+if(storedPass !== p){
+  errEl.style.display = "block";
+  return;
+}
   errEl.style.display = "none";
 
   CURRENT_SESSION = {
@@ -6293,12 +6356,54 @@ function bindAdminFinSwitch(){
   host.dataset.bound = "1";
 }
 
+function normUser(s){
+  return String(s||"").trim().toUpperCase();
+}
+function randInt(min, max){
+  return Math.floor(Math.random()*(max-min+1))+min;
+}
+function genPassword(len=10){
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%";
+  let out = "";
+  for(let i=0;i<len;i++) out += chars[randInt(0, chars.length-1)];
+  return out;
+}
+  
 /* ================= UNITS DB (backend-ready) ================= */
 function kUnitsDB(bid){ return `unitsdb_${bid}`; }
 
+/* ===== helpers za kredencijale ===== */
+function normUser(s){
+  return String(s||"").trim().toUpperCase();
+}
+function randInt(min, max){
+  return Math.floor(Math.random()*(max-min+1))+min;
+}
+function genPassword(len=10){
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%";
+  let out = "";
+  for(let i=0;i<len;i++) out += chars[randInt(0, chars.length-1)];
+  return out;
+}
+
+/* ===== Units DB ===== */
 function loadUnitsDB(bid){
-  try{ return JSON.parse(localStorage.getItem(kUnitsDB(bid))) || []; }
-  catch{ return []; }
+  let rows = [];
+  try{ rows = JSON.parse(localStorage.getItem(kUnitsDB(bid))) || []; }
+  catch{ rows = []; }
+
+  // ✅ migracija: dodaj username/password ako fale
+  let changed = false;
+  rows.forEach(u => {
+    u.unitCode = normUser(u.unitCode);
+    if(!u.username){ u.username = normUser(u.unitCode); changed = true; }
+    if(!u.password){ u.password = genPassword(10); changed = true; }
+  });
+
+  if(changed){
+    localStorage.setItem(kUnitsDB(bid), JSON.stringify(rows));
+  }
+  return rows;
 }
 
 function saveUnitsDB(bid, rows){
@@ -6306,21 +6411,41 @@ function saveUnitsDB(bid, rows){
 }
 
 function findUnitDB(bid, unitCode){
-  return loadUnitsDB(bid).find(x => x.unitCode === unitCode) || null;
+  const code = normUser(unitCode);
+  return loadUnitsDB(bid).find(x => normUser(x.unitCode) === code) || null;
 }
 
 function upsertUnitDB(bid, unit){
   const rows = loadUnitsDB(bid);
-  const idx = rows.findIndex(x => x.unitCode === unit.unitCode);
-  if(idx === -1) rows.push(unit);
-  else rows[idx] = { ...rows[idx], ...unit };
+
+  const unitCode = normUser(unit.unitCode);
+  const idx = rows.findIndex(x => normUser(x.unitCode) === unitCode);
+  const prev = idx >= 0 ? rows[idx] : null;
+
+  const payload = {
+    ...(prev||{}),
+    ...unit,
+    unitCode,
+    username: normUser(unit.username || (prev && prev.username) || unitCode),
+    password: String(unit.password || (prev && prev.password) || genPassword(10)),
+    ownerFullName: String(unit.ownerFullName || (prev && prev.ownerFullName) || "").trim(),
+    active: (unit.active != null ? !!unit.active : (prev ? !!prev.active : true)),
+    updatedAt: Date.now(),
+    createdAt: (prev && prev.createdAt) ? prev.createdAt : Date.now()
+  };
+
+  if(idx === -1) rows.push(payload);
+  else rows[idx] = payload;
+
   saveUnitsDB(bid, rows);
+  return payload; // ✅ bitno: vraća snimljen objekat
 }
 
 function deleteUnitDB(bid, unitCode){
-  saveUnitsDB(bid, loadUnitsDB(bid).filter(x => x.unitCode !== unitCode));
+  const code = normUser(unitCode);
+  saveUnitsDB(bid, loadUnitsDB(bid).filter(x => normUser(x.unitCode) !== code));
 }
-
+  
 function nextUnitCodeDB(bid){
   const building = BUILDINGS.find(b => b.id === bid);
   if(!building) return null;
@@ -6421,13 +6546,17 @@ function renderAdminUnits(bid){
       row.style.justifyContent = "space-between";
 
       const left = document.createElement("div");
-      left.innerHTML = `
-        <div style="font-weight:900">${escapeHTML(u.unitCode)}</div>
-        <div class="smallText" style="opacity:.75">
-          Vlasnik: <b>${escapeHTML(u.ownerFullName || "—")}</b>
-        </div>
-      `;
-
+left.innerHTML = `
+  <div style="font-weight:900">${escapeHTML(u.unitCode)}</div>
+  <div class="smallText" style="opacity:.75">
+    Vlasnik: <b>${escapeHTML(u.ownerFullName || "—")}</b>
+  </div>
+  <div class="smallText" style="opacity:.75">
+    Username: <b>${escapeHTML(u.username || u.unitCode)}</b>
+    &nbsp;•&nbsp;
+    Šifra: <b>${escapeHTML(u.password || "—")}</b>
+  </div>
+`;
       const actions = document.createElement("div");
       actions.style.display = "flex";
       actions.style.gap = "8px";
@@ -6441,6 +6570,24 @@ function renderAdminUnits(bid){
         setModeEdit(u);
       });
 
+      const reset = document.createElement("button");
+reset.type = "button";
+reset.className = "btn btnGhost";
+reset.textContent = "Reset šifre";
+reset.addEventListener("click", (e) => {
+  e.stopPropagation();
+
+  const newPass = genPassword(10);
+  const saved = upsertUnitDB(bid, { ...u, password: newPass });
+
+  redraw();
+
+  const text = `Kredencijali za ${saved.unitCode}\nUsername: ${saved.username}\nŠifra: ${saved.password}`;
+  if(navigator.clipboard) navigator.clipboard.writeText(text).catch(()=>{});
+  alert(text + "\n\n(Kopirano u clipboard ako browser dozvoljava)");
+});
+actions.appendChild(reset);
+      
       const del = document.createElement("button");
       del.type = "button";
       del.className = "btn btnGhost";
@@ -6470,50 +6617,85 @@ function renderAdminUnits(bid){
   cancelBtn.onclick = () => setModeAdd();
 
   saveBtn.onclick = () => {
-    const unitCode = (unitI.value || "").trim().toUpperCase();
-    const ownerFullName = (ownerI.value || "").trim();
+  const unitCode = (unitI.value || "").trim().toUpperCase();
+  const ownerFullName = (ownerI.value || "").trim();
 
-    if(!unitCode || !ownerFullName){
-      alert("Popuni: ID stana + Ime i prezime.");
-      return;
+  if(!unitCode || !ownerFullName){
+    alert("Popuni: ID stana + Ime i prezime.");
+    return;
+  }
+
+  const rows = loadUnitsDB(bid) || [];
+  const mode = form.dataset.mode || "add";
+  const editing = (form.dataset.editing || "").trim().toUpperCase();
+
+  // helper za prikaz + kopiranje kredencijala
+  function showCreds(saved){
+    if(!saved) return;
+    const text =
+      `Kredencijali za ${saved.unitCode}\n` +
+      `Username: ${saved.username || saved.unitCode}\n` +
+      `Šifra: ${saved.password || "—"}`;
+
+    // pokušaj clipboard (nije obavezno)
+    if(navigator.clipboard){
+      navigator.clipboard.writeText(text).catch(()=>{});
     }
+    alert(text + "\n\n(Kopirano u clipboard ako browser dozvoljava)");
+  }
 
-    const rows = loadUnitsDB(bid);
-    const mode = form.dataset.mode || "add";
-    const editing = (form.dataset.editing || "").trim().toUpperCase();
-
-    if(mode === "edit" && editing){
-      // ako menjaš ID, spreči duplikat
-      if(editing !== unitCode && rows.some(x => String(x.unitCode).toUpperCase() === unitCode)){
-        alert("Taj ID stana već postoji.");
-        return;
-      }
-      // ako menjaš ID, obriši stari pa upiši novi
-      if(editing !== unitCode){
-        deleteUnitDB(bid, editing);
-      }
-      upsertUnitDB(bid, { unitCode, ownerFullName, active: true });
-redraw();
-setModeAdd();
-if(typeof renderDuesAdmin === "function") renderDuesAdmin();
-return;
-    }
-
-    // add mode
-    if(rows.some(x => String(x.unitCode).toUpperCase() === unitCode)){
+  if(mode === "edit" && editing){
+    // ako menjaš ID, spreči duplikat
+    if(editing !== unitCode && rows.some(x => String(x.unitCode||"").trim().toUpperCase() === unitCode)){
       alert("Taj ID stana već postoji.");
       return;
     }
-    upsertUnitDB(bid, { unitCode, ownerFullName, active: true });
-redraw();
-setModeAdd();
-if(typeof renderDuesAdmin === "function") renderDuesAdmin();
-  };
 
-  // init
-  setModeAdd();
+    // ✅ sačuvaj stare kredencijale (ako menjamo ID)
+    let carry = null;
+    if(editing !== unitCode && typeof findUnitDB === "function"){
+      carry = findUnitDB(bid, editing);
+    }
+
+    // ako menjaš ID, obriši stari pa upiši novi
+    if(editing !== unitCode){
+      deleteUnitDB(bid, editing);
+    }
+
+    // ✅ upiši novi/izmenjeni stan (zadrži šifru ako postoji)
+    const saved = upsertUnitDB(bid, {
+      unitCode,
+      ownerFullName,
+      active: true,
+      password: carry?.password,  // prenesi staru šifru
+      username: unitCode          // username prati ID (po tvojoj logici)
+    });
+
+    redraw();
+    setModeAdd();
+    if(typeof renderDuesAdmin === "function") renderDuesAdmin();
+
+    // opcionalno: pokaži kredencijale posle edit-a samo ako je menjan ID
+    if(editing !== unitCode) showCreds(saved);
+
+    return;
+  }
+
+  // add mode
+  if(rows.some(x => String(x.unitCode||"").trim().toUpperCase() === unitCode)){
+    alert("Taj ID stana već postoji.");
+    return;
+  }
+
+  const saved = upsertUnitDB(bid, { unitCode, ownerFullName, active: true });
+
   redraw();
-}
+  setModeAdd();
+  if(typeof renderDuesAdmin === "function") renderDuesAdmin();
+
+  // ✅ pokaži kredencijale odmah nakon dodavanja
+  showCreds(saved);
+};
 
   /* ================= ADMIN: UPRAVLJANJE ZGRADAMA ================= */
 function renderAdminBuildings(){
