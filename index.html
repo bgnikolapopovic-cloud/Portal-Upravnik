@@ -3270,10 +3270,6 @@ function parseMoney(x){
 }
 function money(n){ return (Number(n||0)).toFixed(0); } // bez decimala (RSD)
 
-function ymNow(){
-  const d = new Date();
-  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0");
-}
 function ymFromDateStr(s){
   // očekuje "YYYY-MM-DD" ili Date.toISOString().slice(0,10)
   const t = String(s || "");
@@ -3389,10 +3385,6 @@ function findUserByUsername(username){
   const key = normUser(username);
   if(!key) return null;
   return getAllUsers().find(u => normUser(u.username) === key) || null;
-}
-
-function listManagers(){
-  return getAllUsers().filter(u => u && u.role === "upravnik");
 }
 
 function upsertUserToDB(user){
@@ -6006,18 +5998,7 @@ function renderUnitOwners(bid){
   updateOwnersProgress(bid);
 }
 
-  function kUsersDB(){ return "pu_users_db_v1"; }
-
-function loadUsersDB(){
-  try{ return JSON.parse(localStorage.getItem(kUsersDB())) || []; }
-  catch{ return []; }
-}
-
-function saveUsersDB(rows){
-  localStorage.setItem(kUsersDB(), JSON.stringify(rows));
-}
-
-/* ===== HELPER: PRIKAZ STANA + IME (SAMO UPRAVNIK / ADMIN) ===== */
+  /* ===== HELPER: PRIKAZ STANA + IME (SAMO UPRAVNIK / ADMIN) ===== */
 function getUnitLabel(bid, unitCode){
   const role = CURRENT_SESSION?.role;
   const code = String(unitCode || "").trim().toUpperCase();
@@ -6062,10 +6043,6 @@ function loadUsersDB(){
 
 function saveUsersDB(rows){
   localStorage.setItem(kUsersDB(), JSON.stringify(rows || []));
-}
-
-function listManagers(){
-  return loadUsersDB().filter(u => u && u.role === "upravnik");
 }
 
 function addManagerUser({ name, username, password }){
@@ -6356,36 +6333,10 @@ function bindAdminFinSwitch(){
   host.dataset.bound = "1";
 }
 
-function normUser(s){
-  return String(s||"").trim().toUpperCase();
-}
-function randInt(min, max){
-  return Math.floor(Math.random()*(max-min+1))+min;
-}
-function genPassword(len=10){
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%";
-  let out = "";
-  for(let i=0;i<len;i++) out += chars[randInt(0, chars.length-1)];
-  return out;
-}
-  
 /* ================= UNITS DB (backend-ready) ================= */
 function kUnitsDB(bid){ return `unitsdb_${bid}`; }
 
 /* ===== helpers za kredencijale ===== */
-function normUser(s){
-  return String(s||"").trim().toUpperCase();
-}
-function randInt(min, max){
-  return Math.floor(Math.random()*(max-min+1))+min;
-}
-function genPassword(len=10){
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%";
-  let out = "";
-  for(let i=0;i<len;i++) out += chars[randInt(0, chars.length-1)];
-  return out;
-}
-
 /* ===== Units DB ===== */
 function loadUnitsDB(bid){
   let rows = [];
