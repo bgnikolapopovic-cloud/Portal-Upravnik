@@ -8012,6 +8012,38 @@ if(typeof applyFinanceRoleUI === "function") applyFinanceRoleUI();
 /* POZIV */
 bindFinanceTabs();
 
+  /* ================= OWNERS SUB-TABS (Dodaj stan / Dodaj zgradu) ================= */
+function bindOwnersSubTabs(){
+  const ownersWrap = document.getElementById("finTabWrapOwners");
+  const bU = document.getElementById("ownTabUnits");
+  const bB = document.getElementById("ownTabBuildings");
+  if(!ownersWrap || !bU || !bB) return;
+
+  // bind samo jednom
+  if(ownersWrap.dataset.boundOwnTabs === "1") return;
+  ownersWrap.dataset.boundOwnTabs = "1";
+
+  function setSub(which){
+    ownersWrap.dataset.ownTab = which;
+
+    // stil dugmadi
+    bU.classList.toggle("btnPrimary", which === "units");
+    bU.classList.toggle("btnGhost",   which !== "units");
+
+    bB.classList.toggle("btnPrimary", which === "buildings");
+    bB.classList.toggle("btnGhost",   which !== "buildings");
+
+    // primeni role UI (ovo prikazuje/sakriva wrapove)
+    if(typeof applyFinanceRoleUI === "function") applyFinanceRoleUI();
+  }
+
+  bU.addEventListener("click", () => setSub("units"));
+  bB.addEventListener("click", () => setSub("buildings"));
+
+  // inicijalno stanje
+  setSub(ownersWrap.dataset.ownTab || "units");
+}
+
 
 /* ================= ROLE UI (samo Owners pod-tabovi) ================= */
 function applyFinanceRoleUI(){
